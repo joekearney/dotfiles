@@ -4,11 +4,11 @@ set -e
 
 # yes, assuming same home dir on source and target
 SOURCE_HOME=$(cd ~; pwd)
-TARGET_HOME=/home/$(whoami)
 TARGET_HOST=shell
 if [[ $1 != "" ]]; then
   TARGET_HOST=$1
 fi
+TARGET_HOME=$(ssh $TARGET_HOST "cd ~; pwd")
 
 echo "Copying dot files from [${SOURCE_HOME}] on $(hostname -s) to [${TARGET_HOME}] on $TARGET_HOST"
 
