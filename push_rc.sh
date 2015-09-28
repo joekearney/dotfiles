@@ -2,7 +2,6 @@
 
 set -e
 
-# yes, assuming same home dir on source and target
 SOURCE_HOME=$(cd ~; pwd)
 TARGET_HOST=shell
 if [[ $1 != "" ]]; then
