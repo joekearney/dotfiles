@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DOT_FILE_DIR=$(dirname $0)
+DOT_FILE_DIR=$(readlink -f $0 | xargs dirname)
 
-for f in $(find $DOT_FILE_DIR -maxdepth 1 -type f -name '.*'); do
-	ln -s $f ~/$(basename $f)
+for f in .bashrc .bash_profile .vimrc; do
+	ln -sf $DOT_FILE_DIR/$f ~/$(basename $f)
 done
