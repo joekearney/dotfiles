@@ -14,10 +14,12 @@ umask 027
 source ~/.bashrc
 
 # git stuff
+GIT_PS1_SHOWDIRTYSTATE=yes
+GIT_PS1_SHOWSTASHSTATE=yes
+GIT_PS1_SHOWUNTRACKEDFILES=yes
+GIT_PS1_SHOWCOLORHINTS=yes
 source ~/.git-prompt.sh
 
-##################################################
-# Fancy PWD display function
 ##################################################
 # The home directory (HOME) is replaced with a ~
 # The last pwdmaxlen characters of the PWD are displayed
@@ -25,7 +27,7 @@ source ~/.git-prompt.sh
 # /home/me/stuff          -> ~/stuff               if USER=me
 # /usr/share/big_dir_name -> .../share/big_dir_name if pwdmaxlen=20
 ##################################################
-bash_prompt_command() {
+abbrev_pwd() {
     local lastExitStatus=$?
 
     # How many characters of the $PWD should be kept
@@ -43,12 +45,11 @@ bash_prompt_command() {
     fi
 
     # extra backslash before $ means it gets re-evaluated each time
-    export DIR_PROMPT="$NEW_PWD"
+    echo $NEW_PWD
 }
 
 # don't export this
-PROMPT_COMMAND="bash_prompt_command"
 # prompt courtesy of http://bashrcgenerator.com/
-export PS1="\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]\h\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]\$DIR_PROMPT\[$(tput sgr0)\]\[\033[38;5;15m\]\$(__git_ps1)\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]\$?\[$(tput sgr0)\]\[\033[38;5;7m\])\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+PROMPT_COMMAND='__git_ps1 "\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]\h\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]\$(abbrev_pwd))\[$(tput sgr0)\]\[\033[38;5;15m\]" "\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]\$?\[$(tput sgr0)\]\[\033[38;5;7m\])\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"'
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
