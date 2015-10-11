@@ -18,6 +18,7 @@ GIT_PS1_SHOWDIRTYSTATE=yes
 GIT_PS1_SHOWSTASHSTATE=yes
 GIT_PS1_SHOWUNTRACKEDFILES=yes
 GIT_PS1_SHOWCOLORHINTS=yes
+GIT_PS1_SHOWUPSTREAM="auto"
 source ~/.git-prompt.sh
 
 ##################################################
