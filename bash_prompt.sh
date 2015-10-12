@@ -35,12 +35,32 @@ abbrev_pwd() {
     echo $NEW_PWD
 }
 
+# echo out the current Ruby version, if we're in an rvm environment
 rvm_string() {
   if [[ "${rvm_ruby_string}" != "" ]]; then
+    # e.g. "(ruby-2.0.0)", with the name coloured
     echo " (\[$(tput sgr0)\]\[\033[38;5;10m\]${rvm_ruby_string}\[$(tput sgr0)\]\[\033[38;5;15m\])"
   fi
 }
 
+# if the last printed line did not end in a newline
+# echo a marker character and a newline
+clear_line() {
+  local curpos
+  echo -en "\E[6n"
+
+  # read current pos into variable
+  IFS=";" read -sdR -a curpos
+
+  ((curpos[1]!=1)) && \
+    echo -e '\E[1m\E[41m\E[33m%\E[0m' # print marker, and newline
+}
+
+all_the_things() {
+  clear_line
+  __git_ps1 "\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]\h\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]\$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]" "$(rvm_string)\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]\$?\[$(tput sgr0)\]\[\033[38;5;7m\])\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+}
+
 # don't export this
 # prompt courtesy of http://bashrcgenerator.com/
-PROMPT_COMMAND='__git_ps1 "\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]\h\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]\$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]" "$(rvm_string)\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]\$?\[$(tput sgr0)\]\[\033[38;5;7m\])\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"'
+PROMPT_COMMAND=all_the_things
