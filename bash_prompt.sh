@@ -50,21 +50,26 @@ command_timer_stop() {
   last_command_exec_time_secs=$(($SECONDS - $command_in_progress_timer))
   unset command_in_progress_timer
 }
-# prints out the execution time of the last command
-last_command_exec_time() {
-  if ((last_command_exec_time_secs > 4)); then
-    local total_secs=${last_command_exec_time_secs}
-    local s = $((total_secs % 60))
-    local m = $(( (total_secs % 3600) / 60))
-    local h = $((total_secs / 3600))
+convert_time_string() {
+  total_secs="$1"
+  if ((total_secs>4)); then
+    ((s=total_secs%60))
+    ((m=(total_secs%3600)/60))
+    ((h=total_secs/3600))
 
     local time_string=""
-    if   ((h > 0)); then time_string="${h}h${m}m${s}s"
-    elif ((m > 0)); then time_string="${m}m${s}s"
+    if   ((h>0)); then time_string="${h}h${m}m${s}s"
+    elif ((m>0)); then time_string="${m}m${s}s"
     else                 time_string="${s}s"
     fi
 
     echo -n " in ${time_string}"
+  fi
+}
+# prints out the execution time of the last command
+last_command_exec_time() {
+  if [[ "$last_command_exec_time_secs" != "" ]]; then
+    convert_time_string $last_command_exec_time_secs
   fi
 }
 # start the timer on each command
@@ -94,7 +99,7 @@ all_the_things() {
 
   clear_line
   # prompt formatting helped by http://bashrcgenerator.com/
-  __git_ps1 "\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]\h\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]\$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]" "$(rvm_string)\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] $(time_zone) \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]\$?\[$(tput sgr0)\]\[\033[38;5;7m\]$(last_command_exec_time))\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+  __git_ps1 "\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]\h\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]\$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]" "$(rvm_string)\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] $(time_zone) \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]\$?\[$(tput sgr0)\]\[\033[38;5;7m\])\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
 }
 
 # don't export this
