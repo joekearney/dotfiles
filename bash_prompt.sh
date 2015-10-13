@@ -42,6 +42,35 @@ rvm_string() {
     echo " (\[$(tput sgr0)\]\[\033[38;5;10m\]${rvm_ruby_string}\[$(tput sgr0)\]\[\033[38;5;15m\])"
   fi
 }
+
+command_timer_start() {
+  command_in_progress_timer=${command_in_progress_timer:-$SECONDS}
+}
+command_timer_stop() {
+  last_command_exec_time_secs=$(($SECONDS - $command_in_progress_timer))
+  unset command_in_progress_timer
+}
+# prints out the execution time of the last command
+last_command_exec_time() {
+  if ((last_command_exec_time_secs > 4)); then
+    local total_secs=${last_command_exec_time_secs}
+    local s = $((total_secs % 60))
+    local m = $(( (total_secs % 3600) / 60))
+    local h = $((total_secs / 3600))
+
+    local time_string=""
+    if   ((h > 0)); then time_string="${h}h${m}m${s}s"
+    elif ((m > 0)); then time_string="${m}m${s}s"
+    else                 time_string="${s}s"
+    fi
+
+    echo -n " in ${time_string}"
+  fi
+}
+# start the timer on each command
+trap 'command_timer_start' DEBUG
+
+# print out the time zone of the current machine, in grey
 time_zone() {
   echo -n "\[$(tput sgr0)\]\[\033[38;5;7m\]"
   echo -n $(date +'%Z')
@@ -61,10 +90,12 @@ clear_line() {
 }
 
 all_the_things() {
+  command_timer_stop
+
   clear_line
-  __git_ps1 "\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]\h\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]\$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]" "$(rvm_string)\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] $(time_zone) \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]\$?\[$(tput sgr0)\]\[\033[38;5;7m\])\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+  # prompt formatting helped by http://bashrcgenerator.com/
+  __git_ps1 "\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]\h\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]\$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]" "$(rvm_string)\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] $(time_zone) \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]\$?\[$(tput sgr0)\]\[\033[38;5;7m\]$(last_command_exec_time))\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
 }
 
 # don't export this
-# prompt courtesy of http://bashrcgenerator.com/
 PROMPT_COMMAND=all_the_things
