@@ -10,6 +10,7 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
+export LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
 export LESS=' -R '
 
 export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
