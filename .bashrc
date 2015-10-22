@@ -15,4 +15,11 @@ export LESS=' -R '
 
 export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 
-eval $(boot2docker shellinit 2>/dev/null)
+if [[ $(command -v boot2docker) ]]; then
+  eval $(boot2docker shellinit 2>/dev/null)
+fi
+
+# head and grep
+function hag() {
+  sed -e '1p' -e "/$1/!d"
+}
