@@ -1,5 +1,4 @@
-# Get the aliases and functions
-
+# Get the aliases, PATH and functions
 if [ -f ~/.bashrc ]; then
   . ~/.bashrc
 fi

@@ -10,10 +10,19 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
-export LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
-export LESS=' -R '
+if [ -f /usr/local/bin/src-hilite-lesspipe.sh ]; then
+  export LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
+  export LESS=' -R '
+fi
 
-export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+if [ -d /usr/local/opt/coreutils/libexec/gnubin ]; then
+  # Add gnu niceness, probably on a mac at this point
+  export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+fi
+if [ -d $HOME/.rvm ]; then
+  # Add RVM to PATH for scripting
+  export PATH="$PATH:$HOME/.rvm/bin"
+fi
 
 if [[ $(command -v boot2docker) ]]; then
   eval $(boot2docker shellinit 2>/dev/null)
