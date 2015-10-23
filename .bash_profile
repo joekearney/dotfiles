@@ -14,10 +14,10 @@ if [ -f $(readlink -f ~/.bash_profile | xargs dirname)/bash_prompt.sh ]; then
 fi
 
 # load bash_completions from various sources
-# the standard ones
-if [ -f /etc/bash_completion ]; then
-  . /etc/bash_completion
-fi
+# the standard ones -- this seems to break prompt on some hosts
+#if [ -f /etc/bash_completion ]; then
+#  . /etc/bash_completion
+#fi
 # from brew-installed sources if they exist
 if [[ $(command -v brew) && -f $(brew --prefix)/etc/bash_completion ]]; then
   . $(brew --prefix)/etc/bash_completion
