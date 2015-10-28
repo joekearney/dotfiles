@@ -28,6 +28,13 @@ if [[ $(command -v boot2docker) ]]; then
   eval $(boot2docker shellinit 2>/dev/null)
 fi
 
+# import credentials into environment
+if [ -d ~/.credentials ]; then
+  for b in ~/.credentials/*; do
+    . $b
+  done
+fi
+
 # head and grep
 function hag() {
   sed -e '1p' -e "/$1/!d"
