@@ -43,33 +43,42 @@ rvm_string() {
   fi
 }
 
+current_time_millis() {
+  echo $(($(date +%s%N)/1000000))
+}
 command_timer_start() {
-  command_in_progress_timer=${command_in_progress_timer:-$SECONDS}
+  local millis=$(current_time_millis)
+  command_in_progress_timer=${command_in_progress_timer:-$millis}
 }
 command_timer_stop() {
-  last_command_exec_time_secs=$(($SECONDS - $command_in_progress_timer))
+  local millis=$(current_time_millis)
+  last_command_exec_time_secs=$((millis - $command_in_progress_timer))
   unset command_in_progress_timer
 }
 convert_time_string() {
-  local total_secs="$1"
-  if ((total_secs>4)); then
-    ((s=total_secs%60))
-    ((m=(total_secs%3600)/60))
-    ((h=total_secs/3600))
+  local total_millis="$1"
+  ((total_secs=total_millis/1000))
+  ((ms=total_millis%1000))
+  ((s=total_secs%60))
+  ((m=(total_secs%3600)/60))
+  ((h=total_secs/3600))
 
-    local time_string=""
-    if   ((h>0)); then time_string="${h}h${m}m${s}s"
-    elif ((m>0)); then time_string="${m}m${s}s"
-    else                 time_string="${s}s"
-    fi
-
-    echo -n " in ${time_string}"
-
-    # how do you do local vars on arithmetic?
-    unset s
-    unset m
-    unset h
+  local time_string=""
+  if   ((h>0)); then time_string="${h}h${m}m${s}s"
+  elif ((m>0)); then time_string="${m}m${s}s"
+  elif ((s>3)); then time_string="${s}s"
+  elif ((s>0)); then time_string="${s}.$(printf "%0*d" 3 $ms | sed -e 's/[0]*$//g')s"
+  else               time_string="${ms}ms"
   fi
+
+  echo -n " in ${time_string}"
+
+  # how do you do local vars on arithmetic?
+  unset ms
+  unset s
+  unset m
+  unset h
+  unset total_secs
 }
 # prints out the execution time of the last command
 last_command_exec_time() {
