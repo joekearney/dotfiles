@@ -14,3 +14,12 @@ function countdown() {
     ((remaining=remaining-1))
   done
 }
+
+function shellTitle() {
+    echo -ne "\033]0;"$*"\007"
+}
+
+# head and grep
+function hag() {
+  sed -e '1p' -e "/$1/!d"
+}

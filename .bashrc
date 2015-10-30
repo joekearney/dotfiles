@@ -34,8 +34,3 @@ if [ -d ~/.credentials ]; then
     . $b
   done
 fi
-
-# head and grep
-function hag() {
-  sed -e '1p' -e "/$1/!d"
-}

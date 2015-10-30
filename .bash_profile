@@ -8,6 +8,11 @@ if [ -f /etc/bashrc ]; then
   . /etc/bashrc
 fi
 
+# load functions
+if [ -f $(readlink -f ~/.bash_profile | xargs dirname)/functions.sh ]; then
+  . $(readlink -f ~/.bash_profile | xargs dirname)/functions.sh
+fi
+
 # load custom prompt
 if [ -f $(readlink -f ~/.bash_profile | xargs dirname)/bash_prompt.sh ]; then
   . $(readlink -f ~/.bash_profile | xargs dirname)/bash_prompt.sh
