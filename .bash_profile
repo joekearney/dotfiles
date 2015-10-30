@@ -8,14 +8,16 @@ if [ -f /etc/bashrc ]; then
   . /etc/bashrc
 fi
 
+export DOT_FILES_DIR=$(readlink -f ~/.bash_profile | xargs dirname)
+
 # load functions
-if [ -f $(readlink -f ~/.bash_profile | xargs dirname)/functions.sh ]; then
-  . $(readlink -f ~/.bash_profile | xargs dirname)/functions.sh
+if [ -f ${DOT_FILES_DIR}/functions.sh ]; then
+  . ${DOT_FILES_DIR}/functions.sh
 fi
 
 # load custom prompt
-if [ -f $(readlink -f ~/.bash_profile | xargs dirname)/bash_prompt.sh ]; then
-  . $(readlink -f ~/.bash_profile | xargs dirname)/bash_prompt.sh
+if [ -f ${DOT_FILES_DIR}/bash_prompt.sh ]; then
+  . ${DOT_FILES_DIR}/bash_prompt.sh
 fi
 
 # load bash_completions from various sources
@@ -28,8 +30,8 @@ if [[ $(command -v brew) && -f $(brew --prefix)/etc/bash_completion ]]; then
   . $(brew --prefix)/etc/bash_completion
 fi
 # any custom ones
-if [ -d $(readlink -f ~/.bash_profile | xargs dirname)/bash_completion ]; then
-  for b in $(readlink -f ~/.bash_profile | xargs dirname)/bash_completion/*; do
+if [ -d ${DOT_FILES_DIR}/bash_completion ]; then
+  for b in ${DOT_FILES_DIR}/bash_completion/*; do
     . $b
   done
 fi
