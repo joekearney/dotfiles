@@ -23,3 +23,21 @@ function shellTitle() {
 function hag() {
   sed -e '1p' -e "/$1/!d"
 }
+
+function ash() {
+  if [[ $1 == "" ]]; then
+    # delegate to the error that ssh gives with no args
+    ssh
+  else
+    local target_host=$1
+    LC_alias_of_target_host=$target_host ssh $target_host
+  fi
+}
+
+function getExpectedHostname() {
+  if [ ! -z "$LC_alias_of_target_host" ]; then
+    echo "$LC_alias_of_target_host"
+  else
+    hostname -s
+  fi
+}
