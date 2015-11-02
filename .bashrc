@@ -3,6 +3,7 @@
 alias ls='ls -G --color=auto'
 alias ll='ls -lh'
 alias la='ls -lAh'
+alias cb='popd'
 
 alias dir='dir --color=auto'
 alias vdir='vdir --color=auto'
