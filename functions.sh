@@ -87,3 +87,19 @@ function cd() {
     pushd $1 &> /dev/null   #dont display current stack
   fi
 }
+
+# cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
+function cdg() {
+  if [[ "$1" == "" ]]; then
+    echo "Usage: ${FUNCNAME[0]} <repo-name>"
+  else
+    local repoName=$1
+    local path=$(find ~/git -type d -maxdepth 2 -name "*$repoName*")
+    local count=$(echo "$path" | wc -l)
+    if [[ "$count" == "1" ]]; then
+      cd $path
+    else
+      echo -e "Found $count directories matching [$repoName]:\n$(echo "$path" | sed 's/^/  /')"
+    fi
+  fi
+}
