@@ -79,7 +79,11 @@ function getExpectedHostname() {
 
 # let cd also pushd directories into stack. Use popd to reverse stack
 function cd() {
-  if [ -e $1 ]; then 
+  if [[ "$1" == "" ]]; then
+    pushd ~ &> /dev/null
+  elif [[ "$1" == "-" ]]; then
+    popd &> /dev/null
+  elif [ -e $1 ]; then
     pushd $1 &> /dev/null   #dont display current stack
   fi
 }
