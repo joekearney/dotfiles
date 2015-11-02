@@ -8,6 +8,5 @@
   co = checkout
   st = status
   hist = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-	hub = "!f() { git clone git@github.com:$1/$2.git $1/$2; }; f"
+	hub = "!f() { git clone git@github.com:$1/$2.git ~/git/$1/$2; }; f"
 	unstash = stash apply
-	cd = "!f() { cd $(find ~/git/ -type d -maxdepth 2 -name *$1*); }; f"
