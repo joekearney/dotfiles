@@ -43,6 +43,8 @@ rvm_string() {
   fi
 }
 
+# gets the current number of millis since the epoch.
+# THIS DOESN'T WORK on normal mac. If it fails, check that gnubin is on the PATH
 current_time_millis() {
   echo $(($(date +%s%N)/1000000))
 }
@@ -52,7 +54,7 @@ command_timer_start() {
 }
 command_timer_stop() {
   local millis=$(current_time_millis)
-  last_command_exec_time_secs=$((millis - $command_in_progress_timer))
+  last_command_exec_time_secs=$(($millis - $command_in_progress_timer))
   unset command_in_progress_timer
 }
 convert_time_string() {

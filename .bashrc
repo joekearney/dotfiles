@@ -25,6 +25,9 @@ if [ -d $HOME/.rvm ]; then
   export PATH="$PATH:$HOME/.rvm/bin"
 fi
 
+DOT_FILES_DIR=$(readlink -f ~/.bash_profile | xargs dirname)
+export PATH="$DOT_FILES_DIR/bin:$PATH"
+
 if [[ $(command -v boot2docker) ]]; then
   eval $(boot2docker shellinit 2>/dev/null)
 fi
