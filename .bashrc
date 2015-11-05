@@ -11,7 +11,7 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
-export MYSQL_PS1="\u@\h [\d] \c> "
+export MYSQL_PS1="\u@\h:\d \c> "
 
 if [ -f /usr/local/bin/src-hilite-lesspipe.sh ]; then
   export LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
@@ -28,7 +28,7 @@ if [ -d $HOME/.rvm ]; then
 fi
 
 DOT_FILES_DIR=$(readlink -f ~/.bash_profile | xargs dirname)
-export PATH="$DOT_FILES_DIR/bin:$PATH"
+export PATH="~/bin:$DOT_FILES_DIR/bin:$PATH"
 
 if [[ $(command -v boot2docker) ]]; then
   eval $(boot2docker shellinit 2>/dev/null)

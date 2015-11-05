@@ -11,8 +11,11 @@ function pushDotFilesTo() {
     echo "Usage: pushDotFilesTo <host>"
   else
     local host=$1
-    ${DOT_FILES_DIR}/push_rc.sh $host
+    ${DOT_FILES_DIR}/pushDotFiles.sh $host
   fi
+}
+function pushDotFilesAndSshTo() {
+  pushDotFilesTo $1 && ash $1
 }
 
 # Sources .bash_profile into the current environment
