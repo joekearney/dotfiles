@@ -1,0 +1,12 @@
+#!/bin/bash
+
+PROJECT_DIR="$HOME/.sbt-repl"
+
+mkdir -p $PROJECT_DIR
+cd $PROJECT_DIR
+
+if [ ! -f $PROJECT_DIR/build.sbt ]; then
+  cp $(dirname $0)/build.sbt.template ./build.sbt
+fi
+
+sbt console-quick

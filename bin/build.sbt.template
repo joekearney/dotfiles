@@ -1,0 +1,7 @@
+name := "repl-with-libs"
+version := "1.0"
+scalaVersion := "2.11.7"
+
+libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.1.5"
+libraryDependencies += "joda-time" % "joda-time" % "2.9"
+libraryDependencies += "com.typesafe.play" %% "play-json" % "2.4.3"
