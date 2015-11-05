@@ -11,6 +11,8 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
+export MYSQL_PS1="\u@\h [\d] \c> "
+
 if [ -f /usr/local/bin/src-hilite-lesspipe.sh ]; then
   export LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
   export LESS=' -R '
