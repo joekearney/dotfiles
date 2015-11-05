@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DOT_FILES_DIR=$(dirname $0)
+
 for f in .bashrc .bash_profile .vimrc .git-prompt.sh .gitconfig; do
 	ln -sf $DOT_FILES_DIR/$f ~/$(basename $f)
 done

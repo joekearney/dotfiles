@@ -1,14 +1,12 @@
 #!/bin/bash
 
-echo $0 | xargs readlink -f
-
 ECHO_ONLY=false
-INCLUDE_SSH=false
+INCLUDE_SSH_CERTS=false
 DO_LINKING=true
 
 set -e
 
-SOURCE_DIR=$(readlink -f $0 | xargs dirname)
+SOURCE_DIR=$(dirname $0)
 source ${SOURCE_DIR}/functions.sh
 source ${SOURCE_DIR}/.bash_color_vars
 
@@ -26,12 +24,12 @@ function copyFilesTo() {
 
   if [[ ${DO_LINKING} == "true" ]]; then
     echo "  [host=${TARGET_HOST}] Linking dotfiles on [${TARGET_HOST}]"
-    runCommand ssh $TARGET_HOST "~/dotfiles/link.sh"
+    runCommand ssh $TARGET_HOST "~/dotfiles/linkDotFiles.sh"
   else
     echo "  [host=${TARGET_HOST}] skipping linking"
   fi
 
-  if [[ ${INCLUDE_SSH} == "true" ]]; then
+  if [[ ${INCLUDE_SSH_CERTS} == "true" ]]; then
     echo "  [host=${TARGET_HOST}] Copying ssh certificates to [$TARGET_HOST:${TARGET_HOME}]"
     runCommand ssh $TARGET_HOST "mkdir -p ${TARGET_HOME}/.ssh; chmod 700 ${TARGET_HOME}/.ssh"
     runCommand rsync -a ${SOURCE_HOME}/.ssh/id_rsa* $TARGET_HOST:${TARGET_HOME}/.ssh/
