@@ -1,12 +1,23 @@
 #!/bin/bash
 
-PROJECT_DIR="$HOME/.sbt-repl"
+TEMPLATE=$(dirname $0)/build.sbt.template
 
-mkdir -p $PROJECT_DIR
-cd $PROJECT_DIR
+function runSbt() {
+  PROJECT_DIR="$HOME/.sbt-repl"
 
-if [ ! -f $PROJECT_DIR/build.sbt ]; then
-  cp $(dirname $0)/build.sbt.template ./build.sbt
+  mkdir -p $PROJECT_DIR
+  cd $PROJECT_DIR
+
+  # copy template build.sbt, overwriting if exists
+  cp $TEMPLATE ./build.sbt
+
+  sbt console-quick
+}
+
+if [[ "$1" == add ]]; then
+  echo -n "Paste the new line for build.sbt here: "
+  read line
+  echo "$line" >> $TEMPLATE
+else
+  runSbt
 fi
-
-sbt console-quick
