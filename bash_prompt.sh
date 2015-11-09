@@ -6,6 +6,7 @@ GIT_PS1_SHOWSTASHSTATE=yes
 GIT_PS1_SHOWUNTRACKEDFILES=yes
 GIT_PS1_SHOWCOLORHINTS=yes
 GIT_PS1_SHOWUPSTREAM="auto verbose"
+. $DOT_FILES_DIR/.bash_color_vars
 . $DOT_FILES_DIR/git-prompt.sh
 
 ##################################################

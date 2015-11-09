@@ -10,3 +10,6 @@
   hist = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
 	hub = "!f() { git clone git@github.com:$1/$2.git ~/git/$1/$2; }; f"
 	unstash = stash apply
+	current-branch = rev-parse --abbrev-ref HEAD
+	new-branch = checkout -b
+	push-upstream = "!f() { git push --set-upstream origin $(git current-branch); }; f"

@@ -15,11 +15,6 @@ if [ -f ${DOT_FILES_DIR}/functions.sh ]; then
   . ${DOT_FILES_DIR}/functions.sh
 fi
 
-# load custom prompt
-if [ -f ${DOT_FILES_DIR}/bash_prompt.sh ]; then
-  . ${DOT_FILES_DIR}/bash_prompt.sh
-fi
-
 # load bash_completions from various sources
 # the standard ones -- this seems to break prompt on some hosts
 #if [ -f /etc/bash_completion ]; then
@@ -34,6 +29,11 @@ if [ -d ${DOT_FILES_DIR}/bash_completion ]; then
   for b in ${DOT_FILES_DIR}/bash_completion/*; do
     . $b
   done
+fi
+
+# load custom prompt
+if [ -f ${DOT_FILES_DIR}/bash_prompt.sh ]; then
+  . ${DOT_FILES_DIR}/bash_prompt.sh
 fi
 
 # this is a safe and sensible umask
