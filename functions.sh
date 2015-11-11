@@ -57,7 +57,7 @@ function ash() {
     ssh
   else
     local target_host=$1
-    local shortname=$(echo $LC_alias_of_target_host | sed -e 's/\..*//')
+    local shortname=$(echo $target_host | sed -e 's/\..*^//')
     grep -qFx "$target_host" $KNOWN_HOSTS_FILE || echo $target_host >> $KNOWN_HOSTS_FILE
     LC_alias_of_target_host=$shortname ssh $target_host
   fi
@@ -75,6 +75,14 @@ complete -F _ash_complete_options ash
 function getExpectedHostname() {
   if [ ! -z "$LC_alias_of_target_host" ]; then
     echo "$LC_alias_of_target_host"
+  else
+    hostname -s
+  fi
+}
+# Gets the hostname entered when ssh-ing to the machine.
+function getExpectedHostnameAndOriginal() {
+  if [ ! -z "$LC_alias_of_target_host" ]; then
+    echo "$LC_alias_of_target_host = $(hostname -s)"
   else
     hostname -s
   fi
