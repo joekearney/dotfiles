@@ -4,7 +4,9 @@ alias ls='ls -G --color=auto'
 alias ll='ls -lh'
 alias la='ls -lAh'
 alias ld='ls -lAdh .*'
+
 alias cb='popd'
+alias cdd='cd ~/dotfiles'
 
 alias dir='dir --color=auto'
 alias vdir='vdir --color=auto'
