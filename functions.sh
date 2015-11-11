@@ -114,3 +114,10 @@ function cdg() {
     fi
   fi
 }
+# bash auto completion for cdg
+function _cdg_complete_options() {
+  local curr_arg=${COMP_WORDS[COMP_CWORD]}
+  local lines=$(find ~/git -type d -maxdepth 3 -name ".git" | awk -F/ '{ print $(NF-1) }')
+  COMPREPLY=( $(compgen -W '${lines[@]}' -- $curr_arg ) )
+}
+complete -F _cdg_complete_options cdg
