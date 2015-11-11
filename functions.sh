@@ -94,6 +94,8 @@ function cd() {
     pushd ~ &> /dev/null
   elif [[ "$1" == "-" ]]; then
     popd &> /dev/null
+  elif [[ "$1" == "?" ]]; then
+    dirs -v
   elif [ -e $1 ]; then
     pushd $1 &> /dev/null   #dont display current stack
   fi
