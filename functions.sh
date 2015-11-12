@@ -123,3 +123,9 @@ function _cdg_complete_options() {
   COMPREPLY=( $(compgen -W '${lines[@]}' -- $curr_arg ) )
 }
 complete -F _cdg_complete_options cdg
+
+# pipe from http to less, for a given URL
+function httpless() {
+  # --print=hb means print response headers and response body.
+  http --pretty=all --print=hb "$@" | less
+}
