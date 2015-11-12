@@ -35,8 +35,8 @@ fi
 DOT_FILES_DIR=$(readlink -f ~/.bash_profile | xargs dirname)
 export PATH="~/bin:$DOT_FILES_DIR/bin:$PATH"
 
-if [[ $(command -v boot2docker) ]]; then
-  eval $(boot2docker shellinit 2>/dev/null)
+if [[ $(command -v docker-machine) ]]; then
+  eval "$(docker-machine env default)"
 fi
 
 # import credentials into environment
