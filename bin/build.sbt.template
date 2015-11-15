@@ -2,7 +2,14 @@ name := "repl-with-libs"
 version := "1.0"
 scalaVersion := "2.11.7"
 
+fork := true
+
 libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.1.5"
 libraryDependencies += "joda-time" % "joda-time" % "2.9"
 libraryDependencies += "com.typesafe.play" %% "play-json" % "2.4.3"
-libraryDependencies += "org.spire-math" %% "cats" % "0.2.0"
+libraryDependencies += "org.spire-math" %% "cats" % "0.3.0"
+libraryDependencies ++= Seq(
+  "io.circe" %% "circe-core" % "0.2.0",
+  "io.circe" %% "circe-generic" % "0.2.0",
+  "io.circe" %% "circe-parse" % "0.2.0"
+)
