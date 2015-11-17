@@ -2,7 +2,7 @@
 
 DOT_FILES_DIR=$(dirname $0)
 
-for f in .bashrc .bash_profile .vimrc .gitconfig; do
+for f in .bashrc .bash_profile .vimrc .gitconfig .screenrc; do
 	ln -sf $DOT_FILES_DIR/$f ~/$(basename $f)
 done
 
