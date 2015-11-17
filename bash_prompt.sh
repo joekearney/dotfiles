@@ -92,6 +92,14 @@ last_command_exec_time() {
 # start the timer on each command
 trap 'command_timer_start' DEBUG
 
+# gets the list of detached screen instances
+detached_screens() {
+  local screens=$(screen -ls | grep Detached | awk '{ print $1 }' | sed "s/.$(hostname -s)//" | tr '\n' ',' | sed 's/,$//')
+  if [[ "$screens" != "" ]]; then
+    echo -n " (screens: $YELLOW$screens$RESTORE)"
+  fi
+}
+
 # print out the time zone of the current machine, in grey
 time_zone() {
   echo -n "\[$(tput sgr0)\]\[\033[38;5;7m\]"
@@ -119,7 +127,7 @@ all_the_things() {
   clear_line
   shellTitle $(getExpectedHostname)
   # prompt formatting helped by http://bashrcgenerator.com/
-  __git_ps1 "\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]\$(getExpectedHostnameAndOriginal)\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]\$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]" "$(rvm_string)\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] $(time_zone) \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]$(last_command_exec_time))\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+  __git_ps1 "\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]\$(getExpectedHostnameAndOriginal)\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]\$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]" "$(rvm_string)$(detached_screens)\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] $(time_zone) \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]$(last_command_exec_time))\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
 }
 
 # don't export this
