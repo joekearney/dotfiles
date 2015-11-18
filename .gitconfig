@@ -13,3 +13,4 @@
 	current-branch = rev-parse --abbrev-ref HEAD
 	new-branch = checkout -b
 	push-upstream = "!f() { git push --set-upstream origin $(git current-branch); }; f"
+  diff = diff --color-words
