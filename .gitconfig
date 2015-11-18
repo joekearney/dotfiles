@@ -4,6 +4,14 @@
 # set email in $HOME/.config/git/config
 	name = Joe Kearney
 
+[color]
+  diff = always
+  status = auto
+  branch = auto
+  interactive = auto
+  ui = true
+  pager = true
+
 [alias]
   co = checkout
   st = status
@@ -13,4 +21,4 @@
 	current-branch = rev-parse --abbrev-ref HEAD
 	new-branch = checkout -b
 	push-upstream = "!f() { git push --set-upstream origin $(git current-branch); }; f"
-  diff = diff --color-words
+  dif = diff --color-words
