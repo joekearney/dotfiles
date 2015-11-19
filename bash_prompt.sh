@@ -37,9 +37,12 @@ abbrev_pwd() {
 
 # echo out the current Ruby version, if we're in an rvm environment
 rvm_string() {
-  if [[ "${rvm_current_rvmrc}" != "" ]]; then
-    # e.g. "(ruby-2.0.0)", with the name coloured
-    echo " ($GREEN$(rvm current)$RESTORE)"
+  if [[ $(command -v rvm) ]]; then
+    local rvmCurrent=$(rvm current)
+    if [[ "${rvmCurrent}" != "system" ]]; then
+      # e.g. "(ruby-2.0.0)", with the name coloured
+      echo " (${GREEN}${rvmCurrent}${RESTORE})"
+    fi
   fi
 }
 
@@ -131,6 +134,15 @@ all_the_things() {
 
   clear_line
   shellTitle $(getExpectedHostname)
+
+  # HACK RVM tries to be clever with going back to the previous environment
+  # on a directory change, but with multiple ruby projects on multiple versions
+  # you end up with non-ruby directories getting a specifiv rvm-ruby version,
+  # which is wierd. This is a way of disabling this behaviour - set this value
+  # in every directory. Can't do this in the cd() function, because rvm has
+  # taken over that as well!
+  rvm_previous_environment="system"
+
   # prompt formatting helped by http://bashrcgenerator.com/
   __git_ps1 "\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]\$(getExpectedHostnameAndOriginal)\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]\$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE" "$(rvm_string)$(detached_screens)$(current_screen)\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] $(time_zone) \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]$(last_command_exec_time))\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
 }

@@ -36,10 +36,10 @@ function sortOutPathEntries() {
   prependToPath "$DOT_FILES_DIR/bin"
   prependToPath "~/bin"
 
-  # add rvm scripts. These always want to be on the front of the path
+  # add rvm scripts
   if [ -d $HOME/.rvm ]; then
     # Add RVM to PATH for scripting
-    prependToPath "$HOME/.rvm/bin"
+    echo $PATH | grep -qv "$HOME/.rvm/bin" && export PATH="$PATH:$HOME/.rvm/bin"
   fi
 }
 
