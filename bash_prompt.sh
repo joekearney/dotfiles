@@ -39,7 +39,7 @@ abbrev_pwd() {
 rvm_string() {
   if [[ "${rvm_current_rvmrc}" != "" ]]; then
     # e.g. "(ruby-2.0.0)", with the name coloured
-    echo " (\[$(tput sgr0)\]\[\033[38;5;10m\]$(rvm current)\[$(tput sgr0)\]\[\033[38;5;15m\])"
+    echo " ($GREEN$(rvm current)$RESTORE)"
   fi
 }
 
@@ -132,7 +132,7 @@ all_the_things() {
   clear_line
   shellTitle $(getExpectedHostname)
   # prompt formatting helped by http://bashrcgenerator.com/
-  __git_ps1 "\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]\$(getExpectedHostnameAndOriginal)\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]\$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]" "$(rvm_string)$(detached_screens)$(current_screen)\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] $(time_zone) \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]$(last_command_exec_time))\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+  __git_ps1 "\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]\$(getExpectedHostnameAndOriginal)\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]\$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE" "$(rvm_string)$(detached_screens)$(current_screen)\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] $(time_zone) \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]$(last_command_exec_time))\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
 }
 
 # don't export this
