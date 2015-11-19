@@ -36,7 +36,17 @@ DOT_FILES_DIR=$(readlink -f ~/.bash_profile | xargs dirname)
 export PATH="~/bin:$DOT_FILES_DIR/bin:$PATH"
 
 if [[ $(command -v docker-machine) ]]; then
-  eval "$(docker-machine env default)"
+  docker-machine status default | grep -q Running
+  statusExitCode=$?
+  if [[ $statusExitCode == '0' ]]; then
+    eval "$(docker-machine env default)"
+  else
+    echo "docker-machine default is not running. If you want the environment set up, run:"
+    echo ""
+    echo '    docker-machine start default && eval $(docker-machine env default)'
+    echo ""
+  fi
+  unset statusExitCode
 fi
 
 # import credentials into environment
