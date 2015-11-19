@@ -38,9 +38,9 @@ abbrev_pwd() {
 
 # echo out the current Ruby version, if we're in an rvm environment
 rvm_string() {
-  if [[ "${rvm_ruby_string}" != "" ]]; then
+  if [[ "${rvm_current_rvmrc}" != "" ]]; then
     # e.g. "(ruby-2.0.0)", with the name coloured
-    echo " (\[$(tput sgr0)\]\[\033[38;5;10m\]${rvm_ruby_string}\[$(tput sgr0)\]\[\033[38;5;15m\])"
+    echo " (\[$(tput sgr0)\]\[\033[38;5;10m\]$(rvm current)\[$(tput sgr0)\]\[\033[38;5;15m\])"
   fi
 }
 
