@@ -1,6 +1,7 @@
 RESTORE=$(echo -en '\033[0m')
 RED=$(echo -en '\033[00;31m')
-GREEN=$(echo -en '\033[00;32m')
+#\[$(tput sgr0)\]\[\033[38;5;10m\]
+GREEN=$(echo -en '\033[38;5;10m')
 YELLOW=$(echo -en '\033[00;33m')
 BLUE=$(echo -en '\033[00;34m')
 MAGENTA=$(echo -en '\033[00;35m')

@@ -1,5 +1,48 @@
 #!/bin/bash
 
+function joinStrings {
+  local IFS="$1"
+  shift
+  echo "$*"
+}
+function prependOrBringToFrontOfArray() {
+  local string=$1
+  local newEntry=$2
+  local delimiter=$3
+  IFS="$delimiter" read -r -a array <<< "$string"
+
+  for i in "${!array[@]}"; do
+    if [[ "${array[$i]}" = "${newEntry}" ]]; then
+      unset "array[$i]"
+      break;
+    fi
+  done
+  echo "$newEntry:$(joinStrings ':' ${array[@]})"
+}
+
+function sortOutPathEntries() {
+  function prependToPath() {
+    local newEntry=$1
+    export PATH=$(prependOrBringToFrontOfArray $PATH $newEntry ':')
+  }
+
+  # Add gnu niceness. Probably on a mac if we have to do this
+  if [ -d /usr/local/opt/coreutils/libexec/gnubin ]; then
+    prependToPath "/usr/local/opt/coreutils/libexec/gnubin"
+  fi
+
+  # add scripts in the dotfiles/bin, and any homedir/bin
+  export DOT_FILES_DIR=$(readlink -f ~/.bash_profile | xargs dirname)
+  prependToPath "$DOT_FILES_DIR/bin"
+  prependToPath "~/bin"
+
+  # add rvm scripts. These always want to be on the front of the path
+  if [ -d $HOME/.rvm ]; then
+    # Add RVM to PATH for scripting
+    prependToPath "$HOME/.rvm/bin"
+  fi
+}
+
 function setUpAliases() {
   alias ls='ls -G --color=auto'
   alias ll='ls -lh'
@@ -14,6 +57,8 @@ function setUpAliases() {
   alias grep='grep --color=auto'
   alias fgrep='fgrep --color=auto'
   alias egrep='egrep --color=auto'
+
+  alias atomd='atom ~/dotfiles'
 }
 
 function setExports() {
@@ -25,31 +70,6 @@ function setExports() {
   if [ -f /usr/local/bin/src-hilite-lesspipe.sh ]; then
     export LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
     export LESS=' -R '
-  fi
-}
-
-function sortOutPathEntries() {
-  function prependToPath() {
-    local newEntry=$1
-    if echo $PATH | grep -qv $newEntry; then
-      export PATH="$newEntry:$PATH"
-    fi
-  }
-
-  # Add gnu niceness. Probably on a mac if we have to do this
-  if [ -d /usr/local/opt/coreutils/libexec/gnubin ]; then
-    prependToPath "/usr/local/opt/coreutils/libexec/gnubin"
-  fi
-
-  # add scripts in the dotfiles/bin, and any homedir/bin
-  DOT_FILES_DIR=$(readlink -f ~/.bash_profile | xargs dirname)
-  prependToPath "$DOT_FILES_DIR/bin"
-  prependToPath "~/bin"
-
-  # add rvm scripts. These always want to be on the front of the path
-  if [ -d $HOME/.rvm ]; then
-    # Add RVM to PATH for scripting
-    prependToPath "$HOME/.rvm/bin"
   fi
 }
 
@@ -78,8 +98,8 @@ function loadCredentials() {
   fi
 }
 
+sortOutPathEntries
 setUpAliases
 setExports
-sortOutPathEntries
 initDockerMachineEnv
 loadCredentials

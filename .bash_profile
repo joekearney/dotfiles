@@ -1,4 +1,4 @@
-# Get the aliases, PATH and functions
+# Get the aliases, PATH, DOT_FILES_DIR and functions.
 if [ -f ~/.bashrc ]; then
   . ~/.bashrc
 fi
@@ -8,7 +8,8 @@ if [ -f /etc/bashrc ]; then
   . /etc/bashrc
 fi
 
-export DOT_FILES_DIR=$(readlink -f ~/.bash_profile | xargs dirname)
+# load colours
+. $DOT_FILES_DIR/.bash_color_vars
 
 # load functions
 if [ -f ${DOT_FILES_DIR}/functions.sh ]; then

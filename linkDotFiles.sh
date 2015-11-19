@@ -2,7 +2,7 @@
 
 DOT_FILES_DIR=$(dirname $(readlink -f $0))
 
-for f in .bashrc .bash_profile .vimrc .gitconfig .screenrc; do
+for f in .bashrc .bash_profile .vimrc .gitconfig .screenrc .inputrc; do
 	ln -sf $DOT_FILES_DIR/$f ~/$(basename $f)
 done
 
