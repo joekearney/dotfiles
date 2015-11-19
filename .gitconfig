@@ -1,5 +1,6 @@
 [push]
 	default = simple
+	
 [user]
 # set email in $HOME/.config/git/config
 	name = Joe Kearney
