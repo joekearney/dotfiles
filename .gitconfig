@@ -42,3 +42,6 @@
 	new-branch = checkout -b
 	push-upstream = "!f() { git push --set-upstream origin $(git current-branch); }; f"
   dif = diff --color-words
+	gi = "!gi() { curl -L -s https://www.gitignore.io/api/$@ ;}; gi"
+	repodir = "!f() { git rev-parse --show-toplevel; }; f"
+	ignore = "!gi() { echo $@ >> $(git repodir)/.gitignore; }; gi"
