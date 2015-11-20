@@ -36,13 +36,18 @@ abbrev_pwd() {
 }
 
 # echo out the current Ruby version, if we're in an rvm environment
-rvm_string() {
-  if [[ $(command -v rvm) ]]; then
+get_rvm_string() {
+  if [[ "$rvm_ruby_string" != "" ]]; then
+    # fast
+    local rvmCurrent=$rvm_ruby_string
+  elif [[ $(command -v rvm) ]]; then
+    # slow, sometimes necessary
     local rvmCurrent=$(rvm current)
-    if [[ "${rvmCurrent}" != "system" ]]; then
-      # e.g. "(ruby-2.0.0)", with the name coloured
-      echo " (${GREEN}${rvmCurrent}${RESTORE})"
-    fi
+  fi
+
+  if [[ "${rvmCurrent}" != "system" ]]; then
+    # e.g. "(ruby-2.0.0)", with the name coloured
+    echo " (${GREEN}${rvmCurrent}${RESTORE})"
   fi
 }
 
@@ -95,13 +100,13 @@ last_command_exec_time() {
 trap 'command_timer_start' DEBUG
 
 # gets the list of detached screen instances
-detached_screens() {
+get_detached_screens() {
   local screens=$(screen -ls | grep Detached | awk '{ print $1 }' | sed "s/.$(hostname -s)//" | tr '\n' ',' | sed 's/,$//')
   if [[ "$screens" != "" ]]; then
     echo -n " (screens: $YELLOW$screens$RESTORE)"
   fi
 }
-current_screen() {
+get_current_screen() {
   local screen=$(echo $STY | sed "s/.$(hostname -s)//")
   if [[ "$screen" != "" ]]; then
     echo -n " (in screen: $GREEN$screen$RESTORE)"
@@ -109,7 +114,7 @@ current_screen() {
 }
 
 # print out the time zone of the current machine, in grey
-time_zone() {
+get_time_zone() {
   echo -n "\[$(tput sgr0)\]\[\033[38;5;7m\]"
   echo -n $(date +'%Z')
 }
@@ -132,6 +137,8 @@ all_the_things() {
 
   command_timer_stop
 
+  local startPromptAt=$(current_time_millis)
+
   clear_line
   shellTitle $(getExpectedHostname)
 
@@ -143,8 +150,20 @@ all_the_things() {
   # taken over that as well!
   rvm_previous_environment="system"
 
+  local expectedHostNameAndOriginal=$(getExpectedHostnameAndOriginal)
+  local apwd=$(abbrev_pwd)
+  local rvm_string=$(get_rvm_string)
+  local detached_screens=$(get_detached_screens)
+  local current_screen=$(get_current_screen)
+  local time_zone=$(get_time_zone)
+
+  local last_command_exec_time_string=$(last_command_exec_time)
+
   # prompt formatting helped by http://bashrcgenerator.com/
-  __git_ps1 "\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]\$(getExpectedHostnameAndOriginal)\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]\$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE" "$(rvm_string)$(detached_screens)$(current_screen)\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] $(time_zone) \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]$(last_command_exec_time))\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+  __git_ps1 "\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]${expectedHostNameAndOriginal}\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]${apwd}\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE" "${rvm_string}${detached_screens}${current_screen}\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] ${time_zone} \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]${last_command_exec_time_string})\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+
+  local endPromptAt=$(current_time_millis)
+  ((prompt_creation_time_ms=endPromptAt-startPromptAt))
 }
 
 # don't export this
