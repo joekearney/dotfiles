@@ -101,28 +101,38 @@ function cd() {
   fi
 }
 
-# cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
-function cdg() {
-  if [[ "$1" == "" ]]; then
-    echo "Usage: ${FUNCNAME[0]} <repo-name>"
+# do something given a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
+function do_with_git_repo() {
+  if [[ "$1" == "" || "$2" == "" ]]; then
+    echo "Usage: ${FUNCNAME[0]} <repo-name> <operation>"
   else
     local repoName=$1
+    local operation=$2
     local path=$(find ~/git -type d -maxdepth 2 -name "*$repoName*")
     local count=$(echo "$path" | wc -l)
     if [[ "$count" == "1" ]]; then
-      cd $path
+      $operation $path
     else
       echo -e "Found $count directories matching [$repoName]:\n$(echo "$path" | sed 's/^/  /')"
     fi
   fi
 }
+# cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
+function cdg() {
+  do_with_git_repo $1 "cd"
+}
+# cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
+function atomg() {
+  do_with_git_repo $1 "atom"
+}
 # bash auto completion for cdg
-function _cdg_complete_options() {
+function _do_with_git_complete_options() {
   local curr_arg=${COMP_WORDS[COMP_CWORD]}
   local lines=$(find ~/git -type d -maxdepth 3 -name ".git" | awk -F/ '{ print $(NF-1) }')
   COMPREPLY=( $(compgen -W '${lines[@]}' -- $curr_arg ) )
 }
-complete -F _cdg_complete_options cdg
+complete -F _do_with_git_complete_options cdg
+complete -F _do_with_git_complete_options atomg
 
 # pipe from http to less, for a given URL
 function httpless() {
