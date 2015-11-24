@@ -45,7 +45,7 @@ get_rvm_string() {
     local rvmCurrent=$(rvm current)
   fi
 
-  if [[ "${rvmCurrent}" != "system" ]]; then
+  if [[ "${rvmCurrent}" != "system" && "$rvmCurrent" != "" ]]; then
     # e.g. "(ruby-2.0.0)", with the name coloured
     echo " (${GREEN}${rvmCurrent}${RESTORE})"
   fi
