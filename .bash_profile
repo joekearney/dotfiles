@@ -11,6 +11,10 @@ fi
 # load colours
 . $DOT_FILES_DIR/.bash_color_vars
 
+# Load RVM into a shell session *as a function*
+# if file exists and is non-empty
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+
 # load functions
 if [ -f ${DOT_FILES_DIR}/functions.sh ]; then
   . ${DOT_FILES_DIR}/functions.sh
@@ -39,7 +43,3 @@ fi
 
 # this is a safe and sensible umask
 umask 027
-
-# Load RVM into a shell session *as a function*
-# if file exists and is non-empty
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"

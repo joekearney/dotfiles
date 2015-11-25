@@ -108,7 +108,7 @@ function g() {
   else
     local operation=$1
     local repoName=$2
-    local path=$(find ~ -type d -maxdepth 3 -name "*$repoName*")
+    local path=$(find ~/git -type d -maxdepth 2 -name "*$repoName*")
     local count=$(echo "$path" | wc -l)
     if [[ "$count" == "1" ]]; then
       $operation $path
