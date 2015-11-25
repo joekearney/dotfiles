@@ -109,6 +109,7 @@ function g() {
     local operation=$1
     local repoName=$2
     local path=$(find ~/git -type d -maxdepth 2 -name "*$repoName*")
+    echo "found $path"
     local count=$(echo "$path" | wc -l)
     if [[ "$count" == "1" ]]; then
       $operation $path
@@ -133,6 +134,7 @@ function _do_with_git_complete_options() {
 }
 complete -F _do_with_git_complete_options cdg
 complete -F _do_with_git_complete_options atomg
+complete -F _do_with_git_complete_options g
 
 # pipe from http to less, for a given URL
 function httpless() {
