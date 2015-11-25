@@ -40,9 +40,9 @@ get_rvm_string() {
   if [[ "$rvm_ruby_string" != "" ]]; then
     # fast
     local rvmCurrent=$rvm_ruby_string
-  elif [[ $(command -v rvm) ]]; then
+  elif [[ $(command -v ~/.rvm/bin/rvm-prompt) ]]; then
     # slow, sometimes necessary
-    local rvmCurrent=$(rvm current)
+    local rvmCurrent=$(~/.rvm/bin/rvm-prompt)
   fi
 
   if [[ "${rvmCurrent}" != "system" && "$rvmCurrent" != "" ]]; then
