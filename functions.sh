@@ -102,13 +102,13 @@ function cd() {
 }
 
 # do something given a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
-function do_with_git_repo() {
+function g() {
   if [[ "$1" == "" || "$2" == "" ]]; then
-    echo "Usage: ${FUNCNAME[0]} <repo-name> <operation>"
+    echo "Usage: ${FUNCNAME[0]} <operation> <repo-name>"
   else
-    local repoName=$1
-    local operation=$2
-    local path=$(find ~/git -type d -maxdepth 2 -name "*$repoName*")
+    local operation=$1
+    local repoName=$2
+    local path=$(find ~ -type d -maxdepth 3 -name "*$repoName*")
     local count=$(echo "$path" | wc -l)
     if [[ "$count" == "1" ]]; then
       $operation $path
@@ -119,11 +119,11 @@ function do_with_git_repo() {
 }
 # cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
 function cdg() {
-  do_with_git_repo $1 "cd"
+  g "cd" $1
 }
 # cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
 function atomg() {
-  do_with_git_repo $1 "atom"
+  g "atom" $1
 }
 # bash auto completion for cdg
 function _do_with_git_complete_options() {
