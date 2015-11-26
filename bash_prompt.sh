@@ -37,7 +37,9 @@ abbrev_pwd() {
 
 # echo out the current Ruby version, if we're in an rvm environment
 get_rvm_string() {
-  if [[ "$rvm_ruby_string" != "" ]]; then
+  if [[ "$(pwd)" == $HOME ]]; then # not interested if in homedir
+    local rvmCurrent=""
+  elif [[ "$rvm_ruby_string" != "" ]]; then
     # fast
     local rvmCurrent=$rvm_ruby_string
   elif [[ $(command -v ~/.rvm/bin/rvm-prompt) ]]; then
