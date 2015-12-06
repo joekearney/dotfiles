@@ -11,6 +11,7 @@ function runSbt() {
   # copy template build.sbt, overwriting if exists
   cp $TEMPLATE ./build.sbt
 
+  export SBT_OPTS="-Xmx512M -XX:+UseG1GC -XX:+CMSClassUnloadingEnabled"
   sbt console-quick
 }
 
