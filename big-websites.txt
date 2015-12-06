@@ -1,0 +1,13 @@
+google.com
+bbc.co.uk
+theguardian.com
+cnn.com
+db.de
+soundcloud.com
+ikea.com
+gsacapital.com
+github.com
+skyscanner.net
+joekearney.co.uk
+wix.com
+amazon.de
