@@ -24,14 +24,14 @@ function copyFilesTo() {
 
   if [[ ${DO_LINKING} == "true" ]]; then
     echo "  [host=${TARGET_HOST}] Linking dotfiles on [${TARGET_HOST}]"
-    runCommand ssh $TARGET_HOST "~/dotfiles/linkDotFiles.sh"
+    runCommand ssh -x $TARGET_HOST "~/dotfiles/linkDotFiles.sh"
   else
     echo "  [host=${TARGET_HOST}] skipping linking"
   fi
 
   if [[ ${INCLUDE_SSH_CERTS} == "true" ]]; then
     echo "  [host=${TARGET_HOST}] Copying ssh certificates to [$TARGET_HOST:${TARGET_HOME}]"
-    runCommand ssh $TARGET_HOST "mkdir -p ${TARGET_HOME}/.ssh; chmod 700 ${TARGET_HOME}/.ssh"
+    runCommand ssh -x $TARGET_HOST "mkdir -p ${TARGET_HOME}/.ssh; chmod 700 ${TARGET_HOME}/.ssh"
     runCommand rsync -a ${SOURCE_HOME}/.ssh/id_rsa* $TARGET_HOST:${TARGET_HOME}/.ssh/
   else
     echo "  [host=${TARGET_HOST}] skipping ssh"
