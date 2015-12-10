@@ -43,5 +43,6 @@
 	push-upstream = "!f() { git push --set-upstream origin $(git current-branch); }; f"
   dif = diff --color-words
 	gi = "!gi() { curl -L -s https://www.gitignore.io/api/$@ ;}; gi"
+	gi-standard = "!g() { git gi eclipse,intellij,osx,scala,java,maven; }; g"
 	repodir = "!f() { git rev-parse --show-toplevel; }; f"
 	ignore = "!gi() { echo $@ >> $(git repodir)/.gitignore; }; gi"
