@@ -1,12 +1,19 @@
+
+function loadIfExists() {
+  local f=$1
+  if [ -f $f ]; then
+    . $f
+  fi
+}
+
 # Get the aliases, PATH, DOT_FILES_DIR and functions.
-if [ -f ~/.bashrc ]; then
-  . ~/.bashrc
-fi
+loadIfExists ~/.bashrc
 
 # Source global definitions
-if [ -f /etc/bashrc ]; then
-  . /etc/bashrc
-fi
+loadIfExists /etc/bashrc
+
+# Source machine-local environment
+loadIfExists ~/.local_env.sh
 
 # load colours
 . $DOT_FILES_DIR/.bash_color_vars
