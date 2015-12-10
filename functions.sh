@@ -141,3 +141,10 @@ function httpless() {
   # --print=hb means print response headers and response body.
   http --pretty=all --print=hb "$@" | less
 }
+
+function tunnelblickRestart() {
+  osascript $DOT_FILES_DIR/applescript/tunnelblick-restart.scpt
+}
+function tunnelblickStatus() {
+  osascript $DOT_FILES_DIR/applescript/tunnelblick-status.scpt
+}
