@@ -109,12 +109,21 @@ function g() {
     local operation=$1
     local repoName=$2
     local path=$(find ~/git -type d -maxdepth 2 -name "*$repoName*")
-    echo "found $path"
-    local count=$(echo "$path" | wc -l)
+
+    # wc counts newlines, so doesn't work to disambiguate 0/1 lines
+    local count
+    if [[ "$path" == "" ]]; then
+      count=0
+    else
+      count=$(echo "$path" | wc -l)
+    fi
+
     if [[ "$count" == "1" ]]; then
       $operation $path
-    else
+    elif (( $count > 1 )); then
       echo -e "Found $count directories matching [$repoName]:\n$(echo "$path" | sed 's/^/  /')"
+    else
+      echo -e "Found no directories matching [$repoName]"
     fi
   fi
 }
@@ -142,9 +151,20 @@ function httpless() {
   http --pretty=all --print=hb "$@" | less
 }
 
-function tunnelblickRestart() {
-  osascript $DOT_FILES_DIR/applescript/tunnelblick-restart.scpt
+function tunnelblick() {
+  local op=$1
+  if [[ "$op" == "restart" ]]; then
+    osascript $DOT_FILES_DIR/applescript/tunnelblick-restart.scpt
+  elif [[ "$op" == "status" ]]; then
+    osascript $DOT_FILES_DIR/applescript/tunnelblick-status.scpt
+  else
+    echo "Usage: ${FUNCNAME[0]} restart|status"
+  fi
 }
-function tunnelblickStatus() {
-  osascript $DOT_FILES_DIR/applescript/tunnelblick-status.scpt
+# bash auto completion for cdg
+function _tunnelblick_complete_options() {
+  local curr_arg=${COMP_WORDS[COMP_CWORD]}
+  local lines=$(echo "restart|status" | tr '|' '\n')
+  COMPREPLY=( $(compgen -W '${lines[@]}' -- $curr_arg ) )
 }
+complete -F _tunnelblick_complete_options tunnelblick
