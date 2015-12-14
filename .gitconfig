@@ -17,26 +17,7 @@
   co = checkout
   st = status
   hist = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-	hub = "!f() { \
-			if [[ $1 == '' ]]; then \
-				echo 'Usage: git hub [<org>] <repo>'; \
-				exit 1; \
-			fi; \
-			if [[ $2 == '' ]]; then \
-				local repo=$1; \
-				local org=$(pwd | xargs basename); \
-				local url=git@github.com:$org/$repo.git; \
-				echo \"Cloning from [${RED}$url${RESTORE}] into [${GREEN}$(pwd)/$repo${RESTORE}]\"; \
-				git clone $url; \
-			else \
-				local org=$1; \
-				local repo=$2; \
-				local url=git@github.com:$org/$repo.git; \
-				local target=\"~/git/$org/$repo\" \
-				echo \"Cloning from [${RED}$url${RESTORE}] into [${GREEN}${target}${RESTORE}] \" \
-				git clone $url $target; \
-			fi \
-		}; f"
+	hub = "!f() { $DOT_FILES_DIR/bin/git-hub-clone.sh \"$@\"; }; f"
 	unstash = stash apply
 	current-branch = rev-parse --abbrev-ref HEAD
 	new-branch = checkout -b
