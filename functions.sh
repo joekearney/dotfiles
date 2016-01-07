@@ -154,9 +154,9 @@ function httpless() {
 function tunnelblick() {
   local op=$1
   if [[ "$op" == "restart" ]]; then
-    osascript $DOT_FILES_DIR/applescript/tunnelblick-restart.scpt
+    osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-restart.scpt
   elif [[ "$op" == "status" ]]; then
-    osascript $DOT_FILES_DIR/applescript/tunnelblick-status.scpt
+    osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-status.scpt
   elif [[ "$op" == "check" ]]; then
     if [[ $(tunnelblick status) == "CONNECTED" ]]; then
       echo "Tunnelblick thinks it is connected to [$PRIMARY_TUNNELBLICK_VPN_NAME]"

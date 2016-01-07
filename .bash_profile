@@ -23,9 +23,8 @@ loadIfExists ~/.local_env.sh
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
 # load functions
-if [ -f ${DOT_FILES_DIR}/functions.sh ]; then
-  . ${DOT_FILES_DIR}/functions.sh
-fi
+loadIfExists ${DOT_FILES_DIR}/functions.sh
+loadIfExists ${DOT_FILES_DIR}/tunnelblick/tunnelblick-functions.sh
 
 # load bash_completions from various sources
 # the standard ones -- this seems to break prompt on some hosts
