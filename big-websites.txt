@@ -11,3 +11,4 @@ skyscanner.net
 joekearney.co.uk
 wix.com
 amazon.de
+strava.com
