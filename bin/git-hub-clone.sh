@@ -15,7 +15,7 @@ gitHubClone() {
     local org=$1;
     local repo=$2;
     local url=git@github.com:$org/$repo.git;
-    local target="~/git/$org/$repo"
+    local target="$HOME/git/$org/$repo"
     echo "Cloning from [${RED}$url${RESTORE}] into [${GREEN}${target}${RESTORE}] "
     git clone $url $target;
   fi
