@@ -4,6 +4,8 @@ function tunnelblick() {
     osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-restart.scpt
   elif [[ "$op" == "status" ]]; then
     osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-status.scpt
+  elif [[ "$op" == "kill" ]]; then
+    ps -e -o pid,comm | grep -i tunnelblick | awk '{print $1}' | xargs sudo kill
   elif [[ "$op" == "check" ]]; then
     if [[ $(tunnelblick status) == "CONNECTED" ]]; then
       echo "Tunnelblick thinks it is connected to [$PRIMARY_TUNNELBLICK_VPN_NAME]"
@@ -31,7 +33,7 @@ function tunnelblick() {
 # bash auto completion for cdg
 function _tunnelblick_complete_options() {
   local curr_arg=${COMP_WORDS[COMP_CWORD]}
-  local lines=$(echo "restart|status|check" | tr '|' '\n')
+  local lines=$(echo "restart|status|check|kill" | tr '|' '\n')
   COMPREPLY=( $(compgen -W '${lines[@]}' -- $curr_arg ) )
 }
 complete -F _tunnelblick_complete_options tunnelblick
