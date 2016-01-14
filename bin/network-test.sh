@@ -20,6 +20,7 @@ function runTest() {
   done
 
   if [ $failed -gt 0 ]; then
+    echo " = failed $failed instances of [$name]"
     PROBLEM_TESTS+=("$name (failed $failed)")
   fi
 
@@ -35,24 +36,30 @@ function runTestSuite() {
   echo "Testing network connection using $NUM_TARGETS targets..."
   echo
 
-  local PROBLEM_TESTS=()
+  # not a great way of doing this
+  PROBLEM_TESTS=()
 
   runTest "dns lookup over udp" "host -W $DNS_TIMEOUT -R $DNS_RETRIES"
   runTest "dns lookup over tcp" "host -W $DNS_TIMEOUT -R $DNS_RETRIES -T"
   runTest "ping" "ping -oq -t $PING_TIMEOUT"
   runTest "http" "http --headers --timeout $HTTP_TIMEOUT"
 
+  local exitStatus
+
   echo
   echo "All tests completed"
-  if [ "${#PROBLEM_TESTS[@]}" -gt 1 ]; then
+  if [ "${#PROBLEM_TESTS[@]}" -gt 0 ]; then
     echo "There were problems in these tests:"
     for p in "${PROBLEM_TESTS[@]}"; do
       echo "  $p"
     done
-    exit 1
+    exitStatus=1
   else
-    exit
+    exitStatus=0
   fi
+
+  unset PROBLEM_TESTS
+  return $exitStatus
 }
 
 function runUntilFailed() {
