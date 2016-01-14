@@ -58,10 +58,10 @@ function runTestSuite() {
 function runUntilFailed() {
   local keepGoing=1
 
-  if [ $keepGoing -gt 0 ]; then
+#  if [ $keepGoing -gt 0 ]; then
 #    echo running
 #    keepGoing=runTestSuite
-  fi
+#  fi
 }
 
 if [[ "$1" == "-r" ]]; then
