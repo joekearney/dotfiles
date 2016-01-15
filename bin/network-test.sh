@@ -3,6 +3,10 @@
 TARGETS=$(cat $DOT_FILES_DIR/big-websites.txt)
 NUM_TARGETS=$(echo "$TARGETS" | wc -l)
 
+function indent() {
+  sed 's/^/ |  /'
+}
+
 function runTest() {
   local name=$1
   local op=$2
@@ -15,7 +19,7 @@ function runTest() {
     if [ $result -ne 0 ]; then
       ((failed=failed+1))
       echo " + Failed test [$name] on [$w], with exit code [$result]"
-      echo "$output" | sed 's/^/ |  /'
+      echo "$output" | indent
     fi
   done
 
@@ -33,6 +37,13 @@ function runTestSuite() {
   local DNS_RETRIES=1
   local HTTP_TIMEOUT=1
 
+  echo "Current DHCP info:"
+  ipconfig getpacket en0 | egrep '(yiaddr|router)' | indent
+
+  echo "Current DNS setup is as follows:"
+  cat /etc/resolv.conf | grep -v '^#' | indent
+
+  echo
   echo "Testing network connection using $NUM_TARGETS targets..."
   echo
 
@@ -47,14 +58,15 @@ function runTestSuite() {
   local exitStatus
 
   echo
-  echo "All tests completed"
+  echo -n "All tests completed"
   if [ "${#PROBLEM_TESTS[@]}" -gt 0 ]; then
-    echo "There were problems in these tests:"
+    echo ". There were problems in these tests:"
     for p in "${PROBLEM_TESTS[@]}"; do
       echo "  $p"
     done
     exitStatus=1
   else
+    echo " successfully"
     exitStatus=0
   fi
 
@@ -62,17 +74,4 @@ function runTestSuite() {
   return $exitStatus
 }
 
-function runUntilFailed() {
-  local keepGoing=1
-
-#  if [ $keepGoing -gt 0 ]; then
-#    echo running
-#    keepGoing=runTestSuite
-#  fi
-}
-
-if [[ "$1" == "-r" ]]; then
-  runUntilFailed
-else
-  runTestSuite
-fi
+runTestSuite
