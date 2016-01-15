@@ -108,20 +108,25 @@ function g() {
   else
     local operation=$1
     local repoName=$2
-    local path=$(find ~/git -type d -maxdepth 2 -name "*$repoName*")
+    local path=($(find ~/git -type d -maxdepth 3 -name ".git" | egrep -i "/[^/]*${repoName}[^/]*/.git" | xargs dirname))
 
-    # wc counts newlines, so doesn't work to disambiguate 0/1 lines
-    local count
-    if [[ "$path" == "" ]]; then
-      count=0
-    else
-      count=$(echo "$path" | wc -l)
-    fi
+    local count=${#path[@]}
 
     if [[ "$count" == "1" ]]; then
       $operation $path
     elif (( $count > 1 )); then
-      echo -e "Found $count directories matching [$repoName]:\n$(echo "$path" | sed 's/^/  /')"
+      echo -e "Found $count directories matching [$repoName]:" #\n$(echo "$path" | sed 's/^/  /')"
+      echo
+      local index=1
+      for p in "${path[@]}"; do
+        echo "  [$index] $p"
+        ((index=index+1))
+      done
+      read -p "Enter an repo to use, or <enter> to stop: " g
+      if [[ "$g" != "" ]]; then
+        ((gotoIndex=g-1))
+        $operation ${path[gotoIndex]}
+      fi
     else
       echo -e "Found no directories matching [$repoName]"
     fi
