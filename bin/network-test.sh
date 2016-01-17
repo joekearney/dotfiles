@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# requirements:
+#         brew install parallel ipconfig httpie
+# sudo apt-get install parallel ipconfig httpie
+
 TARGETS=$(cat $DOT_FILES_DIR/big-websites.txt)
 NUM_TARGETS=$(echo "$TARGETS" | wc -l)
 
@@ -10,22 +14,14 @@ function indent() {
 function runTest() {
   local name=$1
   local op=$2
-  local failed=0
   echo "Running test: $name"
-  for w in $TARGETS; do
-    local output
-    output=$($op $w 2>&1)
-    result=$?
-    if [ $result -ne 0 ]; then
-      ((failed=failed+1))
-      echo " + Failed test [$name] on [$w], with exit code [$result]"
-      echo "$output" | indent
-    fi
-  done
+
+  echo "${TARGETS}" | parallel "$op $w {} > /dev/null"
+  local failed=$?
 
   if [ $failed -gt 0 ]; then
-    echo " = failed $failed instances of [$name]"
-    PROBLEM_TESTS+=("$name (failed $failed)")
+    echo " | failed $failed/$NUM_TARGETS instances of [$name]"
+    PROBLEM_TESTS+=("$name (failed $failed/$NUM_TARGETS)")
   fi
 
   return $failed
