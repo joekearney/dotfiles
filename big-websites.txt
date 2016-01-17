@@ -9,3 +9,5 @@ skyscanner.net
 joekearney.co.uk
 wix.com
 eclipse.org
+wikipedia.org
+bing.com
