@@ -52,7 +52,7 @@ function runTestSuite() {
 
   runTest "dns lookup over udp" "host -W $DNS_TIMEOUT -R $DNS_RETRIES"
   runTest "dns lookup over tcp" "host -W $DNS_TIMEOUT -R $DNS_RETRIES -T"
-  runTest "ping" "ping -oq -t $PING_TIMEOUT"
+  runTest "ping" "ping -c 1 -q -t $PING_TIMEOUT"
   runTest "http" "http --headers --timeout $HTTP_TIMEOUT"
 
   local exitStatus
