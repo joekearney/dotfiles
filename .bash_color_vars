@@ -1,3 +1,5 @@
+#!/bin/bash
+
 RESTORE=$(echo -en '\033[0m')
 RED=$(echo -en '\033[00;31m')
 GREEN=$(echo -en '\033[38;5;10m')
@@ -15,3 +17,5 @@ LMAGENTA=$(echo -en '\033[01;35m')
 LPURPLE=$(echo -en '\033[01;35m')
 LCYAN=$(echo -en '\033[01;36m')
 WHITE=$(echo -en '\033[01;37m')
+
+source $DOT_FILES_DIR/colorizer/Library/colorizer.sh
