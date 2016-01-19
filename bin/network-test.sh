@@ -10,7 +10,8 @@ NUM_TARGETS=$(echo "$TARGETS" | wc -l)
 DEFAULT_SUITE_TIMEOUT_SECONDS=2
 
 function indent() {
-  sed 's/^/ |  /'
+  local prefix=$1
+  sed "s/^/$1  /"
 }
 
 function runTest() {
@@ -41,10 +42,10 @@ function runTestSuite() {
   local HTTP_TIMEOUT=1
 
   echo "Current DHCP info:"
-  ipconfig getpacket en0 | egrep '(yiaddr|router)' | indent
+  ipconfig getpacket en0 | egrep '(yiaddr|router)' | indent " |"
 
   echo "Current DNS setup is as follows:"
-  cat /etc/resolv.conf | grep -v '^#' | indent
+  cat /etc/resolv.conf | grep -v '^#' | indent " |"
 
   echo
   echo "Testing network connection using $NUM_TARGETS targets..."
