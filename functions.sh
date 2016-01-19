@@ -88,6 +88,12 @@ function getExpectedHostnameAndOriginal() {
   fi
 }
 
+# indents stdout by two spaces, prefixed by the argument
+function indent() {
+  local prefix=$1
+  sed "s/^/$1  /"
+}
+
 # let cd also pushd directories into stack. Use popd to reverse stack
 function cd() {
   if [[ "$1" == "" ]]; then
@@ -95,7 +101,16 @@ function cd() {
   elif [[ "$1" == "-" ]]; then
     popd &> /dev/null
   elif [[ "$1" == "?" ]]; then
-    dirs -v
+    dirs -v | indent
+    read -p "Enter index to jump to, or <enter> to do nothing: " i
+    if [[ "$i" != "" ]]; then
+      local target=$(dirs +$i)
+      if [[ "$?" == "0" ]]; then
+        colorize "Jumping to [<light-green>$target</light-green>]"
+        # need eval to handle ~ in target path
+        eval cd "$target"
+      fi
+    fi
   elif [ -e $1 ]; then
     pushd $1 &> /dev/null   #dont display current stack
   fi
