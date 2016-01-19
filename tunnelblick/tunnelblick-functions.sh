@@ -2,6 +2,8 @@ function tunnelblick() {
   local op=$1
   if [[ "$op" == "restart" ]]; then
     osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-restart.scpt
+  elif [[ "$op" == "stop" ]]; then
+    osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-stop.scpt
   elif [[ "$op" == "status" ]]; then
     osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-status.scpt
   elif [[ "$op" == "kill" ]]; then
@@ -33,7 +35,7 @@ function tunnelblick() {
 # bash auto completion for cdg
 function _tunnelblick_complete_options() {
   local curr_arg=${COMP_WORDS[COMP_CWORD]}
-  local lines=$(echo "restart|status|check|kill" | tr '|' '\n')
+  local lines=$(echo "restart|status|check|kill|stop" | tr '|' '\n')
   COMPREPLY=( $(compgen -W '${lines[@]}' -- $curr_arg ) )
 }
 complete -F _tunnelblick_complete_options tunnelblick
