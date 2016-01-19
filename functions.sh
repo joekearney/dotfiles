@@ -115,14 +115,17 @@ function g() {
     if [[ "$count" == "1" ]]; then
       $operation $path
     elif (( $count > 1 )); then
-      echo -e "Found $count directories matching [$repoName]:" #\n$(echo "$path" | sed 's/^/  /')"
-      echo
+      echo -e "Found $count directories matching [${WHITE}$repoName${RESTORE}]"
       local index=1
       for p in "${path[@]}"; do
-        echo "  [$index] $p"
+        local head=$(dirname $p)
+        local tail=$(basename $p)
+        echo "  [${GREEN}$index${RESTORE}] ${head}/${GREEN}${tail}${RESTORE}"
         ((index=index+1))
       done
-      read -p "Enter an repo to use, or <enter> to stop: " g
+
+      echo -n "Enter an repo to use, or <enter> to stop: "
+      read g
       if [[ "$g" != "" ]]; then
         ((gotoIndex=g-1))
         $operation ${path[gotoIndex]}
@@ -154,4 +157,10 @@ complete -F _do_with_git_complete_options g
 function httpless() {
   # --print=hb means print response headers and response body.
   http --pretty=all --print=hb "$@" | less
+}
+
+function docker-reset-hard() {
+  docker-machine restart default && \
+  eval "$(docker-machine env default)" && \
+  yes | docker-machine regenerate-certs default
 }
