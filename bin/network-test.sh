@@ -7,6 +7,8 @@
 TARGETS=$(cat $DOT_FILES_DIR/big-websites.txt)
 NUM_TARGETS=$(echo "$TARGETS" | wc -l)
 
+DEFAULT_SUITE_TIMEOUT_SECONDS=2
+
 function indent() {
   sed 's/^/ |  /'
 }
@@ -14,9 +16,14 @@ function indent() {
 function runTest() {
   local name=$1
   local op=$2
+  local timeout=$3
+  if [[ "$timeout" == "" ]]; then
+    timeout=$DEFAULT_SUITE_TIMEOUT_SECONDS
+  fi
+
   echo "Running test: $name"
 
-  echo "${TARGETS}" | parallel "$op $w {} > /dev/null"
+  echo "${TARGETS}" | parallel --timeout $timeout "$op $w {} > /dev/null"
   local failed=$?
 
   if [ $failed -gt 0 ]; then
@@ -46,8 +53,8 @@ function runTestSuite() {
   # not a great way of doing this
   PROBLEM_TESTS=()
 
-  runTest "dns lookup over udp" "host -W $DNS_TIMEOUT -R $DNS_RETRIES"
-  runTest "dns lookup over tcp" "host -W $DNS_TIMEOUT -R $DNS_RETRIES -T"
+  runTest "dns/udp" "host -W $DNS_TIMEOUT -R $DNS_RETRIES"
+  #runTest "dns/tcp" "host -W $DNS_TIMEOUT -R $DNS_RETRIES -T"
   runTest "ping" "ping -c 1 -q -t $PING_TIMEOUT"
   runTest "http" "http --headers --timeout $HTTP_TIMEOUT"
 
