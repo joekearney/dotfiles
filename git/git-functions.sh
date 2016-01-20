@@ -30,10 +30,31 @@ function g() {
         $operation ${path[gotoIndex]}
       fi
     else
-      echo -e "Found no directories matching [$repoName]"
+      echo -e "Found no directories matching [${RED}$repoName${RESTORE}]"
     fi
   fi
 }
+# bash auto completion for g commands.
+# This actually gives the list of repos on all arg positions of g, where really
+# we'd only want it on the second arg. TODO improve? It's also useful for
+# pre-canned commands like cdg and atomg
+function _do_with_git_complete_options() {
+  local curr_arg=${COMP_WORDS[COMP_CWORD]}
+  # get the list of git repos in known positions
+  # this comment syntax for a multiline command is a pretty horrific abuse of
+  # substitution, inspired by this: http://stackoverflow.com/questions/9522631
+  local repos=$(find                                                                       \
+          ~/git                           `# assumed base of where all of your repos live` \
+          -type d                         `# looking for directories`                      \
+          -mindepth 2 -maxdepth 3         `# either at ~/git/*/.git or ~/git/*/*/.git`     \
+          -name ".git" |                  `# called .git`                                  \
+            awk -F/ '{ print $(NF-1) }'   `# and get the name of the dir containing .git`  \
+        )
+  COMPREPLY=( $(compgen -W '${repos[@]}' -- $curr_arg ) )
+}
+
+complete -F _do_with_git_complete_options g
+
 # cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
 function cdg() {
   g "cd" $1
@@ -42,15 +63,8 @@ function cdg() {
 function atomg() {
   g "atom" $1
 }
-# bash auto completion for cdg
-function _do_with_git_complete_options() {
-  local curr_arg=${COMP_WORDS[COMP_CWORD]}
-  local lines=$(find ~/git -type d -maxdepth 3 -name ".git" | awk -F/ '{ print $(NF-1) }')
-  COMPREPLY=( $(compgen -W '${lines[@]}' -- $curr_arg ) )
-}
 complete -F _do_with_git_complete_options cdg
 complete -F _do_with_git_complete_options atomg
-complete -F _do_with_git_complete_options g
 
 gitHubClone() {
   if [[ $1 == '' ]]; then
@@ -61,14 +75,14 @@ gitHubClone() {
     local repo=$1;
     local org=$(pwd | xargs basename);
     local url=git@github.com:$org/$repo.git;
-    echo "Cloning from [${RED}$url${RESTORE}] into [${GREEN}$(pwd)/$repo${RESTORE}]";
+    echo "Cloning from [${YELLOW}$url${RESTORE}] into [${GREEN}$(pwd)/$repo${RESTORE}]...";
     git clone $url;
   else
     local org=$1;
     local repo=$2;
     local url=git@github.com:$org/$repo.git;
     local target="$HOME/git/$org/$repo"
-    echo "Cloning from [${RED}$url${RESTORE}] into [${GREEN}${target}${RESTORE}] "
+    echo "Cloning from [${YELLOW}$url${RESTORE}] into [${GREEN}${target}${RESTORE}]..."
     git clone $url $target;
   fi
 }
