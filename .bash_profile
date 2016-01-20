@@ -1,4 +1,3 @@
-
 function loadIfExists() {
   local f=$1
   if [ -f $f ]; then
