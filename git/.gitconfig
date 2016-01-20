@@ -17,7 +17,7 @@
   co = checkout
   st = status
   hist = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-	hub = "!f() { $DOT_FILES_DIR/bin/git-hub-clone.sh \"$@\"; }; f"
+	hub = "!f() { $DOT_FILES_DIR/git/git-hub-clone.sh \"$@\"; }; f"
 	unstash = stash apply
 	current-branch = rev-parse --abbrev-ref HEAD
 	new-branch = checkout -b

@@ -18,4 +18,4 @@ LPURPLE=$(echo -en '\033[01;35m')
 LCYAN=$(echo -en '\033[01;36m')
 WHITE=$(echo -en '\033[01;37m')
 
-source $DOT_FILES_DIR/colorizer/Library/colorizer.sh
+source $DOT_FILES_DIR/colour/colorizer/colorizer.sh

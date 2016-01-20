@@ -16,7 +16,7 @@ loadIfExists /etc/bashrc
 loadIfExists ~/.local_env.sh
 
 # load colours
-. $DOT_FILES_DIR/.bash_color_vars
+loadIfExists $DOT_FILES_DIR/colour/.bash_color_vars
 
 # Load RVM into a shell session *as a function*
 # if file exists and is non-empty
@@ -24,7 +24,9 @@ loadIfExists ~/.local_env.sh
 
 # load functions
 loadIfExists ${DOT_FILES_DIR}/functions.sh
-loadIfExists ${DOT_FILES_DIR}/tunnelblick/tunnelblick-functions.sh
+for thing in git sbt tunnelblick; do
+  loadIfExists ${DOT_FILES_DIR}/$thing/$thing-functions.sh
+done
 
 # load bash_completions from various sources
 # the standard ones -- this seems to break prompt on some hosts

@@ -6,7 +6,7 @@ GIT_PS1_SHOWSTASHSTATE=yes
 GIT_PS1_SHOWUNTRACKEDFILES=yes
 GIT_PS1_SHOWCOLORHINTS=yes
 GIT_PS1_SHOWUPSTREAM="auto verbose"
-. $DOT_FILES_DIR/git-prompt.sh
+. $DOT_FILES_DIR/git/git-prompt.sh
 
 ##################################################
 # The home directory (HOME) is replaced with a ~
