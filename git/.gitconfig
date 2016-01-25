@@ -27,3 +27,4 @@
 	gi-standard = "!g() { git gi eclipse,intellij,osx,scala,java,maven; }; g"
 	repodir = "!f() { git rev-parse --show-toplevel; }; f"
 	ignore = "!gi() { echo $@ >> $(git repodir)/.gitignore; }; gi"
+	ls = ls-tree --name-only HEAD
