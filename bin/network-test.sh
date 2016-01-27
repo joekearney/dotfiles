@@ -24,7 +24,7 @@ function runTest() {
 
   echo "Running test: $name"
 
-  echo "${TARGETS}" | parallel --timeout $timeout "$op $w {} > /dev/null"
+  echo "${TARGETS}" | parallel --timeout $timeout "$op $w {} > /dev/null 2>&1"
   local failed=$?
 
   if [ $failed -gt 0 ]; then
