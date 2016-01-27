@@ -4,6 +4,8 @@
 #         brew install parallel ipconfig httpie
 # sudo apt-get install parallel ipconfig httpie
 
+. $DOT_FILES_DIR/colour/.bash_color_vars
+
 TARGETS=$(cat $DOT_FILES_DIR/big-websites.txt)
 NUM_TARGETS=$(echo "$TARGETS" | wc -l)
 
@@ -22,13 +24,13 @@ function runTest() {
     timeout=$DEFAULT_SUITE_TIMEOUT_SECONDS
   fi
 
-  echo "Running test: $name"
+  echo "Running test: $YELLOW$name$RESTORE"
 
-  echo "${TARGETS}" | parallel --timeout $timeout "$op $w {} > /dev/null 2>&1"
+  echo "${TARGETS}" | parallel --timeout $timeout "$op $w {} > /dev/null 2>&1 || (echo \" |  failed: [$RED{}$RESTORE]\"; exit 1)"
   local failed=$?
 
   if [ $failed -gt 0 ]; then
-    echo " | failed $failed/$NUM_TARGETS instances of [$name]"
+    echo "failed ${RED}${failed}${RESTORE}/$NUM_TARGETS instances of [$RED$name$RESTORE]" | indent " |"
     PROBLEM_TESTS+=("$name (failed $failed/$NUM_TARGETS)")
   fi
 
@@ -70,7 +72,7 @@ function runTestSuite() {
     done
     exitStatus=1
   else
-    echo " successfully"
+    echo " ${GREEN}successfully${RESTORE}"
     exitStatus=0
   fi
 
