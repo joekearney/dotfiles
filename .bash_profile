@@ -21,6 +21,10 @@ loadIfExists $DOT_FILES_DIR/colour/.bash_color_vars
 # if file exists and is non-empty
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
+# added Miniconda2 3.19.0 to head of path
+[[ -s "$HOME/.miniconda2" ]] && export PATH="/Users/joekearney/.miniconda2/bin:$PATH"
+
+
 # load functions
 loadIfExists ${DOT_FILES_DIR}/functions.sh
 for thing in git sbt tunnelblick; do
