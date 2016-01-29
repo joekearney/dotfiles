@@ -8,7 +8,7 @@ set -e
 
 SOURCE_DIR=$(dirname $0)
 source ${SOURCE_DIR}/functions.sh
-source ${SOURCE_DIR}/.bash_color_vars
+source ${SOURCE_DIR}/colour/.bash_color_vars
 
 SOURCE_HOME=$(cd ~; pwd)
 
