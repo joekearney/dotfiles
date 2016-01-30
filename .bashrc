@@ -59,6 +59,7 @@ function setUpAliases() {
   alias egrep='egrep --color=auto'
 
   alias atomd='atom ~/dotfiles'
+  alias tn='network-test.sh'
 }
 
 function setExports() {
