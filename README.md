@@ -2,6 +2,8 @@
 
 A collection of dotfiles that I've found useful. These define a prompt and a bunch of useful functions for my shell environment.
 
+Some of it is written by me, some of it has been acquired from various sources on the Internet.
+
 ## Requirements
 
 * Bash 4
