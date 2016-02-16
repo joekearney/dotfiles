@@ -10,6 +10,7 @@ TARGETS=$(cat $DOT_FILES_DIR/big-websites.txt)
 NUM_TARGETS=$(echo "$TARGETS" | wc -l)
 
 DEFAULT_SUITE_TIMEOUT_SECONDS=2
+DEBUG=0
 
 function indent() {
   local prefix=$1
@@ -26,10 +27,10 @@ function runTest() {
 
   echo "Running test: $YELLOW$name$RESTORE"
 
-  echo "${TARGETS}" | parallel --timeout $timeout "$op $w {} > /dev/null 2>&1 || (echo \" |  failed: [$RED{}$RESTORE]\"; exit 1)"
+  echo "${TARGETS}" | parallel --timeout $timeout "$op $w {} > /dev/null 2>&1 && (if [ $DEBUG -eq 1 ]; then echo \" |  passed: [$GREEN{}$RESTORE]\"; fi) || (echo \" |  failed: [$RED{}$RESTORE]\"; exit 1)"
   local failed=$?
 
-  if [ $failed -gt 0 ]; then
+  if [ $failed -ne 0 ]; then
     echo "failed ${RED}${failed}${RESTORE}/$NUM_TARGETS instances of [$RED$name$RESTORE]" | indent " |"
     PROBLEM_TESTS+=("$name (failed $failed/$NUM_TARGETS)")
   fi
@@ -79,5 +80,12 @@ function runTestSuite() {
   unset PROBLEM_TESTS
   return $exitStatus
 }
+
+if [[ "$1" == "-v" ]]; then
+  echo "Running in debug mode"
+  DEBUG=1
+else
+  DEBUG=0
+fi
 
 runTestSuite
