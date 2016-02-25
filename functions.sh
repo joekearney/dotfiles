@@ -133,3 +133,7 @@ function docker-reset-hard() {
   eval "$(docker-machine env default)" && \
   yes | docker-machine regenerate-certs default
 }
+
+function weather() {
+  http --body "wttr.in/$1"
+}

@@ -60,8 +60,6 @@ function setUpAliases() {
 
   alias atomd='atom ~/dotfiles'
   alias tn='network-test.sh'
-
-  alias weather='http --body wttr.in'
 }
 
 function setExports() {
