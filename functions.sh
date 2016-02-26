@@ -137,3 +137,16 @@ function docker-reset-hard() {
 function weather() {
   http --body "wttr.in/$1"
 }
+
+# I can never remember which way round symlinks go
+function mkLink() {
+  echo "This will create a symlink from <name> -> <actual-file>."
+  local target
+  local name
+  read -p "  Enter actual file:  " target
+  read -p "  Enter name of link: " name
+
+  echo "Creating symlink $name -> $target"
+
+  ln -s $target $name
+}
