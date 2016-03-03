@@ -1,5 +1,14 @@
 #!/bin/bash
 
+DEBUG=no
+function echoDebug() {
+  if [[ "$DEBUG" == "yes" ]]; then
+    echo "$@"
+  fi
+}
+
+echoDebug "In .bashrc"
+
 function joinStrings {
   local IFS="$1"
   shift
@@ -14,7 +23,6 @@ function prependOrBringToFrontOfArray() {
   for i in "${!array[@]}"; do
     if [[ "${array[$i]}" = "${newEntry}" ]]; then
       unset "array[$i]"
-      break;
     fi
   done
   echo "$newEntry:$(joinStrings ':' ${array[@]})"
@@ -33,8 +41,14 @@ function sortOutPathEntries() {
 
   # add scripts in the dotfiles/bin, and any homedir/bin
   export DOT_FILES_DIR=$(readlink -f ~/.bash_profile | xargs dirname)
+  echoDebug "Set dotfiles dir to $DOT_FILES_DIR"
   prependToPath "$DOT_FILES_DIR/bin"
   prependToPath "~/bin"
+
+  # added Miniconda2 3.19.0 to head of path
+  if [[ -s "$HOME/.miniconda2" ]]; then
+    prependToPath "/Users/joekearney/.miniconda2/bin"
+  fi
 
   # add rvm scripts
   if [ -d $HOME/.rvm ]; then
@@ -88,9 +102,99 @@ function loadCredentials() {
     done
   fi
 }
+function loadIfExists() {
+  local f=$1
+  echoDebug "Sourcing file $f..."
+  if [ -f $f ]; then
+    . $f
+    echoDebug "Sourced file $f"
+  fi
+}
+function sensibleBashDefaults() {
+  # from https://github.com/mrzool/bash-sensible/blob/master/sensible.bash
+
+  # Prevent file overwrite on stdout redirection
+  set -o noclobber
+
+  # Update window size after every command
+  shopt -s checkwinsize
+
+  # Perform file completion in a case insensitive fashion
+  bind "set completion-ignore-case on"
+
+  # Treat hyphens and underscores as equivalent
+  bind "set completion-map-case on"
+
+  # Display matches for ambiguous patterns at first tab press
+  bind "set show-all-if-ambiguous on"
+
+  # Append to the history file, don't overwrite it
+  shopt -s histappend
+
+  # Save multi-line commands as one command
+  shopt -s cmdhist
+
+  # Huge history. Doesn't appear to slow things down, so why not?
+  HISTSIZE=500000
+  HISTFILESIZE=100000
+
+  # Avoid duplicate entries
+  HISTCONTROL="erasedups:ignoreboth"
+
+  # Don't record some commands
+  export HISTIGNORE="&:[ ]*:exit:ls:bg:fg:history:clear"
+
+  # Useful timestamp format
+  HISTTIMEFORMAT='%F %T '
+}
 
 sortOutPathEntries
 setUpAliases
 setExports
+sensibleBashDefaults
+
+# this is a safe and sensible umask
+umask 027
+
+# Source global definitions
+loadIfExists /etc/bashrc
+
+# Source machine-local environment
+loadIfExists ~/.local_env.sh
+
+# load colours
+loadIfExists $DOT_FILES_DIR/colour/.bash_color_vars
+
+# Load RVM into a shell session *as a function*
+# if file exists and is non-empty
+loadIfExists "$HOME/.rvm/scripts/rvm"
+
+# load functions
+loadIfExists ${DOT_FILES_DIR}/functions.sh
+for thing in git sbt tunnelblick; do
+  loadIfExists ${DOT_FILES_DIR}/$thing/$thing-functions.sh
+done
+
+# load bash_completions from various sources
+# the standard ones -- this seems to break prompt on some hosts
+#if [ -f /etc/bash_completion ]; then
+#  . /etc/bash_completion
+#fi
+# from brew-installed sources if they exist
+if [[ $(command -v brew) && -f $(brew --prefix)/etc/bash_completion ]]; then
+  . $(brew --prefix)/etc/bash_completion
+fi
+# any custom ones
+if [ -d ${DOT_FILES_DIR}/bash_completion ]; then
+  for b in ${DOT_FILES_DIR}/bash_completion/*; do
+    . $b
+  done
+fi
+
+# load custom prompt
+if [ -f ${DOT_FILES_DIR}/bash_prompt.sh ]; then
+  . ${DOT_FILES_DIR}/bash_prompt.sh
+fi
+
 initDockerMachineEnv
 loadCredentials
