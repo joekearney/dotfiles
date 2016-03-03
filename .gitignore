@@ -1,3 +1,5 @@
 .known_hosts
 target/
 .bash_history
+.ivy2/
+.sbt/
