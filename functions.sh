@@ -119,8 +119,11 @@ function cd() {
         eval cd "$target"
       fi
     fi
-  elif [ -e "$target" ]; then
+  elif [ -d "$target" ]; then
     pushd "$target" &> /dev/null   #dont display current stack
+  else
+    echo "No such directory: [$target]"
+    return 1
   fi
 }
 
