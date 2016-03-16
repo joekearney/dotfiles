@@ -13,3 +13,4 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-generic" % "0.2.0",
   "io.circe" %% "circe-parse" % "0.2.0"
 )
+libraryDependencies ++= Seq("org.specs2" %% "specs2-core" % "3.7.2")
