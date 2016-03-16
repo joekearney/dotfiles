@@ -6,7 +6,6 @@ theguardian.com
 db.de
 github.com
 skyscanner.net
-joekearney.co.uk
 wix.com
 eclipse.org
 wikipedia.org
