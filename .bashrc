@@ -86,6 +86,9 @@ function setExports() {
     export LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
     export LESS=' -R '
   fi
+  export LC_ALL=en_GB.UTF-8
+  export LANG=en_GB.UTF-8
+  export LANGUAGE=en_GB.UTF-8
 }
 
 function initDockerMachineEnv() {

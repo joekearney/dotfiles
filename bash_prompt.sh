@@ -15,7 +15,7 @@ GIT_PS1_SHOWUPSTREAM="auto verbose"
 #   /home/me/stuff          -> ~/stuff                if USER=me
 #   /usr/share/big_dir_name -> .../share/big_dir_name if pwdmaxlen=20
 ##################################################
-abbrev_pwd() {
+function abbrev_pwd() {
     local lastExitStatus=$?
 
     # How many characters of the $PWD should be kept
@@ -36,7 +36,7 @@ abbrev_pwd() {
 }
 
 # echo out the current Ruby version, if we're in an rvm environment
-get_rvm_string() {
+function get_rvm_string() {
   if [[ "$(pwd)" == $HOME ]]; then # not interested if in homedir
     local rvmCurrent=""
   elif [[ "$rvm_ruby_string" != "" ]]; then
@@ -55,19 +55,19 @@ get_rvm_string() {
 
 # gets the current number of millis since the epoch.
 # THIS DOESN'T WORK on normal mac. If it fails, check that gnubin is on the PATH
-current_time_millis() {
+function current_time_millis() {
   echo $(($(date +%s%N)/1000000))
 }
-command_timer_start() {
+function command_timer_start() {
   local millis=$(current_time_millis)
   command_in_progress_timer=${command_in_progress_timer:-$millis}
 }
-command_timer_stop() {
+function command_timer_stop() {
   local millis=$(current_time_millis)
   last_command_exec_time_secs=$(($millis - $command_in_progress_timer))
   unset command_in_progress_timer
 }
-convert_time_string() {
+function convert_time_string() {
   local total_millis="$1"
   ((total_secs=total_millis/1000))
   ((ms=total_millis%1000))
@@ -93,7 +93,7 @@ convert_time_string() {
   unset total_secs
 }
 # prints out the execution time of the last command
-last_command_exec_time() {
+function last_command_exec_time() {
   if [[ "$last_command_exec_time_secs" != "" ]]; then
     convert_time_string $last_command_exec_time_secs
   fi
@@ -101,14 +101,17 @@ last_command_exec_time() {
 # start the timer on each command
 trap 'command_timer_start' DEBUG
 
+function screen_command_exists() {
+  [[ $(command -v screen) ]]
+}
 # gets the list of detached screen instances
-get_detached_screens() {
-  local screens=$(screen -ls | grep Detached | awk '{ print $1 }' | sed "s/.$(hostname -s)//" | tr '\n' ',' | sed 's/,$//')
+function get_detached_screens() {
+  local screens=$(screen_command_exists && screen -ls | grep Detached | awk '{ print $1 }' | sed "s/.$(hostname -s)//" | tr '\n' ',' | sed 's/,$//')
   if [[ "$screens" != "" ]]; then
     echo -n " (screens: $YELLOW$screens$RESTORE)"
   fi
 }
-get_current_screen() {
+function get_current_screen() {
   local screen=$(echo $STY | sed "s/.$(hostname -s)//")
   if [[ "$screen" != "" ]]; then
     echo -n " (in screen: $GREEN$screen$RESTORE)"
@@ -116,14 +119,14 @@ get_current_screen() {
 }
 
 # print out the time zone of the current machine, in grey
-get_time_zone() {
+function get_time_zone() {
   echo -n "\[$(tput sgr0)\]\[\033[38;5;7m\]"
   echo -n $(date +'%Z')
 }
 
 # if the last printed line did not end in a newline
 # echo a marker character and a newline
-clear_line() {
+function clear_line() {
   local curpos
   echo -en "\E[6n"
 
@@ -134,7 +137,7 @@ clear_line() {
     echo -e '\E[1m\E[41m\E[33m%\E[0m' # print marker, and newline
 }
 
-all_the_things() {
+function all_the_things() {
   local lastExitCode=$?
 
   command_timer_stop

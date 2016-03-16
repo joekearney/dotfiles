@@ -102,23 +102,25 @@ function indent() {
 
 # let cd also pushd directories into stack. Use popd to reverse stack
 function cd() {
-  if [[ "$1" == "" ]]; then
+  local target="$@"
+
+  if [[ "$target" == "" ]]; then
     pushd ~ &> /dev/null
-  elif [[ "$1" == "-" ]]; then
+  elif [[ "$target" == "-" ]]; then
     popd &> /dev/null
-  elif [[ "$1" == "?" ]]; then
+  elif [[ "$target" == "?" ]]; then
     dirs -v | indent
     read -p "Enter index to jump to, or <enter> to do nothing: " i
     if [[ "$i" != "" ]]; then
-      local target=$(dirs +$i)
+      target=$(dirs +$i)
       if [[ "$?" == "0" ]]; then
         colorize "Jumping to [<light-green>$target</light-green>]"
         # need eval to handle ~ in target path
         eval cd "$target"
       fi
     fi
-  elif [ -e $1 ]; then
-    pushd $1 &> /dev/null   #dont display current stack
+  elif [ -e "$target" ]; then
+    pushd "$target" &> /dev/null   #dont display current stack
   fi
 }
 
