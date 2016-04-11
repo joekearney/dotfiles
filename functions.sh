@@ -155,3 +155,32 @@ function mkLink() {
 
   ln -s $target $name
 }
+
+function runOn() {
+  usage="Usage: $0 <host> [-b] <command...>"
+
+  target=$1
+  if [[ "$target" == "" ]]; then
+    echo usage
+    exit 1
+  fi
+
+  shift 1
+
+  background=no
+  if [[ "$1" == "-b" ]]; then
+    background=yes
+    shift 1
+  fi
+
+  remoteCommands="$*"
+
+  echo -n "Running: [$remoteCommands] on [$target]"
+  if [[ "$background" == "yes" ]]; then
+    echo " in the background..."
+    ssh -A $target nohup $remoteCommands > /dev/null 2> /dev/null < /dev/null &
+  else
+    echo "..."
+    ssh -A $target $remoteCommands
+  fi
+}
