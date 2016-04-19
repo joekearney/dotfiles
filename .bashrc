@@ -123,14 +123,14 @@ function sensibleBashDefaults() {
   # Update window size after every command
   shopt -s checkwinsize
 
-  # Perform file completion in a case insensitive fashion
-  bind "set completion-ignore-case on"
-
-  # Treat hyphens and underscores as equivalent
-  bind "set completion-map-case on"
-
-  # Display matches for ambiguous patterns at first tab press
-  bind "set show-all-if-ambiguous on"
+  # # Perform file completion in a case insensitive fashion
+  # bind "set completion-ignore-case on"
+  #
+  # # Treat hyphens and underscores as equivalent
+  # bind "set completion-map-case on"
+  #
+  # # Display matches for ambiguous patterns at first tab press
+  # bind "set show-all-if-ambiguous on"
 
   # Append to the history file, don't overwrite it
   shopt -s histappend
