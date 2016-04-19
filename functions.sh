@@ -162,7 +162,7 @@ function runOn() {
   target=$1
   if [[ "$target" == "" ]]; then
     echo usage
-    exit 1
+    return 1
   fi
 
   shift 1
