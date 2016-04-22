@@ -137,6 +137,19 @@ function clear_line() {
     echo -e '\E[1m\E[41m\E[33m%\E[0m' # print marker, and newline
 }
 
+function containsRubyDirective() {
+  grep -i -E -q -L "^(ruby \"\S+\"|#ruby=\S+)$" $1
+}
+function rvmHacks() {
+  # HACK RVM tries to be clever with going back to the previous environment
+  # on a directory change, but with multiple ruby projects on multiple versions
+  # you end up with non-ruby directories getting a specifiv rvm-ruby version,
+  # which is wierd. This is a way of disabling this behaviour - set this value
+  # in every directory. Can't do this in the cd() function, because rvm has
+  # taken over that as well!
+  rvm_previous_environment="system"
+}
+
 function all_the_things() {
   local lastExitCode=$?
 
@@ -147,13 +160,7 @@ function all_the_things() {
   clear_line
   shellTitle $(getExpectedHostname)
 
-  # HACK RVM tries to be clever with going back to the previous environment
-  # on a directory change, but with multiple ruby projects on multiple versions
-  # you end up with non-ruby directories getting a specifiv rvm-ruby version,
-  # which is wierd. This is a way of disabling this behaviour - set this value
-  # in every directory. Can't do this in the cd() function, because rvm has
-  # taken over that as well!
-  rvm_previous_environment="system"
+  rvmHacks
 
   local expectedHostNameAndOriginal=$(getExpectedHostnameAndOriginal)
   local apwd=$(abbrev_pwd)
