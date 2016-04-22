@@ -67,9 +67,14 @@ complete -F _do_with_git_complete_options cdg
 complete -F _do_with_git_complete_options atomg
 
 function gitSetUpSbtSymlinks() {
-  local repo=$1
-  ln -sf ~/.ivy2 $repo/.ivy2
-  ln -sf ~/.sbt $repo/.sbt
+  if [[ "$#" != 1 ]]; then
+    echo "Usage: gitSetUpSbtSymlinks <repo-dir>"
+    return 1
+  else
+    local repo=$1
+    ln -sf ~/.ivy2 $repo/.ivy2
+    ln -sf ~/.sbt $repo/.sbt
+  fi
 }
 
 function gitHubClone() {

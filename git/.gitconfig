@@ -36,3 +36,4 @@
 	repodir = "!f() { git rev-parse --show-toplevel; }; f"
 	ignore = "!gi() { echo $@ >> $(git repodir)/.gitignore; }; gi"
 	ls = ls-tree --name-only HEAD
+  sbt-symlinks = "!f() { $DOT_FILES_DIR/git/git-sbt-symlinks.sh \"$@\"; } f"
