@@ -66,7 +66,13 @@ function atomg() {
 complete -F _do_with_git_complete_options cdg
 complete -F _do_with_git_complete_options atomg
 
-gitHubClone() {
+function gitSetUpSbtSymlinks() {
+  local repo=$1
+  ln -sf ~/.ivy2 $repo/.ivy2
+  ln -sf ~/.sbt $repo/.sbt
+}
+
+function gitHubClone() {
   if [[ $1 == '' ]]; then
     echo 'Usage: git hub [<org>] <repo>';
     exit 1;
@@ -77,6 +83,7 @@ gitHubClone() {
     local url=git@github.com:$org/$repo.git;
     echo "Cloning from [${YELLOW}$url${RESTORE}] into [${GREEN}$(pwd)/$repo${RESTORE}]...";
     git clone $url;
+    gitSetUpSbtSymlinks $repo
   else
     local org=$1;
     local repo=$2;
@@ -84,5 +91,6 @@ gitHubClone() {
     local target="$HOME/git/$org/$repo"
     echo "Cloning from [${YELLOW}$url${RESTORE}] into [${GREEN}${target}${RESTORE}]..."
     git clone $url $target;
+    gitSetUpSbtSymlinks $target
   fi
 }
