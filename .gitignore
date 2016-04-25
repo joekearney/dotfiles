@@ -3,3 +3,4 @@ target/
 .bash_history
 .ivy2/
 .sbt/
+.credentials/
