@@ -38,3 +38,5 @@
   ls = ls-tree --name-only HEAD
   pr-done = "!f() { prBranch=$(git current-branch) && [[ \"$prBranch\" != \"master\" ]] && git checkout master && git pull --rebase && git branch -d $prBranch ; }; f"
   sbt-symlinks = "!f() { $DOT_FILES_DIR/git/git-sbt-symlinks.sh \"$@\"; }; f"
+  preb = pull --rebase
+  move-commits-to = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitMoveCommitsTo \"$@\"; }; f"

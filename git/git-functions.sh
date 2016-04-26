@@ -99,3 +99,13 @@ function gitHubClone() {
     gitSetUpSbtSymlinks $target
   fi
 }
+
+function gitMoveCommitsTo() {
+  if [[ "$#" != 2 ]]; then
+    echo "Usage: gitMoveCommitsTo <branchName> <numCommits>"
+  fi
+  local branchName=$1
+  local numCommits=$2
+
+  git branch $branchName && git reset --hard HEAD~$numCommits && git checkout $branchName
+}
