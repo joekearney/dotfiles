@@ -73,7 +73,7 @@ function gitSetUpSbtSymlinks() {
   else
     local repo=$1
     ln -sf ~/.ivy2 $repo/.ivy2
-    ln -sf ~/.sbt $repo/.sbt
+#    ln -sf ~/.sbt $repo/.sbt
   fi
 }
 
