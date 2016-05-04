@@ -24,11 +24,13 @@
 
 [alias]
   co = checkout
+  master = checkout master
   st = status
+  preb = pull --rebase
   hist = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-  hub = "!f() { $DOT_FILES_DIR/git/git-hub-clone.sh \"$@\"; }; f"
   unstash = stash apply
   current-branch = rev-parse --abbrev-ref HEAD
+  sha = rev-parse --short HEAD
   new-branch = checkout -b
   push-upstream = "!f() { git push --set-upstream origin $(git current-branch); }; f"
   gi = "!gi() { curl -L -s https://www.gitignore.io/api/$@ ;}; gi"
@@ -37,6 +39,6 @@
   ignore = "!gi() { echo $@ >> $(git repodir)/.gitignore; }; gi"
   ls = ls-tree --name-only HEAD
   pr-done = "!f() { prBranch=$(git current-branch) && [[ \"$prBranch\" != \"master\" ]] && git checkout master && git pull --rebase && git branch -d $prBranch ; }; f"
-  sbt-symlinks = "!f() { $DOT_FILES_DIR/git/git-sbt-symlinks.sh \"$@\"; }; f"
-  preb = pull --rebase
+  hub = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitHubClone \"$@\"; }; f"
+  sbt-symlinks = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitSetUpSbtSymlinks \"$@\"; }; f"
   move-commits-to = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitMoveCommitsTo \"$@\"; }; f"

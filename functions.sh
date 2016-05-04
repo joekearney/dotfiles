@@ -184,3 +184,25 @@ function runOn() {
     ssh -A $target $remoteCommands
   fi
 }
+
+function shibdiff() {
+  if [[ "$#" != 2 ]]; then
+    echo "Usage: shibdiff <file1> <file2>"
+  fi
+
+  local file1=$1
+  local file2=$2
+
+  diff <(shibboleth show $file1) <(shibboleth show $file2)
+}
+function shibdiffFromBranch() {
+  if [[ "$#" != 2 ]]; then
+    echo "Usage: shibdiff <file1> <branch>"
+    exit 1
+  fi
+
+  local file=$1
+  local branch=$2
+
+  cat <(shibboleth show $file) <(git show $branch:$file | shibboleth show -)
+}

@@ -11,4 +11,6 @@ shift 1
 
 functionArgs="$@"
 
+echo "Calling: $functionName $functionArgs"
+
 $functionName $functionArgs

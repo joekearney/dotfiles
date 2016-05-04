@@ -103,6 +103,7 @@ function gitHubClone() {
 function gitMoveCommitsTo() {
   if [[ "$#" != 2 ]]; then
     echo "Usage: gitMoveCommitsTo <branchName> <numCommits>"
+    return 1
   fi
   local branchName=$1
   local numCommits=$2
