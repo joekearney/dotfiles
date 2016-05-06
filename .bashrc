@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Using bash version [$BASH_VERSION]"
+
 DEBUG=no
 function echoDebug() {
   if [[ "$DEBUG" == "yes" ]]; then
