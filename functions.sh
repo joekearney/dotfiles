@@ -185,24 +185,21 @@ function runOn() {
   fi
 }
 
-function shibdiff() {
-  if [[ "$#" != 2 ]]; then
-    echo "Usage: shibdiff <file1> <file2>"
+function rlf() {
+  if [[ "$#" != 1 ]]; then
+    echo "Usage: rlf <path>"
+    echo "Finds the real path of the item given"
+    return 1
   fi
 
-  local file1=$1
-  local file2=$2
+  local thing=$1
+  local whichThing=$(which $thing)
 
-  diff <(shibboleth show $file1) <(shibboleth show $file2)
-}
-function shibdiffFromBranch() {
-  if [[ "$#" != 2 ]]; then
-    echo "Usage: shibdiff <file1> <branch>"
-    exit 1
+  if [[ "$whichThing" != "" ]]; then
+    readlink -f $whichThing
+  elif [[ -a "$thing" ]]; then
+    readlink -f $thing
+  else
+    echo "[$thing] not found"
   fi
-
-  local file=$1
-  local branch=$2
-
-  cat <(shibboleth show $file) <(git show $branch:$file | shibboleth show -)
 }
