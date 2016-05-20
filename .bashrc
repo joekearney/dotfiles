@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Using bash version [$BASH_VERSION]"
+echo "Using bash version [$BASH_VERSION] from [$BASH]"
 
 DEBUG=no
 function echoDebug() {
@@ -70,6 +70,7 @@ function setUpAliases() {
 
   alias dir='dir --color=auto'
   alias vdir='vdir --color=auto'
+
   alias grep='grep --color=auto'
   alias fgrep='fgrep --color=auto'
   alias egrep='egrep --color=auto'
