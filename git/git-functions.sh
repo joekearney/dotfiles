@@ -7,7 +7,7 @@ function g() {
   else
     local operation=$1
     local repoName=$2
-    local path=($(find ~/git -type d -maxdepth 3 -name ".git" | egrep -i "/[^/]*${repoName}[^/]*/.git" | xargs dirname))
+    local path=($(find ~/git -maxdepth 3 -type d -name ".git" | egrep -i "/[^/]*${repoName}[^/]*/.git" | xargs dirname))
 
     local count=${#path[@]}
 
@@ -45,8 +45,8 @@ function _do_with_git_complete_options() {
   # substitution, inspired by this: http://stackoverflow.com/questions/9522631
   local repos=$(find                                                                       \
           ~/git                           `# assumed base of where all of your repos live` \
-          -type d                         `# looking for directories`                      \
           -mindepth 2 -maxdepth 3         `# either at ~/git/*/.git or ~/git/*/*/.git`     \
+          -type d                         `# looking for directories`                      \
           -name ".git" |                  `# called .git`                                  \
             awk -F/ '{ print $(NF-1) }'   `# and get the name of the dir containing .git`  \
         )
