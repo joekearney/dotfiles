@@ -203,3 +203,31 @@ function rlf() {
     echo "[$thing] not found"
   fi
 }
+
+function srv() {
+  if [[ "$#" != 1 ]]; then
+    echo "Usage: srv <server>"
+    echo "Echos a randomly chosen host:port from the SRV records for the server"
+    return 1
+  fi
+
+  # server is the name in nslookup of the parameter
+  local server=$1
+
+  function doLookup() {
+    nslookup -type=SRV $server \
+      | grep --only-matching "\tservice = .*" \
+      | cut -d " " -f 5,6 \
+      | sed -r 's/([0-9]*) (.*)\./\2:\1/' \
+      | shuf -n 1
+  }
+
+  local answer=$(doLookup)
+  if [[ "$answer" == "" ]]; then
+    # none found
+    return 1
+  else
+    echo $answer
+    return 0
+  fi
+}
