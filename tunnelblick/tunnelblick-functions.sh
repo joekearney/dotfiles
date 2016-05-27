@@ -7,7 +7,7 @@ function tunnelblick() {
   elif [[ "$op" == "status" ]]; then
     osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-status.scpt
   elif [[ "$op" == "kill" ]]; then
-    ps -e -o pid,comm | grep -i tunnelblick | awk '{print $1}' | xargs sudo kill
+    ps -e -o pid,comm | grep -i tunnelblick | awk '{print $1}' | xargs -n 1 sudo kill
   elif [[ "$op" == "check" ]]; then
     if [[ $(tunnelblick status) == "CONNECTED" ]]; then
       echo "Tunnelblick thinks it is connected to [$PRIMARY_TUNNELBLICK_VPN_NAME]"
