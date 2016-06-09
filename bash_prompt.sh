@@ -150,6 +150,14 @@ function rvmHacks() {
   rvm_previous_environment="system"
 }
 
+function get_first_prompt_extras() {
+  if [[ "$NUM_COMMANDS_THIS_SHELL" == "0" ]]; then
+    echo "Using bash version [$BASH_VERSION] from [$BASH]\n"
+  fi
+}
+
+NUM_COMMANDS_THIS_SHELL=0
+
 function all_the_things() {
   local lastExitCode=$?
 
@@ -168,11 +176,14 @@ function all_the_things() {
   local detached_screens=$(get_detached_screens)
   local current_screen=$(get_current_screen)
   local time_zone=$(get_time_zone)
+  local first_prompt_extras=$(get_first_prompt_extras)
 
   local last_command_exec_time_string=$(last_command_exec_time)
 
   # prompt formatting helped by http://bashrcgenerator.com/
-  __git_ps1 "\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]${expectedHostNameAndOriginal}\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]${apwd}\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE" "${rvm_string}${detached_screens}${current_screen}\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] ${time_zone} \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]${last_command_exec_time_string})\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+  __git_ps1 "${first_prompt_extras}\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]${expectedHostNameAndOriginal}\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]${apwd}\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE" "${rvm_string}${detached_screens}${current_screen}\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] ${time_zone} \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]${last_command_exec_time_string})\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+
+  NUM_COMMANDS_THIS_SHELL=$((NUM_COMMANDS_THIS_SHELL=NUM_COMMANDS_THIS_SHELL+1))
 
   local endPromptAt=$(current_time_millis)
   ((prompt_creation_time_ms=endPromptAt-startPromptAt))

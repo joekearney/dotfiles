@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo "Using bash version [$BASH_VERSION] from [$BASH]"
-
 DEBUG=no
 function echoDebug() {
   if [[ "$DEBUG" == "yes" ]]; then
@@ -121,7 +119,7 @@ function sensibleBashDefaults() {
   # from https://github.com/mrzool/bash-sensible/blob/master/sensible.bash
 
   # Prevent file overwrite on stdout redirection
-  set -o noclobber
+#  set -o noclobber
 
   # Update window size after every command
   shopt -s checkwinsize
