@@ -73,6 +73,8 @@ function setUpAliases() {
   alias fgrep='fgrep --color=auto'
   alias egrep='egrep --color=auto'
 
+  alias rud='rvm use default'
+
   alias atomd='atom ~/dotfiles'
   alias tn='network-test.sh'
 }

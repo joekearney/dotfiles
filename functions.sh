@@ -231,3 +231,7 @@ function srv() {
     return 0
   fi
 }
+
+function sumLines() {
+  paste -s -d+ | bc
+}
