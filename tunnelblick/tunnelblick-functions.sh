@@ -12,6 +12,7 @@ function tunnelblick() {
     if [[ $(tunnelblick status) == "CONNECTED" ]]; then
       echo "Tunnelblick thinks it is connected to [$PRIMARY_TUNNELBLICK_VPN_NAME]"
       if [[ $TUNNELBLICK_VALIDATE_ADDRESS ]]; then
+        echo "Testing connection to [$TUNNELBLICK_VALIDATE_ADDRESS]..."
         host $TUNNELBLICK_VALIDATE_ADDRESS > /dev/null
         local validateExitCode=$?
         if [[ "$validateExitCode" != "0" ]]; then
