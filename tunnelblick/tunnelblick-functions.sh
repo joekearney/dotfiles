@@ -9,8 +9,9 @@ function tunnelblick() {
   elif [[ "$op" == "status" ]]; then
     osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-status.scpt
   elif [[ "$op" == "env" ]]; then
-    echo "Tunnelblick primary vpn:        [$PRIMARY_TUNNELBLICK_VPN_NAME]"
-    echo "Tunnelblick validation address: [$TUNNELBLICK_VALIDATE_ADDRESS]"
+    echo "Primary vpn:        [$PRIMARY_TUNNELBLICK_VPN_NAME]"
+    echo "Validation address: [$TUNNELBLICK_VALIDATE_ADDRESS]"
+    echo "Current status:     [$(tunnelblick status)]"
   elif [[ "$op" == "check" ]]; then
     if [[ $(tunnelblick status) == "CONNECTED" ]]; then
       echo "Tunnelblick thinks it is connected to [$PRIMARY_TUNNELBLICK_VPN_NAME]"
