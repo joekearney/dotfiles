@@ -4,10 +4,13 @@ function tunnelblick() {
     osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-restart.scpt
   elif [[ "$op" == "stop" ]]; then
     osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-stop.scpt
-  elif [[ "$op" == "status" ]]; then
-    osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-status.scpt
   elif [[ "$op" == "kill" ]]; then
     ps -e -o pid,comm | grep -i tunnelblick | awk '{print $1}' | xargs -n 1 sudo kill
+  elif [[ "$op" == "status" ]]; then
+    osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-status.scpt
+  elif [[ "$op" == "env" ]]; then
+    echo "Tunnelblick primary vpn:        [$PRIMARY_TUNNELBLICK_VPN_NAME]"
+    echo "Tunnelblick validation address: [$TUNNELBLICK_VALIDATE_ADDRESS]"
   elif [[ "$op" == "check" ]]; then
     if [[ $(tunnelblick status) == "CONNECTED" ]]; then
       echo "Tunnelblick thinks it is connected to [$PRIMARY_TUNNELBLICK_VPN_NAME]"
@@ -27,16 +30,17 @@ function tunnelblick() {
       tunnelblick restart
     fi
   else
-    echo "Usage: ${FUNCNAME[0]} restart|status"
+    echo "Usage: ${FUNCNAME[0]} restart|stop|kill|status|env|check"
     echo "Useful environment variables:"
     echo "    PRIMARY_TUNNELBLICK_VPN_NAME - the name of the VPN to which to connect"
     echo "    TUNNELBLICK_VALIDATE_ADDRESS - an address of something on the network that can only be resolved on the VPN"
+    return 1
   fi
 }
 # bash auto completion for cdg
 function _tunnelblick_complete_options() {
   local curr_arg=${COMP_WORDS[COMP_CWORD]}
-  local lines=$(echo "restart|status|check|kill|stop" | tr '|' '\n')
+  local lines=$(echo "restart|stop|kill|status|env|check" | tr '|' '\n')
   COMPREPLY=( $(compgen -W '${lines[@]}' -- $curr_arg ) )
 }
 complete -F _tunnelblick_complete_options tunnelblick
