@@ -235,3 +235,7 @@ function srv() {
 function sumLines() {
   paste -s -d+ | bc
 }
+
+function cassandraNetstatsSendingProgress() {
+  nodetool netstats | awk '/Sending/ { soFar += $9; total += $2 }; END { print soFar * 100 / total "%" }'
+}
