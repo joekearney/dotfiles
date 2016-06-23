@@ -1,3 +1,6 @@
+[core]
+	excludesfile = ~/dotfiles/git/.global_gitignore
+
 [push]
 	default = simple
 
