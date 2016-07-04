@@ -117,6 +117,22 @@ function get_current_screen() {
     echo -n " (in screen: $GREEN$screen$RESTORE)"
   fi
 }
+function tmux_command_exists() {
+  [[ $(command -v tmux) ]]
+}
+# gets the list of detached tmux instances
+function get_detached_tmuxs() {
+  local tmuxs=$(tmux_command_exists && tmux ls | grep -v attached | sed -r 's/^([0-9]+):.*/\1/' | tr '\n' ',' | sed 's/,$//')
+  if [[ "$tmuxs" != "" ]]; then
+    echo -n " (tmuxs: $YELLOW$tmuxs$RESTORE)"
+  fi
+}
+function get_current_tmux() {
+  local tmux=$(echo $TMUX_PANE | sed "s/^%//")
+  if [[ "$tmux" != "" ]]; then
+    echo -n " (in tmux: $GREEN$tmux$RESTORE)"
+  fi
+}
 
 # print out the time zone of the current machine, in grey
 function get_time_zone() {
@@ -175,13 +191,15 @@ function all_the_things() {
   local rvm_string=$(get_rvm_string)
   local detached_screens=$(get_detached_screens)
   local current_screen=$(get_current_screen)
+  local detached_tmuxs=$(get_detached_tmuxs)
+  local current_tmux=$(get_current_tmux)
   local time_zone=$(get_time_zone)
   local first_prompt_extras=$(get_first_prompt_extras)
 
   local last_command_exec_time_string=$(last_command_exec_time)
 
   # prompt formatting helped by http://bashrcgenerator.com/
-  __git_ps1 "${first_prompt_extras}\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]${expectedHostNameAndOriginal}\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]${apwd}\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE" "${rvm_string}${detached_screens}${current_screen}\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] ${time_zone} \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]${last_command_exec_time_string})\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+  __git_ps1 "${first_prompt_extras}\[\033[38;5;14m\]\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]${expectedHostNameAndOriginal}\[$(tput sgr0)\]\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]${apwd}\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE" "${rvm_string}${detached_screens}${current_screen}${detached_tmuxs}${current_tmux}\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] ${time_zone} \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]${last_command_exec_time_string})\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
 
   NUM_COMMANDS_THIS_SHELL=$((NUM_COMMANDS_THIS_SHELL=NUM_COMMANDS_THIS_SHELL+1))
 
