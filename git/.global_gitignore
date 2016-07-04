@@ -3,8 +3,9 @@
 
 ### Eclipse ###
 
+eclipse-out/
+
 .metadata
-bin/
 tmp/
 *.tmp
 *.bak
