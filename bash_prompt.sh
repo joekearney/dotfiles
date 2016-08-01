@@ -122,13 +122,13 @@ function tmux_command_exists() {
 }
 # gets the list of detached tmux instances
 function get_detached_tmuxs() {
-  local tmuxs=$(tmux_command_exists && tmux ls 2>&1 | grep -v "no server running on" | grep -v "failed to connect to server" | grep -v attached | sed -r 's/^([^:]+):.*/\1/' | tr '\n' ',' | sed 's/,$//')
+  local tmuxs=$(tmux_command_exists && tmux ls 2>&1 | grep -v "no server running on" | grep -v "failed to connect to server" | grep -v "error connecting" | grep -v attached | sed -r 's/^([^:]+):.*/\1/' | tr '\n' ',' | sed 's/,$//')
   if [[ "$tmuxs" != "" ]]; then
     echo -n " (tmuxs: $YELLOW$tmuxs$RESTORE)"
   fi
 }
 function get_current_tmux() {
-  local tmux=$(echo $TMUX_PANE | sed "s/^%//")
+  local tmux=$(tmux_command_exists && tmux ls 2>&1 | grep -v "no server running on" | grep -v "failed to connect to server" | grep -v "error connecting" | grep attached | sed -r 's/^([^:]+):.*/\1/')
   if [[ "$tmux" != "" ]]; then
     echo -n " (in tmux: $GREEN$tmux$RESTORE)"
   fi
