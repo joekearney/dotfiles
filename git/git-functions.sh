@@ -59,11 +59,17 @@ complete -F _do_with_git_complete_options g
 function cdg() {
   g "cd" $1
 }
+# cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name,
+# and do git pull
+function cdgp() {
+  cdg $1 && git pull
+}
 # cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
 function atomg() {
   g "atom" $1
 }
 complete -F _do_with_git_complete_options cdg
+complete -F _do_with_git_complete_options cdgp
 complete -F _do_with_git_complete_options atomg
 
 function gitHubClone() {
