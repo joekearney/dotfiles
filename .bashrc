@@ -77,6 +77,10 @@ function setUpAliases() {
 
   alias atomd='atom ~/dotfiles'
   alias tn='network-test.sh'
+
+  if [ -f ~/.iterm2/imgcat ]; then
+    alias imgcat=~/.iterm2/imgcat
+  fi
 }
 
 function setExports() {

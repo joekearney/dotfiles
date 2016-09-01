@@ -3,10 +3,10 @@
 # do something given a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
 function g() {
   if [[ "$1" == "" || "$2" == "" ]]; then
-    echo "Usage: ${FUNCNAME[0]} <operation> <repo-name>"
+    echo "Usage: ${FUNCNAME[0]} <repo-name> <operation>"
   else
-    local operation=$1
-    local repoName=$2
+    local repoName=$1
+    local operation=$2
     local path=($(find ~/git -maxdepth 3 -type d -name ".git" | egrep -i "/[^/]*${repoName}[^/]*/.git" | xargs dirname))
 
     local count=${#path[@]}
@@ -57,7 +57,7 @@ complete -F _do_with_git_complete_options g
 
 # cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
 function cdg() {
-  g "cd" $1
+  g $1 "cd"
 }
 # cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name,
 # and do git pull
@@ -66,7 +66,7 @@ function cdgp() {
 }
 # cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
 function atomg() {
-  g "atom" $1
+  g $1 "atom"
 }
 complete -F _do_with_git_complete_options cdg
 complete -F _do_with_git_complete_options cdgp
