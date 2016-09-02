@@ -7,7 +7,7 @@ DO_LINKING=true
 set -e
 
 SOURCE_DIR=$(dirname $0)
-source ${SOURCE_DIR}/functions.sh
+source ${SOURCE_DIR}/bash/bash-functions.sh
 source ${SOURCE_DIR}/colour/.bash_color_vars
 
 SOURCE_HOME=$(cd ~; pwd)

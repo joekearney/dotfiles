@@ -6,7 +6,7 @@
 
 . $DOT_FILES_DIR/colour/.bash_color_vars
 
-TARGETS=$(cat $DOT_FILES_DIR/big-websites.txt)
+TARGETS=$(cat $DOT_FILES_DIR/bin/big-websites.txt)
 NUM_TARGETS=$(echo "$TARGETS" | wc -l)
 
 DEFAULT_SUITE_TIMEOUT_SECONDS=2

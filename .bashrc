@@ -100,7 +100,7 @@ function setExports() {
 }
 
 function initDockerMachineEnv() {
-  if [[ $(command -v docker-machine) ]]; then
+  if [[ $(command -v docker-machine && docker-machine status) == "Running" ]]; then
     eval "$(docker-machine env default)"
   fi
 }
@@ -181,8 +181,7 @@ loadIfExists $DOT_FILES_DIR/colour/.bash_color_vars
 loadIfExists "$HOME/.rvm/scripts/rvm"
 
 # load functions
-loadIfExists ${DOT_FILES_DIR}/functions.sh
-for thing in git sbt tunnelblick; do
+for thing in bash git sbt tunnelblick; do
   loadIfExists ${DOT_FILES_DIR}/$thing/$thing-functions.sh
 done
 
@@ -203,8 +202,8 @@ if [ -d ${DOT_FILES_DIR}/bash_completion ]; then
 fi
 
 # load custom prompt
-if [ -f ${DOT_FILES_DIR}/bash_prompt.sh ]; then
-  . ${DOT_FILES_DIR}/bash_prompt.sh
+if [ -f ${DOT_FILES_DIR}/bash/bash_prompt.sh ]; then
+  . ${DOT_FILES_DIR}/bash/bash_prompt.sh
 fi
 
 initDockerMachineEnv
