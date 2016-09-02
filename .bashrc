@@ -100,7 +100,7 @@ function setExports() {
 }
 
 function initDockerMachineEnv() {
-  if [[ $(command -v docker-machine && docker-machine status) == "Running" ]]; then
+  if [[ $(command -v docker-machine > /dev/null && docker-machine status) == "Running" ]]; then
     eval "$(docker-machine env default)"
   fi
 }
