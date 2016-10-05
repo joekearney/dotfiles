@@ -1,6 +1,8 @@
-#!/bin/bash
-
 "\e[1;5C": forward-word   # ctrl + right
 "\e[5C":   forward-word   # ctrl + right
 "\e[1;5D": backward-word  # ctrl + left
 "\e[5D":   backward-word  # ctrl + left
+
+# type something, then up/down arrow keys to go through history (doesn't work yet)
+"\e[A": history-search-backward
+"\e[B": history-search-forward
