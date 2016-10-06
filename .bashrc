@@ -137,8 +137,8 @@ function sensibleBashDefaults() {
   # bind "set completion-map-case on"
 
   # Display matches for ambiguous patterns at first tab press
-  bind "TAB:menu-complete"
-  bind "set show-all-if-ambiguous on"
+#  bind "TAB:menu-complete"
+#  bind "set show-all-if-ambiguous on"
 
   # Append to the history file, don't overwrite it
   shopt -s histappend
