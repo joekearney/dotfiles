@@ -26,8 +26,12 @@ function g() {
       echo -n "Enter an repo to use, or <enter> to stop: "
       read g
       if [[ "$g" != "" ]]; then
-        ((gotoIndex=g-1))
-        $operation ${path[gotoIndex]}
+        if [[ "$g" -lt "$count" ]]; then
+          ((gotoIndex=g-1))
+          $operation ${path[gotoIndex]}
+        else
+          echo -e "Invalid index [${RED}$g${RESTORE}]"
+        fi
       fi
     else
       echo -e "Found no directories matching [${RED}$repoName${RESTORE}]"
