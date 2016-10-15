@@ -78,6 +78,8 @@ function setUpAliases() {
   alias atomd='atom ~/dotfiles'
   alias tn='network-test.sh'
 
+  alias clearDnsCache="sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder;say flushed"
+
   if [ -f ~/.iterm2/imgcat ]; then
     alias imgcat=~/.iterm2/imgcat
   fi
