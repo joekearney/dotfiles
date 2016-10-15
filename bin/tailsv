@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [[ "$1" == "" ]]; then
+  echo "Tails logs from a runit service whose logs are at /etc/sv/<serviceName>/log/main/current"
+  echo "Usage: $0 <serviceName>"
+  exit 1
+fi
+
+serviceName=$1
+
+tail -100f /etc/sv/${serviceName}/log/main/current
