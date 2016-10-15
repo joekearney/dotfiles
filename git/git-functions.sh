@@ -6,7 +6,8 @@ function g() {
     echo "Usage: ${FUNCNAME[0]} <repo-name> <operation>"
   else
     local repoName=$1
-    local operation=$2
+    shift 1
+    local operation="$@"
     local path=($(find ~/git -maxdepth 3 -type d -name ".git" | egrep -i "/[^/]*${repoName}[^/]*/.git" | xargs dirname))
 
     local count=${#path[@]}
