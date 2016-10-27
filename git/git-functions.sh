@@ -27,7 +27,7 @@ function g() {
       echo -n "Enter an repo to use, or <enter> to stop: "
       read g
       if [[ "$g" != "" ]]; then
-        if [[ "$g" -lt "$count" ]]; then
+        if [[ "$g" -le "$count" ]]; then
           ((gotoIndex=g-1))
           $operation ${path[gotoIndex]}
         else
