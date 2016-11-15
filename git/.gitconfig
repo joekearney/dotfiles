@@ -45,4 +45,4 @@
   hub = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitHubClone \"$@\"; }; f"
   sbt-symlinks = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitSetUpSbtSymlinks \"$@\"; }; f"
   move-commits-to = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitMoveCommitsTo \"$@\"; }; f"
-	remote-info = "remote show origin"
+	url = "config --get remote.origin.url"
