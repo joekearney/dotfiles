@@ -101,12 +101,6 @@ function setExports() {
   # export LANGUAGE=en_GB.UTF-8
 }
 
-function initDockerMachineEnv() {
-  if [[ $(command -v docker-machine > /dev/null && docker-machine status) == "Running" ]]; then
-    eval "$(docker-machine env default)"
-  fi
-}
-
 function loadCredentials() {
   # import credentials into environment
   if [ -d ~/.credentials ]; then
@@ -209,5 +203,4 @@ if [ -f ${DOT_FILES_DIR}/bash/bash_prompt.sh ]; then
   . ${DOT_FILES_DIR}/bash/bash_prompt.sh
 fi
 
-initDockerMachineEnv
 loadCredentials
