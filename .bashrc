@@ -3,7 +3,7 @@
 DEBUG=no
 function echoDebug() {
   if [[ "$DEBUG" == "yes" ]]; then
-    echo "$@"
+    cat <<< "$@" 1>&2
   fi
 }
 
