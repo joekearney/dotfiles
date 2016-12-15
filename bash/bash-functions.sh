@@ -239,3 +239,7 @@ function sumLines() {
 function cassandraNetstatsSendingProgress() {
   nodetool netstats | awk '/Sending/ { soFar += $9; total += $2 }; END { print soFar * 100 / total "%" }'
 }
+
+function lsSockets() {
+  netstat -lntap | sed -e '2p' -e '/LISTEN/!d'
+}
