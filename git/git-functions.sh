@@ -108,3 +108,15 @@ function gitMoveCommitsTo() {
 
   git branch $branchName && git reset --hard HEAD~$numCommits && git checkout $branchName
 }
+
+function gitKnifeCookbookBump() {
+  if [[ "$#" != 1 ]]; then
+    echo "Usage: gitKnifeCookbookBump <cookbook>"
+    return 1
+  fi
+  local cookbookName=$1
+
+  knife spork bump ${cookbookName} && \
+    git commit -m "Bump ${cookbookName} cookbook version" cookbooks/${cookbookName}/metadata.rb && \
+    git push
+}

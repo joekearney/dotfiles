@@ -43,6 +43,6 @@
   ls = ls-tree --name-only HEAD
   pr-done = "!f() { prBranch=$(git current-branch) && [[ \"$prBranch\" != \"master\" ]] && git checkout master && git pull --rebase && git branch -d $prBranch ; }; f"
   hub = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitHubClone \"$@\"; }; f"
-  sbt-symlinks = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitSetUpSbtSymlinks \"$@\"; }; f"
   move-commits-to = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitMoveCommitsTo \"$@\"; }; f"
 	url = "config --get remote.origin.url"
+	cookbook-bump = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitKnifeCookbookBump \"$@\"; }; f"
