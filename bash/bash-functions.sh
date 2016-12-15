@@ -241,5 +241,9 @@ function cassandraNetstatsSendingProgress() {
 }
 
 function lsSockets() {
-  netstat -lntap | sed -e '2p' -e '/LISTEN/!d'
+  local prefix=
+  if [[ "$1" == -s ]]; then
+    prefix="sudo"
+  fi
+  ${prefix} netstat -lntap | sed -e '2p' -e '/LISTEN/!d'
 }
