@@ -13,4 +13,5 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-generic" % "0.2.0",
   "io.circe" %% "circe-parse" % "0.2.0"
 )
-libraryDependencies ++= Seq("org.specs2" %% "specs2-core" % "3.7.2")
+libraryDependencies += "org.specs2" %% "specs2-core" % "3.7.2"
+libraryDependencies += "com.github.pathikrit" %% "better-files" % "2.16.0"
