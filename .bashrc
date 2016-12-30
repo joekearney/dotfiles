@@ -108,6 +108,18 @@ function loadCredentials() {
       . $b
     done
   fi
+
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    keyPath=~/.ssh/id_rsa
+
+    # check whether the identity is already in the agent
+    ssh-add -L | grep -qv ${keyPath}
+
+    # if not, add it to the agent
+    if [[ "$?" == "0" ]]; then
+      ssh-add -K ${keyPath}
+    fi
+  fi
 }
 function loadIfExists() {
   local f=$1
