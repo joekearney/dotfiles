@@ -247,3 +247,20 @@ function lsSockets() {
   fi
   ${prefix} netstat -lntap | sed -e '2p' -e '/LISTEN/!d'
 }
+
+function ff() {
+  local target=$1
+  if [[ "$target" == "" ]]; then
+    echo "Finds files with names containing the parameter"
+    echo "Usage: $FUNCNAME <target-filename>"
+    return 1;
+  else
+    if [[ $(command -v ag) ]]; then
+      ag -g ".*${target}.*"
+    elif [[ $(command -v ack) ]]; then
+      ack -g ".*${target}.*"
+    else
+      find . -name "*${target}.*"
+    fi
+  fi
+}
