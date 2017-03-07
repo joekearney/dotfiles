@@ -46,3 +46,4 @@
   move-commits-to = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitMoveCommitsTo \"$@\"; }; f"
 	url = "config --get remote.origin.url"
 	cookbook-bump = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitKnifeCookbookBump \"$@\"; }; f"
+	quick-stats = ! /usr/local/bin/git-quick-stats
