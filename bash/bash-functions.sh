@@ -326,8 +326,6 @@ function sshl() {
     return 1;
   fi;
 
-  sleep 2.5
-
   local ip=$1;
   shift;
   cmd=$@;
