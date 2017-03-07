@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export __DOTFILES_BASH_BASH_FUNCTIONS_LOADED="yes"
+
 if [[ "$DOT_FILES_DIR" == "" ]]; then
   echo "${RED}DOT_FILES_DIR has not been defined for $0${RESTORE}"
 fi
@@ -232,6 +234,45 @@ function srv() {
   fi
 }
 
+# gets the current number of millis since the epoch.
+# THIS DOESN'T WORK on normal mac. If it fails, check that gnubin is on the PATH
+function current_time_millis() {
+  echo $(($(date +%s%N)/1000000))
+}
+
+# converts milliseconds to a human-readable string
+function convert_time_string() {
+  local total_millis="$1"
+
+  if [[ "${total_millis}" == "" ]]; then
+    echo "Usage: convert_time_string <millis>"
+    return 1
+  fi
+
+  ((total_secs=total_millis/1000))
+  ((ms=total_millis%1000))
+  ((s=total_secs%60))
+  ((m=(total_secs%3600)/60))
+  ((h=total_secs/3600))
+
+  local time_string=""
+  if   ((h>0)); then time_string="${h}h${m}m${s}s"
+  elif ((m>0)); then time_string="${m}m${s}s"
+  elif ((s>3)); then time_string="${s}s"
+  elif ((s>0)); then time_string="${s}.$(printf "%0*d" 3 $ms | sed -e 's/[0]*$//g')s"
+  else               time_string="${ms}ms"
+  fi
+
+  echo -n "${time_string}"
+
+  # how do you do local vars on arithmetic?
+  unset ms
+  unset s
+  unset m
+  unset h
+  unset total_secs
+}
+
 function sumLines() {
   paste -s -d+ | bc
 }
@@ -263,4 +304,42 @@ function ff() {
       find . -name "*${target}.*"
     fi
   fi
+}
+
+function chromeApp() {
+  local url="$1"
+  if [[ "$url" == "" ]]; then
+    echo "Usage: chromeApp <url>"
+    return 1
+  fi
+
+  local chrome='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+
+  "$chrome" --app="$url"
+}
+
+function sshl() {
+  local startTime=$(current_time_millis)
+  local -i sleeptime=5;
+  if [[ -z $1 ]]; then
+    echo 'usage: sshl <host> <command...>'
+    return 1;
+  fi;
+
+  sleep 2.5
+
+  local ip=$1;
+  shift;
+  cmd=$@;
+  while true; do
+    ( ssh ${ip} 'uptime' > /dev/null 2>&1 ) && break;
+    echo "$(date) - Not connected [${ip}]: sleeping ${sleeptime} seconds";
+    slee ${sleeptime};s
+  done;
+
+  if [[ $(command -v terminal-notifier) ]]; then
+    local endTime=$(current_time_millis)
+    terminal-notifier -message "Connected to ${ip} after $(convert_time_string $(($endTime - $startTime)) )";
+  fi
+  ssh "${ip}" "${cmd}"
 }

@@ -53,11 +53,6 @@ function get_rvm_string() {
   fi
 }
 
-# gets the current number of millis since the epoch.
-# THIS DOESN'T WORK on normal mac. If it fails, check that gnubin is on the PATH
-function current_time_millis() {
-  echo $(($(date +%s%N)/1000000))
-}
 function command_timer_start() {
   local millis=$(current_time_millis)
   command_in_progress_timer=${command_in_progress_timer:-$millis}
@@ -66,31 +61,6 @@ function command_timer_stop() {
   local millis=$(current_time_millis)
   last_command_exec_time_secs=$(($millis - $command_in_progress_timer))
   unset command_in_progress_timer
-}
-function convert_time_string() {
-  local total_millis="$1"
-  ((total_secs=total_millis/1000))
-  ((ms=total_millis%1000))
-  ((s=total_secs%60))
-  ((m=(total_secs%3600)/60))
-  ((h=total_secs/3600))
-
-  local time_string=""
-  if   ((h>0)); then time_string="${h}h${m}m${s}s"
-  elif ((m>0)); then time_string="${m}m${s}s"
-  elif ((s>3)); then time_string="${s}s"
-  elif ((s>0)); then time_string="${s}.$(printf "%0*d" 3 $ms | sed -e 's/[0]*$//g')s"
-  else               time_string="${ms}ms"
-  fi
-
-  echo -n " in ${time_string}"
-
-  # how do you do local vars on arithmetic?
-  unset ms
-  unset s
-  unset m
-  unset h
-  unset total_secs
 }
 # prints out the execution time of the last command
 function last_command_exec_time() {
@@ -204,7 +174,7 @@ function all_the_things() {
   local time_zone=$(get_time_zone)
   local first_prompt_extras=$(get_first_prompt_extras)
 
-  local last_command_exec_time_string=$(last_command_exec_time)
+  local last_command_exec_time_string="in $(last_command_exec_time)"
 
   local user_colour=$(get_user_colour)
 
