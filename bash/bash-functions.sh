@@ -332,7 +332,7 @@ function sshl() {
   while true; do
     ( ssh ${ip} 'uptime' > /dev/null 2>&1 ) && break;
     echo "$(date) - Not connected [${ip}]: sleeping ${sleeptime} seconds";
-    slee ${sleeptime};s
+    sleep ${sleeptime};
   done;
 
   if [[ $(command -v terminal-notifier) ]]; then
