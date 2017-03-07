@@ -119,8 +119,9 @@ function clear_line() {
   # read current pos into variable
   IFS=";" read -sdR -a curpos
 
+  local marker="<eol>"
   ((curpos[1]!=1)) && \
-    echo -e '\E[1m\E[41m\E[33m%\E[0m' # print marker, and newline
+    echo -e "\E[1m\E[41m\E[33m${marker}\E[0m" # print marker, and newline
 }
 
 function containsRubyDirective() {
