@@ -175,7 +175,7 @@ function all_the_things() {
   local time_zone=$(get_time_zone)
   local first_prompt_extras=$(get_first_prompt_extras)
 
-  local last_command_exec_time_string="in $(last_command_exec_time)"
+  local last_command_exec_time_string=" in $(last_command_exec_time)"
 
   local user_colour=$(get_user_colour)
 
