@@ -8,7 +8,7 @@ function g() {
     local repoName=$1
     shift 1
     local operation="$@"
-    local path=($(find ~/git -maxdepth 3 -type d -name ".git" | egrep -i "/[^/]*${repoName}[^/]*/.git" | xargs dirname))
+    local path=($(find ~/git -maxdepth 3 -type d -name ".git" -or -name "src" | egrep -i "/[^/]*${repoName}[^/]*/(.git|src)" | xargs dirname | sort -u))
 
     local count=${#path[@]}
 
@@ -52,8 +52,9 @@ function _do_with_git_complete_options() {
           ~/git                           `# assumed base of where all of your repos live` \
           -mindepth 2 -maxdepth 3         `# either at ~/git/*/.git or ~/git/*/*/.git`     \
           -type d                         `# looking for directories`                      \
-          -name ".git" |                  `# called .git`                                  \
-            awk -F/ '{ print $(NF-1) }'   `# and get the name of the dir containing .git`  \
+          -name ".git" -or -name "src" |  `# called .git or src`                           \
+          awk -F/ '{ print $(NF-1) }'  |  `# and get the name of the dir containing .git`  \
+          sort -u                         `# and remove duplucates`                        \
         )
   COMPREPLY=( $(compgen -W '${repos[@]}' -- $curr_arg ) )
 }
