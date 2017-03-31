@@ -119,5 +119,6 @@ function gitKnifeCookbookBump() {
 
   knife spork bump ${cookbookName} && \
     git commit -m "Bump ${cookbookName} cookbook version" cookbooks/${cookbookName}/metadata.rb && \
-    git push
+    git push && \
+    knife spork upload ${cookbookName}
 }
