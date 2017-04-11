@@ -104,7 +104,7 @@ function gitMoveCommitsTo() {
     echo "Usage: gitMoveCommitsTo <branchName> <numCommits>"
     return 1
   fi
-  local branchName=$1
+  local branchName=joe/$1
   local numCommits=$2
 
   git branch $branchName && git reset --hard HEAD~$numCommits && git checkout $branchName
