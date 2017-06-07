@@ -65,6 +65,7 @@ function setUpAliases() {
 
   alias cb='popd'
   alias cdd='cd ~/dotfiles'
+  alias cds='cd ~/scratchpad'
 
   alias dir='dir --color=auto'
   alias vdir='vdir --color=auto'
@@ -76,6 +77,7 @@ function setUpAliases() {
   alias rud='rvm use default'
 
   alias atomd='atom ~/dotfiles'
+  alias atoms='atom ~/scratchpad'
   alias tn='network-test.sh'
 
   alias clearDnsCache="sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder;say flushed"

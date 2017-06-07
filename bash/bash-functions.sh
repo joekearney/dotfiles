@@ -341,3 +341,20 @@ function sshl() {
   fi
   ssh "${ip}" "${cmd}"
 }
+
+SCRATCHPAD_DIR=~/scratchpad
+mkdir -p ${SCRATCHPAD_DIR}
+# copy a file into the scratchpad directory
+function scratch() {
+  local files=("$@")
+
+  if [ ${#files[@]} -eq 0 ]; then
+    echo "Copies files into the scratchpad directory at [${GREEN}${SCRATCHPAD_DIR}${RESTORE}]"
+    echo "Usage: scratch <filename ...>"
+    return 1
+  else
+    for f in "${files[@]}"; do
+      cp "$f" "${SCRATCHPAD_DIR}"
+    done
+  fi
+}
