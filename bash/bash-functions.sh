@@ -358,3 +358,11 @@ function scratch() {
     done
   fi
 }
+
+function unslacked() {
+  local channel=$1
+  shift
+  local message="$@"
+
+  curl --data "channel=#${channel}&message=${message}&username=joe" http://unslacked/
+}
