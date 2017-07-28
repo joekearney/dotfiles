@@ -366,3 +366,25 @@ function unslacked() {
 
   curl --data "channel=#${channel}&message=${message}&username=joe" http://unslacked/
 }
+
+function idea() {
+  local ideaDir=$(find /Applications -maxdepth 1 -type d -name "IntelliJ*" | head -n 1)
+
+  if [[ "$ideaDir" == "" ]]; then
+    echo "Couldn't find an IntelliJ install directory"
+    return 1
+  fi
+
+  local ideaApp="${ideaDir}/Contents/MacOS/idea"
+  local project
+
+  if [[ "$1" == "" ]]; then
+    project="$(rlf .)"
+  else
+    project="$1"
+  fi
+
+  echo "Opening project at [${project}] with IntelliJ Idea from [${ideaApp}]"
+
+  "${ideaApp}" "${project}"
+}
