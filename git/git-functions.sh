@@ -102,6 +102,9 @@ function gitHubClone() {
 function gitMoveCommitsTo() {
   if [[ "$#" != 2 ]]; then
     echo "Usage: gitMoveCommitsTo <branchName> <numCommits>"
+    echo
+    echo "Note that this involves a git reset --hard, so will delete anything not committed"
+    echo "on the current branch. Stash, commit or otherwise save your changes first."
     return 1
   fi
   local branchName=joe/$1
