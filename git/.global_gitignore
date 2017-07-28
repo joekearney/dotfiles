@@ -138,7 +138,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-
+### My custom stuff
 
 .kube/
 .sbt/
@@ -146,3 +146,4 @@ Temporary Items
 .m2/
 .bundle/
 .idea/
+.coursier/
