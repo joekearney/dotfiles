@@ -39,6 +39,10 @@ function sortOutPathEntries() {
     prependToPath "/usr/local/opt/coreutils/libexec/gnubin"
   fi
 
+  if [ -d ~/programs/google-cloud-sdk ]; then
+    . ~/programs/google-cloud-sdk/path.bash.inc
+  fi
+
   # add scripts in the dotfiles/bin, and any homedir/bin
   export DOT_FILES_DIR=$(readlink -f ~/.bash_profile | xargs dirname)
   echoDebug "Set dotfiles dir to $DOT_FILES_DIR"
@@ -212,6 +216,9 @@ if [ -d ${DOT_FILES_DIR}/bash_completion ]; then
   for b in ${DOT_FILES_DIR}/bash_completion/*; do
     . $b
   done
+fi
+if [ -f "~/programs/google-cloud-sdk/completion.bash.inc" ]; then
+  . "~/programs/google-cloud-sdk/completion.bash.inc"
 fi
 
 # load custom prompt
