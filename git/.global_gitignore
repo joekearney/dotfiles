@@ -147,3 +147,5 @@ Temporary Items
 .bundle/
 .idea/
 .coursier/
+.oracle_jre_usage
+.bash_history
