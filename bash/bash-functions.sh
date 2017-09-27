@@ -393,5 +393,6 @@ function httpServe() {
   local directory=${1:-.}
   local port="8000"
   local bindHost="localhost"
-  $(cd $directory && echo "Serving directory [$(pwd)] on port [${port}]..." && python3 -m http.server ${port} --bind ${bindHost})
+
+  (cd $directory && echo "Serving directory [$(pwd)] on [http://${bindHost}:${port}]..." && python3 -m http.server ${port} --bind ${bindHost})
 }
