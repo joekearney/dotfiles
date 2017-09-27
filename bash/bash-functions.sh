@@ -390,7 +390,8 @@ function idea() {
 }
 
 function httpServe() {
-  local port=${1:-8000}
-  local bindHost=${2:-localhost}
-  python3 -m http.server ${port} --bind ${bindHost}
+  local directory=${1:-.}
+  local port="8000"
+  local bindHost="localhost"
+  $(cd $directory && echo "Serving directory [$(pwd)] on port [${port}]..." && python3 -m http.server ${port} --bind ${bindHost})
 }
