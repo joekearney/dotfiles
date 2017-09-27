@@ -388,3 +388,9 @@ function idea() {
 
   "${ideaApp}" "${project}"
 }
+
+function httpServe() {
+  local port=${1:-8000}
+  local bindHost=${2:-localhost}
+  python3 -m http.server ${port} --bind ${bindHost}
+}
