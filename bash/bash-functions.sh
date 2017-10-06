@@ -399,6 +399,6 @@ function httpServe() {
 
 # Pulls a repo up to date, switches to that directory, and opens it in Atom
 function cdga() {
-  local repo=$1
+  local repoIsh=$1
   cdgp $repoIsh && atom .
 }
