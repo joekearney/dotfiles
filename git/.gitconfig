@@ -1,12 +1,13 @@
 [core]
-	excludesfile = ~/dotfiles/git/.global_gitignore
+  excludesfile = ~/dotfiles/git/.global_gitignore
+	attributesfile = ~/dotfiles/git/.global_gitattributes
 
 [push]
-	default = simple
+  default = simple
 
 [user]
 # set email in $HOME/.config/git/config
-	name = Joe Kearney
+  name = Joe Kearney
 
 [color]
   diff = always
@@ -15,15 +16,19 @@
   interactive = auto
   ui = always
   pager = true
-	[diff-highlight]
-		oldNormal = "red bold"
-		oldHighlight = "red bold 52"
-		newNormal = "green bold"
-		newHighlight = "green bold 22"
 
 [pager]
-	diff = "diff-so-fancy | less --tabs=1,5 -RFX"
-	show = "diff-so-fancy | less --tabs=1,5 -RFX"
+  diff = "diff-so-fancy | less --tabs=1,5 -RFX"
+  show = "diff-so-fancy | less --tabs=1,5 -RFX"
+
+[diff "shibboleth"]
+  textconv = ~/dotfiles/git/shibboleth-show.sh
+
+[diff-highlight]
+  oldNormal = "red bold"
+  oldHighlight = "red bold 52"
+  newNormal = "green bold"
+  newHighlight = "green bold 22"
 
 [alias]
   co = checkout
@@ -44,7 +49,7 @@
   pr-done = "!f() { prBranch=$(git current-branch) && [[ \"$prBranch\" != \"master\" ]] && git checkout master && git pull --rebase && git branch -d $prBranch ; }; f"
   hub = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitHubClone \"$@\"; }; f"
   move-commits-to = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitMoveCommitsTo \"$@\"; }; f"
-	url = "config --get remote.origin.url"
-	cookbook-bump = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitKnifeCookbookBump \"$@\"; }; f"
-	quick-stats = ! /usr/local/bin/git-quick-stats
-	serve = "daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/"
+  url = "config --get remote.origin.url"
+  cookbook-bump = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitKnifeCookbookBump \"$@\"; }; f"
+  quick-stats = ! /usr/local/bin/git-quick-stats
+  serve = "daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/"
