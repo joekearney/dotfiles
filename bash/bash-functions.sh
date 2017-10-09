@@ -396,9 +396,3 @@ function httpServe() {
 
   (cd $directory && echo "Serving directory [$(pwd)] on [http://${bindHost}:${port}]..." && python3 -m http.server ${port} --bind ${bindHost})
 }
-
-# Pulls a repo up to date, switches to that directory, and opens it in Atom
-function cdga() {
-  local repoIsh=$1
-  cdgp $repoIsh && atom .
-}

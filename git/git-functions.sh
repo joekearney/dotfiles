@@ -45,7 +45,9 @@ function g() {
 # pre-canned commands like cdg and atomg
 function _do_with_git_complete_options() {
   local curr_arg=${COMP_WORDS[COMP_CWORD]}
+
   # get the list of git repos in known positions
+
   # this comment syntax for a multiline command is a pretty horrific abuse of
   # substitution, inspired by this: http://stackoverflow.com/questions/9522631
   local repos=$(find                                                                       \
@@ -70,12 +72,32 @@ function cdg() {
 function cdgp() {
   cdg $1 && git pull
 }
+
+# Pulls a repo up to date, switches to that directory, and opens it in Atom
+function cdga() {
+  local repoIsh=$1
+
+  cdg $repoIsh
+
+  if [[ $? == 0 ]]; then
+    local thisDir=$(basename ${PWD})
+    local parentDir=$(basename $(dirname ${PWD}))
+    local prettyName=${GREEN}${parentDir}/${thisDir}${RESTORE}
+
+    echo "Synchronising Git repo [${prettyName}]..." && \
+    git pull && \
+    echo "Opening Atom in Git repo [${prettyName}]..."
+    atom .
+  fi
+}
+
 # cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
 function atomg() {
   g $1 "atom"
 }
 complete -F _do_with_git_complete_options cdg
 complete -F _do_with_git_complete_options cdgp
+complete -F _do_with_git_complete_options cdga
 complete -F _do_with_git_complete_options atomg
 
 function gitHubClone() {
