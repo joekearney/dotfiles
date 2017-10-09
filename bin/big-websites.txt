@@ -4,7 +4,7 @@ facebook.com
 wikipedia.org
 yahoo.com
 reddit.com
-amazon.de
+amazon.com
 twitter.com
 live.com
 linkedin.com
