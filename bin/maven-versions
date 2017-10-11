@@ -1,0 +1,36 @@
+#!/bin/bash
+
+set -euf -o pipefail
+
+if [[ ! $(command -v xmlstarlet) ]]; then
+  echo "This command requires xmlstarlet, which was not found on PATH"
+  exit 1
+fi
+
+function getVersionsFromRepo() {
+  local repo=$1
+  local project=$2
+  local url="${repo}/${project}/maven-metadata.xml"
+
+  echo "Looking up versions in repo [${YELLOW}${repo}${RESTORE}]"
+
+  local xml=$(curl -s --fail ${url} | tr -d '\n')
+
+  if [[ "${xml}" != "" ]]; then
+    echo "${xml}" | xmlstarlet sel -T -t -m "//metadata/versioning/versions" -v version | tail | sed -r "s|^(.*)|${BLUE}${repo}${RESTORE}> ${GREEN}\1${RESTORE}|" && echo
+  else
+    echo "${RED}No versions found${RESTORE} for [${YELLOW}${repo}${RESTORE}]"
+  fi
+}
+
+PROJECT=$1
+
+if [[ "${PROJECT}" == "" ]]; then
+  echo "Usage: $0 <project>"
+  echo "E.g.   $0 com/google/guava/guava"
+  exit 1
+fi
+
+for repo in ${MAVEN_REPOSITORIES}; do
+  getVersionsFromRepo ${repo} ${PROJECT}
+done
