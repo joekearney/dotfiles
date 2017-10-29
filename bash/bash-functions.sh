@@ -396,3 +396,7 @@ function httpServe() {
 
   (cd $directory && echo "Serving directory [$(pwd)] on [http://${bindHost}:${port}]..." && python3 -m http.server ${port} --bind ${bindHost})
 }
+
+function battery() {
+  pmset -g batt | \grep -Eo '[0-9]+%'
+}
