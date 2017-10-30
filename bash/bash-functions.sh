@@ -398,5 +398,13 @@ function httpServe() {
 }
 
 function battery() {
-  pmset -g batt | \grep -Eo '[0-9]+%'
+  if [[ "$(command -v pmset)" ]]; then
+    local value=$(pmset -g batt | \grep -Eo '[0-9]+%')
+    if [[ "${value}" == "" ]]; then
+      # nevermind, just carry on
+      return 0
+    else
+      echo "${value}"
+    fi
+  fi
 }
