@@ -10,11 +10,11 @@
   name = Joe Kearney
 
 [color]
-  diff = always
+  diff = auto
   status = auto
   branch = auto
   interactive = auto
-  ui = always
+  ui = auto
   pager = true
 
 [pager]
