@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euf -o pipefail
+set -ef -o pipefail
 
 if [[ ! $(command -v xmlstarlet) ]]; then
   echo "This command requires xmlstarlet, which was not found on PATH"
@@ -17,7 +17,7 @@ function getVersionsFromRepo() {
   local xml=$(curl -s --fail ${url} | tr -d '\n')
 
   if [[ "${xml}" != "" ]]; then
-    echo "${xml}" | xmlstarlet sel -T -t -m "//metadata/versioning/versions" -v version | tail | sed -r "s|^(.*)|${BLUE}${repo}${RESTORE}> ${GREEN}\1${RESTORE}|" && echo
+    echo "${xml}" | xmlstarlet sel -T -t -m "//metadata/versioning/versions" -v version | sed -r "s|^(.*)|${YELLOW}${repo}${RESTORE} ${LBLUE}${project}${RESTORE} ${GREEN}\1${RESTORE}|" && echo
   else
     echo "${RED}No versions found${RESTORE} for [${YELLOW}${repo}${RESTORE}]"
   fi
