@@ -77,16 +77,14 @@ function cdgp() {
 function cdga() {
   local repoIsh=$1
 
-  cdg $repoIsh
-
-  if [[ $? == 0 ]]; then
+  if cdg ${repoIsh}; then
     local thisDir=$(basename ${PWD})
     local parentDir=$(basename $(dirname ${PWD}))
     local prettyName=${GREEN}${parentDir}/${thisDir}${RESTORE}
 
     echo "Synchronising Git repo [${prettyName}]..." && \
     git pull && \
-    echo "Opening Atom in Git repo [${prettyName}]..."
+    echo "Opening Atom in Git repo [${prettyName}]..." && \
     atom .
   fi
 }
