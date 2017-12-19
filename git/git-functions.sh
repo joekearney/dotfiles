@@ -160,11 +160,9 @@ function gtree() {
   local extantFiles=""
   for file in ${globalFile} ${localFile}; do
     if [[ -f ${file} ]]; then
-      extantFiles="${extantFiles} ${file}"
+      extantFiles="${file} ${extantFiles}"
     fi
   done
-
-  echo "Using files: [${extantFiles}]"
 
   if [[ "${extantFiles}" != "" ]]; then
     local excludesPattern=$(echo "${extantFiles}" | xargs cat | grep -E -v "(^$|^#)" | sed -E 's|/$||' | tr '\n' '\|' )
