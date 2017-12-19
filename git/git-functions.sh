@@ -168,8 +168,8 @@ function gtree() {
 
   if [[ "${extantFiles}" != "" ]]; then
     local excludesPattern=$(echo "${extantFiles}" | xargs cat | grep -E -v "(^$|^#)" | sed -E 's|/$||' | tr '\n' '\|' )
-    tree -C -I "^(${excludesPattern})$" "${@}"
+    \tree -C -I "^(${excludesPattern})$" "${@}"
   else
-    tree -C "${@}"
+    \tree -C "${@}"
   fi
 }
