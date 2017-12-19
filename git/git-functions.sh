@@ -145,3 +145,31 @@ function gitKnifeCookbookBump() {
     git push && \
     knife spork upload ${cookbookName}
 }
+
+# like tree, but attempting to ignore git-ignored files
+# this isn't complete -- some gitignore entries are not applied here
+# example: "/dirname" won't remove something called "dirname" from
+# anywhere in the tree, because to do so removes too much
+function gtree() {
+  local globalFile=$( git config --get core.excludesfile )
+  local localFile="$( git root )/.gitignore"
+
+  globalFile="${globalFile/#\~/$HOME}"
+  localFile="${localFile/#\~/$HOME}"
+
+  local extantFiles=""
+  for file in ${globalFile} ${localFile}; do
+    if [[ -f ${file} ]]; then
+      extantFiles="${extantFiles} ${file}"
+    fi
+  done
+
+  echo "Using files: [${extantFiles}]"
+
+  if [[ "${extantFiles}" != "" ]]; then
+    local excludesPattern=$(echo "${extantFiles}" | xargs cat | grep -E -v "(^$|^#)" | sed -E 's|/$||' | tr '\n' '\|' )
+    tree -C -I "^(${excludesPattern})$" "${@}"
+  else
+    tree -C "${@}"
+  fi
+}

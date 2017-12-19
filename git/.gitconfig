@@ -1,5 +1,5 @@
 [core]
-  excludesfile = ~/dotfiles/git/.global_gitignore
+  excludesfile = ~/dotfiles/git/global_gitignore
 	attributesfile = ~/dotfiles/git/.global_gitattributes
 
 [push]
@@ -53,3 +53,4 @@
   cookbook-bump = "!f() { $DOT_FILES_DIR/git/git-do-function.sh gitKnifeCookbookBump \"$@\"; }; f"
   quick-stats = ! /usr/local/bin/git-quick-stats
   serve = "daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/"
+  root = !pwd
