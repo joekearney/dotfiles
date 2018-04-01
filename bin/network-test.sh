@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash -eu
 
 # requirements:
 #         brew install parallel ipconfig httpie
@@ -6,8 +6,16 @@
 
 . $DOT_FILES_DIR/colour/.bash_color_vars
 
-TARGETS=$(cat $DOT_FILES_DIR/bin/big-websites.txt)
-NUM_TARGETS=$(echo "$TARGETS" | wc -l)
+function echoErr() {
+  cat <<< "$@" 1>&2
+}
+
+# https://unix.stackexchange.com/questions/30091/fix-or-alternative-for-mktemp-in-os-x
+TEMP_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t 'network_test_temp_dir')
+trap "rm -rf ${TEMP_DIR}" EXIT
+
+readarray -t TARGETS < <(egrep -v "^#" $DOT_FILES_DIR/bin/big-websites.txt)
+NUM_TARGETS="${#TARGETS[@]}"
 
 DEFAULT_SUITE_TIMEOUT_SECONDS=2
 DEBUG=0
@@ -20,22 +28,37 @@ function indent() {
 function runTest() {
   local name=$1
   local op=$2
-  local timeout=$3
+  local timeout=${3:-}
   if [[ "$timeout" == "" ]]; then
     timeout=$DEFAULT_SUITE_TIMEOUT_SECONDS
   fi
 
-  echo "Running test: $YELLOW$name$RESTORE"
+  echoErr "Running test: $YELLOW$name$RESTORE"
 
-  echo "${TARGETS}" | parallel --timeout $timeout "$op $w {} > /dev/null 2>&1 && (if [ $DEBUG -eq 1 ]; then echo \" |  passed: [$GREEN{}$RESTORE]\"; fi) || (echo \" |  failed: [$RED{}$RESTORE]\"; exit 1)"
-  local failed=$?
+  local resultsFile=$(mktemp ${TEMP_DIR}/network_test_temp.XXXX)
+  printf "%s\n" "${TARGETS[@]}" | parallel \
+    --timeout $timeout \
+    --joblog ${resultsFile} \
+    "$op {}" > /dev/null 2>&1
 
-  if [ $failed -ne 0 ]; then
-    echo "failed ${RED}${failed}${RESTORE}/$NUM_TARGETS instances of [$RED$name$RESTORE]" | indent " |"
-    PROBLEM_TESTS+=("$name (failed $failed/$NUM_TARGETS)")
+  # echoErr "  | Results file: ${resultsFile}"
+
+  # first line is header
+  # select those lines with non-zero exitval, in column 7
+  # print target 0-based index computed from 1-based sequence
+  local failedTargets
+  readarray -t failedTargets < <(tail -n +2 ${resultsFile} | awk '$7 != 0 { print ($1 - 1)}')
+
+  local numFailedTargets="${#failedTargets[@]}"
+
+  if [ $numFailedTargets -ne 0 ]; then
+    for index in "${failedTargets[@]}"; do
+      echoErr "  | failed: [${RED}${TARGETS[${index}]}${RESTORE}]"
+    done
+    echoErr "  | failed ${RED}${numFailedTargets}${RESTORE}/$NUM_TARGETS instances of [$RED$name$RESTORE]" | indent " |"
   fi
 
-  return $failed
+  echo $numFailedTargets
 }
 
 function runTestSuite() {
@@ -47,41 +70,51 @@ function runTestSuite() {
   echo "Current DHCP info:"
   ipconfig getpacket en0 | egrep '(yiaddr|router)' | indent " |"
 
-  echo "Current DNS setup is as follows:"
+  echo "Current resolv.conf DNS setup is as follows:"
   cat /etc/resolv.conf | grep -v '^#' | indent " |"
+
+  local -A tests
+  tests["dns/udp"]="host -W $DNS_TIMEOUT -R $DNS_RETRIES"
+  tests["dns/tcp"]="host -W $DNS_TIMEOUT -R $DNS_RETRIES -T"
+  tests["ping"]="ping -c 1 -q -t $PING_TIMEOUT"
+  tests["http"]="http --headers --timeout $HTTP_TIMEOUT"
+  local testsOrdered=("dns/udp" "dns/tcp" "ping" "http")
 
   echo
   echo "Testing network connection using $NUM_TARGETS targets..."
   echo
 
-  # not a great way of doing this
-  PROBLEM_TESTS=()
+  local -A results
+  local totalProblems=0
 
-  runTest "dns/udp" "host -W $DNS_TIMEOUT -R $DNS_RETRIES"
-  #runTest "dns/tcp" "host -W $DNS_TIMEOUT -R $DNS_RETRIES -T"
-  runTest "ping" "ping -c 1 -q -t $PING_TIMEOUT"
-  runTest "http" "http --headers --timeout $HTTP_TIMEOUT"
+  for testName in "${testsOrdered[@]}"; do
+    local testCommand="${tests[${testName}]}"
 
-  local exitStatus
+    if [[ "$testCommand" != "" ]]; then
+      local result=$(runTest "${testName}" "${testCommand}")
+
+      results["${testName}"]="${result}"
+      totalProblems=$((totalProblems + result))
+    fi
+  done
 
   echo
-  echo -n "All tests completed"
-  if [ "${#PROBLEM_TESTS[@]}" -gt 0 ]; then
-    echo ". There were problems in these tests:"
-    for p in "${PROBLEM_TESTS[@]}"; do
-      echo "  $p"
+  if [ "${totalProblems}" -gt 0 ]; then
+    echo "All tests completed. There were failures in ${totalProblems} tests:"
+    for testName in "${testsOrdered[@]}"; do
+      local result="${results[${testName}]}"
+      if [[ "$result" != "" ]]; then
+        printf "  | %-12s %3s/%s\n" ${testName} ${result} ${NUM_TARGETS}
+      fi
     done
-    exitStatus=1
+    return 1
   else
-    echo " ${GREEN}successfully${RESTORE}"
-    exitStatus=0
+    echo "All tests completed ${GREEN}successfully${RESTORE}"
+    return 0
   fi
-
-  unset PROBLEM_TESTS
-  return $exitStatus
 }
 
-if [[ "$1" == "-v" ]]; then
+if [[ "${1:-}" == "-v" ]]; then
   echo "Running in debug mode"
   DEBUG=1
 else
