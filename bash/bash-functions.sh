@@ -218,7 +218,7 @@ function srv() {
 
   function doLookup() {
     nslookup -type=SRV $server \
-      | grep --only-matching "\tservice = .*" \
+      | grep --only-matching "service = .*" \
       | cut -d " " -f 5,6 \
       | sed -r 's/([0-9]*) (.*)\./\2:\1/' \
       | shuf -n 1
