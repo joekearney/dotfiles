@@ -1,4 +1,7 @@
-#!/usr/bin/env bash -eu
+#!/usr/bin/env bash
+
+set -u
+set -e
 
 # requirements:
 #         brew install parallel ipconfig httpie
@@ -68,7 +71,7 @@ function runTestSuite() {
   local HTTP_TIMEOUT=1
 
   echo "Current DHCP info:"
-  ipconfig getpacket en0 | egrep '(yiaddr|router)' | indent " |"
+  ipconfig getpacket en0 | egrep '(yiaddr|router|domain_name_server)' | indent " |"
 
   echo "Current resolv.conf DNS setup is as follows:"
   cat /etc/resolv.conf | grep -v '^#' | indent " |"
@@ -103,7 +106,7 @@ function runTestSuite() {
     echo "All tests completed. There were failures in ${totalProblems} tests:"
     for testName in "${testsOrdered[@]}"; do
       local result="${results[${testName}]}"
-      if [[ "$result" != "" ]]; then
+      if [[ "$result" != "0" ]]; then
         printf "  | %-12s %3s/%s\n" ${testName} ${result} ${NUM_TARGETS}
       fi
     done

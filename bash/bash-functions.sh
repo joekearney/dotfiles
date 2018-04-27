@@ -2,21 +2,26 @@
 
 export __DOTFILES_BASH_BASH_FUNCTIONS_LOADED="yes"
 
+function echoErr() {
+  cat <<< "$@" 1>&2
+}
+
 if [[ "$DOT_FILES_DIR" == "" ]]; then
-  echo "${RED}DOT_FILES_DIR has not been defined for $0${RESTORE}"
+  echoErr "${RED}DOT_FILES_DIR has not been defined for $0${RESTORE}"
 fi
 
 function runCommand() {
   if [[ "${ECHO_ONLY}" == "true" ]]; then
-    echo "    [runCommand] $@"
+    echoErr "    [runCommand] $@"
   else
+    echoErr "    [runCommand] $@"
     "$@"
   fi
 }
 # Pushes the dotfiles directory to the target machine and links them
 function pushDotFilesTo() {
   if [[ "$1" == "" ]]; then
-    echo "Usage: pushDotFilesTo <host>"
+    echoErr "Usage: pushDotFilesTo <host>"
   else
     local host=$1
     ${DOT_FILES_DIR}/pushDotFiles.sh $host
@@ -35,7 +40,7 @@ function reloadDotFiles() {
 function countdown() {
   local remaining=$1
   while ((remaining>0)); do
-    echo $remaining
+    echoErr $remaining
     sleep 1
     ((remaining=remaining-1))
   done
@@ -124,7 +129,7 @@ function cd() {
   elif [ -d "$target" ]; then
     pushd "$target" &> /dev/null   #dont display current stack
   else
-    echo "No such directory: [$target]"
+    echoErr "No such directory: [$target]"
     return 1
   fi
 }
@@ -135,19 +140,13 @@ function httpless() {
   http --pretty=all --print=hb "$@" | less
 }
 
-function docker-reset-hard() {
-  docker-machine restart default && \
-  eval "$(docker-machine env default)" && \
-  yes | docker-machine regenerate-certs default
-}
-
 function weather() {
   http --body "wttr.in/$1"
 }
 
 # I can never remember which way round symlinks go
 function mkLink() {
-  echo "This will create a symlink from <name> -> <actual-file>."
+  echoErr "This will create a symlink from <name> -> <actual-file>."
   local target
   local name
   read -p "  Enter actual file:  " target
@@ -189,8 +188,8 @@ function runOn() {
 
 function rlf() {
   if [[ "$#" != 1 ]]; then
-    echo "Usage: rlf <path>"
-    echo "Finds the real path of the item given"
+    echoErr "Usage: rlf <path>"
+    echoErr "Finds the real path of the item given"
     return 1
   fi
 
@@ -202,14 +201,14 @@ function rlf() {
   elif [[ -a "$thing" ]]; then
     readlink -f $thing
   else
-    echo "[$thing] not found"
+    echoErr "[$thing] not found"
   fi
 }
 
 function srv() {
   if [[ "$#" != 1 ]]; then
-    echo "Usage: srv <server>"
-    echo "Echos a randomly chosen host:port from the SRV records for the server"
+    echoErr "Usage: srv <server>"
+    echoErr "Echos a randomly chosen host:port from the SRV records for the server"
     return 1
   fi
 
@@ -292,8 +291,8 @@ function lsSockets() {
 function ff() {
   local target=$1
   if [[ "$target" == "" ]]; then
-    echo "Finds files with names containing the parameter"
-    echo "Usage: $FUNCNAME <target-filename>"
+    echoErr "Finds files with names containing the parameter"
+    echoErr "Usage: $FUNCNAME <target-filename>"
     return 1;
   else
     if [[ $(command -v ag) ]]; then
@@ -309,7 +308,7 @@ function ff() {
 function chromeApp() {
   local url="$1"
   if [[ "$url" == "" ]]; then
-    echo "Usage: chromeApp <url>"
+    echoErr "Usage: chromeApp <url>"
     return 1
   fi
 
@@ -322,7 +321,7 @@ function sshl() {
   local startTime=$(current_time_millis)
   local -i sleeptime=5;
   if [[ -z $1 ]]; then
-    echo 'usage: sshl <host> <command...>'
+    echoErr 'usage: sshl <host> <command...>'
     return 1;
   fi;
 
@@ -331,7 +330,7 @@ function sshl() {
   cmd=$@;
   while true; do
     ( ssh ${ip} 'uptime' > /dev/null 2>&1 ) && break;
-    echo "$(date) - Not connected [${ip}]: sleeping ${sleeptime} seconds";
+    echoErr "$(date) - Not connected [${ip}]: sleeping ${sleeptime} seconds";
     sleep ${sleeptime};
   done;
 
@@ -349,8 +348,8 @@ function scratch() {
   local files=("$@")
 
   if [ ${#files[@]} -eq 0 ]; then
-    echo "Copies files into the scratchpad directory at [${GREEN}${SCRATCHPAD_DIR}${RESTORE}]"
-    echo "Usage: scratch <filename ...>"
+    echoErr "Copies files into the scratchpad directory at [${GREEN}${SCRATCHPAD_DIR}${RESTORE}]"
+    echoErr "Usage: scratch <filename ...>"
     return 1
   else
     for f in "${files[@]}"; do

@@ -20,4 +20,3 @@ flickr.com
 nytimes.com
 slack.com
 1.1.1.1
-microsoft.com
