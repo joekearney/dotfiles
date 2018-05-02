@@ -8,10 +8,13 @@ function maybeRun() {
   local label="$(printf '%-10s\n' [${mainCommand}])"
 
   if [[ "$(command -v ${mainCommand})" ]]; then
-    ("$@") 2>&1 | indent "$label"
+    echo "Running [$@]..." | indent "$label"
+    (bash -ce "$@" 2>&1) | indent "$label"
   fi
 }
 
-maybeRun mas mas upgrade
-maybeRun brew brew update && brew upgrade
-maybeRun apt-get sudo -s -- 'apt-get update && apt-get install'
+# maybeRun test "echo 1 1>&2; echo 2"
+
+maybeRun mas "mas upgrade"
+maybeRun brew "brew update && brew upgrade --cleanup"
+maybeRun apt-get "sudo -s -- 'apt-get update && apt-get install'"
