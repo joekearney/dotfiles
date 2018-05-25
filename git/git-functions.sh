@@ -4,6 +4,7 @@
 function g() {
   if [[ "$1" == "" || "$2" == "" ]]; then
     echo "Usage: ${FUNCNAME[0]} <repo-name> <operation>"
+    return 1
   else
     local repoName=$1
     shift 1
@@ -14,6 +15,7 @@ function g() {
 
     if [[ "$count" == "1" ]]; then
       $operation $path
+      return $?
     elif (( $count > 1 )); then
       echo -e "Found $count directories matching [${WHITE}$repoName${RESTORE}]"
       local index=1
@@ -30,12 +32,15 @@ function g() {
         if [[ "$g" -le "$count" ]]; then
           ((gotoIndex=g-1))
           $operation ${path[gotoIndex]}
+          return $?
         else
           echo -e "Invalid index [${RED}$g${RESTORE}]"
+          return 1
         fi
       fi
     else
       echo -e "Found no directories matching [${RED}$repoName${RESTORE}]"
+      return 1
     fi
   fi
 }
@@ -66,6 +71,7 @@ complete -F _do_with_git_complete_options g
 # cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
 function cdg() {
   g $1 "cd"
+  return $?
 }
 # cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name,
 # and do git pull
