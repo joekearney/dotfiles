@@ -1,11 +1,37 @@
 #!/bin/bash
 
 DEBUG=no
+#if [[ "$DEBUG" == "yes" ]]; then
+#  set -x
+#fi
+
 function echoDebug() {
   if [[ "$DEBUG" == "yes" ]]; then
     cat <<< "$@" 1>&2
   fi
 }
+
+function current_time_millis() {
+  echo $(($(date +%s%N)/1000000))
+}
+
+STARTED_LOADING_BASH_RC=current_time_millis
+
+if [[ "$DEBUG" == "yes" ]]; then
+  function startTimer() {
+    TIMER_START=$(current_time_millis)
+  }
+  function endTimer() {
+    local end=$(current_time_millis)
+    local elapsed=$((end-TIMER_START))
+    unset TIMER_START
+    local name=$1
+    echo "Running [$name] took ${elapsed}ms"
+  }
+else
+  alias startTimer=true
+  alias endTimer=true
+fi
 
 echoDebug "In .bashrc"
 
@@ -131,9 +157,11 @@ function loadCredentials() {
 }
 function loadIfExists() {
   local f=$1
-  echoDebug "Sourcing file $f..."
   if [ -f $f ]; then
+    echoDebug "Sourcing file $f..."
+    startTimer
     . $f
+    endTimer ". $f"
     echoDebug "Sourced file $f"
   fi
 }
@@ -195,7 +223,10 @@ loadIfExists $DOT_FILES_DIR/colour/.bash_color_vars
 
 # Load RVM into a shell session *as a function*
 # if file exists and is non-empty
-loadIfExists "$HOME/.rvm/scripts/rvm"
+#loadIfExists "$HOME/.rvm/scripts/rvm"
+function rvmLoad() {
+  loadIfExists "$HOME/.rvm/scripts/rvm"
+}
 
 # load functions
 for thing in bash git sbt tunnelblick; do
@@ -208,22 +239,34 @@ done
 #  . /etc/bash_completion
 #fi
 # from brew-installed sources if they exist
+# this is really expensive
 if [[ $(command -v brew) && -f $(brew --prefix)/etc/bash_completion ]]; then
+  echoDebug "Loading bash_completion file for brew"
+  startTimer
   . $(brew --prefix)/etc/bash_completion
+  endTimer "load brew bash completions"
 fi
 # any custom ones
 if [ -d ${DOT_FILES_DIR}/bash_completion ]; then
   for b in ${DOT_FILES_DIR}/bash_completion/*; do
+    startTimer
+    echoDebug "Loading bash_completion file [$b]"
     . $b
+    endTimer "load bash completions from $b"
   done
 fi
 if [ -f "~/programs/google-cloud-sdk/completion.bash.inc" ]; then
+  echoDebug "Loading bash_completion file for Google Cloud SDK"
   . "~/programs/google-cloud-sdk/completion.bash.inc"
 fi
 
 # load custom prompt
 if [ -f ${DOT_FILES_DIR}/bash/bash_prompt.sh ]; then
+  echoDebug "Loading bash prompt definition..."
   . ${DOT_FILES_DIR}/bash/bash_prompt.sh
 fi
 
 loadCredentials
+
+FINISHED_LOADING_BASH_RC=current_time_millis
+echoDebug "Loading bash took $((FINISHED_LOADING_BASH_RC-STARTED_LOADING_BASH_RC))ms"
