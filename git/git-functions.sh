@@ -9,20 +9,22 @@ function g() {
     local repoName=$1
     shift 1
     local operation="$@"
-    local path=($(find ~/git -maxdepth 3 -type d -name ".git" -or -name "src" | egrep -i "/[^/]*${repoName}[^/]*/(.git|src)" | xargs dirname | sort -u))
+    local paths=($(find ~/git -maxdepth 3 -type d -name ".git" -or -name "src" | egrep -i "/[^/]*${repoName}[^/]*/(.git|src)" | xargs dirname | sort -u))
 
-    local count=${#path[@]}
+    local count=${#paths[@]}
 
     if [[ "$count" == "1" ]]; then
-      $operation $path
+      $operation $paths
       return $?
     elif (( $count > 1 )); then
       echo -e "Found $count directories matching [${WHITE}$repoName${RESTORE}]"
       local index=1
-      for p in "${path[@]}"; do
-        local head=$(dirname $p)
-        local tail=$(basename $p)
-        echo "  [${GREEN}$index${RESTORE}] ${head}/${GREEN}${tail}${RESTORE}"
+      for path in "${paths[@]}"; do
+        local parentDir=$(dirname $path)
+        local head=$(dirname $parentDir)
+        local middle=$(basename $parentDir)
+        local tail=$(basename $path)
+        echo "  [${GREEN}$index${RESTORE}] ${head}/${YELLOW}${middle}${RESTORE}/${GREEN}${tail}${RESTORE}"
         ((index=index+1))
       done
 
@@ -31,7 +33,7 @@ function g() {
       if [[ "$g" != "" ]]; then
         if [[ "$g" -le "$count" ]]; then
           ((gotoIndex=g-1))
-          $operation ${path[gotoIndex]}
+          $operation ${paths[gotoIndex]}
           return $?
         else
           echo -e "Invalid index [${RED}$g${RESTORE}]"
