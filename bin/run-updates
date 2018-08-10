@@ -19,3 +19,4 @@ maybeRun "mas" "mas upgrade"
 maybeRun "brew" "brew update && brew upgrade --cleanup"
 maybeRun "apt-get" "sudo -s -- 'apt-get update && apt-get install'"
 maybeRun "gcloud" "gcloud components update --quiet"
+maybeRun "npm" "npm upgrade -g" # update is a synonym

@@ -144,6 +144,7 @@ Temporary Items
 .sbt/
 .ivy2/
 .m2/
+.npm/
 .bundle/
 .idea/
 .coursier/
