@@ -2,21 +2,43 @@
 
 source ${DOT_FILES_DIR}/bash/bash-functions.sh
 
+function runItem() {
+  local command=$1
+
+}
+
 function maybeRun() {
   local mainCommand=$1
   shift
   local label="$(printf '%-10s\n' [${mainCommand}])"
 
   if [[ "$(command -v ${mainCommand})" ]]; then
-    echo "Running [$@]..." | indent "$label"
-    (bash -ce "$@" 2>&1) | indent "$label"
+    local result="pass"
+    while [[ "$1" != "" ]]; do
+      local itemCommand="$1"
+      shift
+
+      if [[ "$result" == "pass" ]]; then
+        echo "Running [$itemCommand]..." | indent "$label"
+        (bash -ce "$itemCommand" 2>&1) | indent "$label"
+
+        if [ $? ]; then
+          result="pass"
+        else
+          result="fail"
+        fi
+
+      else
+        echo "Skipping [$itemCommand] after earlier failure"
+      fi
+    done
   fi
 }
 
 # maybeRun test "echo 1 1>&2; echo 2"
 
 maybeRun "mas" "mas upgrade"
-maybeRun "brew" "brew update && brew upgrade --cleanup && brew cleanup"
+maybeRun "brew" "brew update" "brew upgrade --cleanup" "brew cleanup -s"
 maybeRun "apt-get" "sudo -s -- 'apt-get update && apt-get install'"
 maybeRun "gcloud" "gcloud components update --quiet"
 maybeRun "npm" "npm upgrade -g" # update is a synonym
