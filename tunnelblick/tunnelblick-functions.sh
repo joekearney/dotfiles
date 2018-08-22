@@ -5,7 +5,9 @@ function tunnelblick() {
   elif [[ "$op" == "stop" ]]; then
     osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-stop.scpt
   elif [[ "$op" == "kill" ]]; then
-    ps -e -o pid,comm | grep -i tunnelblick | awk '{print $1}' | xargs -n 1 sudo kill
+    until ps -e -o pid,comm | grep -i tunnelblick; do
+      ps -e -o pid,comm | grep -i tunnelblick | awk '{print $1}' | xargs -n 1 sudo kill
+    done
   elif [[ "$op" == "status" ]]; then
     osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-status.scpt
   elif [[ "$op" == "env" ]]; then
