@@ -1,5 +1,9 @@
 #!/bin/bash
 
+CODE_ROOT=$(cd ~/git; pwd)
+# TODO eventually ${CODE_ROOT}/github.com
+GITHUB_ROOT=${CODE_ROOT}
+
 # do something given a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
 function g() {
   if [[ "$1" == "" || "$2" == "" ]]; then
@@ -9,7 +13,7 @@ function g() {
     local repoName=$1
     shift 1
     local operation="$@"
-    local paths=($(find ~/git -maxdepth 3 -type d -name ".git" -or -name "src" | egrep -i "/[^/]*${repoName}[^/]*/(.git|src)" | xargs dirname | sort -u))
+    local paths=($(find ${CODE_ROOT} -maxdepth 3 -type d -name ".git" -or -name "src" | egrep -i "/[^/]*${repoName}[^/]*/(.git|src)" | xargs dirname | sort -u))
 
     local count=${#paths[@]}
 
@@ -58,8 +62,8 @@ function _do_with_git_complete_options() {
   # this comment syntax for a multiline command is a pretty horrific abuse of
   # substitution, inspired by this: http://stackoverflow.com/questions/9522631
   local repos=$(find                                                                       \
-          ~/git                           `# assumed base of where all of your repos live` \
-          -mindepth 2 -maxdepth 3         `# either at ~/git/*/.git or ~/git/*/*/.git`     \
+          ${CODE_ROOT}                    `# assumed base of where all of your repos live` \
+          -mindepth 2 -maxdepth 3         `# either at ${CODE_ROOT}/*/.git or ${CODE_ROOT}/*/*/.git`     \
           -type d                         `# looking for directories`                      \
           -name ".git" -or -name "src" |  `# called .git or src`                           \
           awk -F/ '{ print $(NF-1) }'  |  `# and get the name of the dir containing .git`  \
@@ -121,7 +125,7 @@ function gitHubClone() {
     local org=$1;
     local repo=$2;
     local url=git@github.com:$org/$repo.git;
-    local target="$HOME/git/$org/$repo"
+    local target="${GITHUB_ROOT}/$org/$repo"
     echo "Cloning from [${YELLOW}$url${RESTORE}] into [${GREEN}${target}${RESTORE}]..."
     git clone $url $target;
   fi
