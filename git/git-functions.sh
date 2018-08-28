@@ -1,8 +1,8 @@
 #!/bin/bash
 
-CODE_ROOT=$(cd ~/git; pwd)
-# TODO eventually ${CODE_ROOT}/github.com
-GITHUB_ROOT=${CODE_ROOT}
+CODE_ROOT=$(cd ~/git/src; pwd)
+# TODO eventually ${CODE_ROOT}
+GITHUB_ROOT=${CODE_ROOT}/github.com
 
 # do something given a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
 function g() {
@@ -13,7 +13,7 @@ function g() {
     local repoName=$1
     shift 1
     local operation="$@"
-    local paths=($(find ${CODE_ROOT} -maxdepth 3 -type d -name ".git" -or -name "src" | egrep -i "/[^/]*${repoName}[^/]*/(.git|src)" | xargs dirname | sort -u))
+    local paths=($(find ${CODE_ROOT} -maxdepth 4 -type d -name ".git" -or -name "src" | egrep -i "/[^/]*${repoName}[^/]*/(.git|src)" | xargs dirname | sort -u))
 
     local count=${#paths[@]}
 
@@ -63,7 +63,7 @@ function _do_with_git_complete_options() {
   # substitution, inspired by this: http://stackoverflow.com/questions/9522631
   local repos=$(find                                                                       \
           ${CODE_ROOT}                    `# assumed base of where all of your repos live` \
-          -mindepth 2 -maxdepth 3         `# either at ${CODE_ROOT}/*/.git or ${CODE_ROOT}/*/*/.git`     \
+          -mindepth 2 -maxdepth 4         `# either at ${CODE_ROOT}/*/.git or ${CODE_ROOT}/*/*/.git`     \
           -type d                         `# looking for directories`                      \
           -name ".git" -or -name "src" |  `# called .git or src`                           \
           awk -F/ '{ print $(NF-1) }'  |  `# and get the name of the dir containing .git`  \

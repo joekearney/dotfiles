@@ -54,3 +54,4 @@
   quick-stats = ! /usr/local/bin/git-quick-stats
   serve = "daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/"
   root = !pwd
+  change-commits = "!f() { VAR=$1; OLD=$2; NEW=$3; shift 3; git filter-branch --env-filter \"if [[ \\\"$`echo $VAR`\\\" = '$OLD' ]]; then export $VAR='$NEW'; fi\" $@; }; f "
