@@ -110,25 +110,30 @@ complete -F _do_with_git_complete_options cdgp
 complete -F _do_with_git_complete_options cdga
 complete -F _do_with_git_complete_options atomg
 
-function gitHubClone() {
-  if [[ $1 == '' ]]; then
-    echo 'Usage: git hub [<org>] <repo>';
-    exit 1;
-  fi;
-  if [[ $2 == '' ]]; then
-    local repo=$1;
-    local org=$(pwd | xargs basename);
-    local url=git@github.com:$org/$repo.git;
-    echo "Cloning from [${YELLOW}$url${RESTORE}] into [${GREEN}$(pwd)/$repo${RESTORE}]...";
-    git clone $url;
-  else
-    local org=$1;
-    local repo=$2;
-    local url=git@github.com:$org/$repo.git;
-    local target="${GITHUB_ROOT}/$org/$repo"
-    echo "Cloning from [${YELLOW}$url${RESTORE}] into [${GREEN}${target}${RESTORE}]..."
-    git clone $url $target;
+function gitClone() {
+  if [[ "$#" != "3" ]]; then
+    echo "Usage: git (github|bitbucket) [<org>] <repo>"
+    exit 1
   fi
+
+  case "$1" in
+    github)
+      local remoteHost="github.com"
+      ;;
+    bitbucket)
+      local remoteHost="bitbucket.org"
+      ;;
+    *)
+      echo "Usage: git (github|bitbucket) [<org>] <repo>"
+      exit 1
+  esac
+
+  local org=$2;
+  local repo=$3;
+  local url=git@${remoteHost}:$org/$repo.git;
+  local target="${CODE_ROOT}/${remoteHost}/$org/$repo"
+  echo "Cloning from [${YELLOW}$url${RESTORE}] into [${GREEN}${target}${RESTORE}]..."
+  git clone $url $target;
 }
 
 function gitMoveCommitsTo() {
