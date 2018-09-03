@@ -19,9 +19,16 @@ function installBash4() {
   ${DOTFILES_BIN}/mac-use-bash-4.sh
 }
 
-#installHomebrew
-#installBash4
-#${DOTFILES_BIN}/install-gnu-tools.sh
-setupDotFiles
+function installBrewThings() {
+  brew install \
+    httpie \
+    maven
+}
 
-#$(DOTFILES_BIN)/run-updates
+installHomebrew
+installBash4
+${DOTFILES_BIN}/install-gnu-tools.sh
+setupDotFiles
+installBrewThings
+
+${DOTFILES_BIN}/run-updates
