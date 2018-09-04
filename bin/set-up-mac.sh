@@ -22,7 +22,8 @@ function installBash4() {
 function installBrewThings() {
   brew install \
     httpie \
-    maven
+    maven \
+    pup jq
 }
 
 installHomebrew
