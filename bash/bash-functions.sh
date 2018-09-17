@@ -385,3 +385,19 @@ function battery() {
     fi
   fi
 }
+
+function javaHomePicker() {
+  if ! command -v /usr/libexec/java_home > /dev/null; then
+    echo "Requires /usr/libexec/java_home"
+    return 1
+  else
+    local version=$1
+    if [[ "${version}" == "" ]]; then
+      /usr/libexec/java_home -V
+      echo
+      echo "Usage: javaHomePicker <version>"
+    else
+      export JAVA_HOME=$(/usr/libexec/java_home -F -v ${version})
+    fi
+  fi
+}

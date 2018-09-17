@@ -1,6 +1,7 @@
 [core]
   excludesfile = ~/dotfiles/git/global_gitignore
 	attributesfile = ~/dotfiles/git/.global_gitattributes
+	autocrlf = input
 
 [push]
   default = simple

@@ -112,7 +112,7 @@ function setUpAliases() {
 
   alias rud='rvm use default'
 
-  alias atomd='atom ~/dotfiles'
+  alias atomd='atom ~/dotfiles ~/.ssh ~'
   alias atoms='atom ~/scratchpad'
   alias tn='network-test.sh'
 

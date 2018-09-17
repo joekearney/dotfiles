@@ -7,6 +7,12 @@ set -e
 #         brew install parallel ipconfig httpie
 # sudo apt-get install parallel ipconfig httpie
 
+if ! command -v parallel; then
+  echo "GNU Parallel is required"
+  echo "  brew install parallel"
+  exit 1
+fi
+
 . $DOT_FILES_DIR/colour/.bash_color_vars
 
 function echoErr() {

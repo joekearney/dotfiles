@@ -6,6 +6,7 @@ function tunnelblick() {
     osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-stop.scpt
   elif [[ "$op" == "kill" ]]; then
     while ps -e -o pid,comm | grep -i --quiet tunnelblick; do
+      echo "Killing tunnelblick..."
       ps -e -o pid,comm | grep -i tunnelblick | awk '{print $1}' | xargs -n 1 sudo kill
     done
   elif [[ "$op" == "status" ]]; then

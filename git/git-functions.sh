@@ -8,6 +8,12 @@ GITHUB_ROOT=${CODE_ROOT}/github.com
 function g() {
   if [[ "$1" == "" || "$2" == "" ]]; then
     echo "Usage: ${FUNCNAME[0]} <repo-name> <operation>"
+    echo ""
+    echo "Passes the directory of the repo to the operation as an argument"
+    echo "Example:"
+    echo "  g <repo> atom"
+    echo "runs:"
+    echo "  atom <repo-dir>"
     return 1
   else
     local repoName=$1

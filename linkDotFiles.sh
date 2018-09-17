@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 DOT_FILES_DIR=$(dirname $(readlink -f $0))
 
 for f in .bashrc .bash_profile .vimrc git/.gitconfig .screenrc .inputrc; do
