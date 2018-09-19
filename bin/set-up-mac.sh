@@ -49,11 +49,24 @@ function maybeInstall() {
 function installBrewThings() {
   echoErr "[brew install] Installing a bunch of brew packages..."
   brew install \
-    tree \
+    bash-completion tree \
     httpie \
     maven sbt \
     parallel \
     pup jq diff-so-fancy xmlstarlet imagemagick
+}
+
+function installDocker() {
+  if brew cask list docker > /dev/null; then
+    echo "Docker already installed"
+  else
+    brew cask install docker
+    etc=/Applications/Docker.app/Contents/Resources/etc
+    target=$(brew --prefix)/etc/bash_completion.d
+    ln -s ${etc}/docker.bash-completion ${target}/docker
+    ln -s ${etc}/docker-machine.bash-completion ${target}/docker-machine
+    ln -s ${etc}/docker-compose.bash-completion ${target}/docker-compose
+  fi
 }
 
 installHomebrew
@@ -80,5 +93,7 @@ maybeInstall wdiff --with-gettext
 maybeInstall wget
 
 installBrewThings
+
+installDockerBashCompletion
 
 ${DOTFILES_BIN}/run-updates
