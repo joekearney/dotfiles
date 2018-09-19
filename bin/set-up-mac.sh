@@ -53,7 +53,7 @@ function installBrewThings() {
     httpie \
     maven sbt \
     parallel \
-    pup jq diff-so-fancy xmlstarlet
+    pup jq diff-so-fancy xmlstarlet imagemagick
 }
 
 installHomebrew
