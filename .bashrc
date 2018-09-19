@@ -134,6 +134,10 @@ function setExports() {
     export LESS=' -R '
   fi
 
+  if command -v /usr/libexec/java_home; then
+    export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+  fi
+
   # export LC_ALL=en_GB.UTF-8
   # export LANG=en_GB.UTF-8
   # export LANGUAGE=en_GB.UTF-8
