@@ -149,7 +149,7 @@ function rvmHacks() {
 function get_first_prompt_extras() {
   if [[ "$NUM_COMMANDS_THIS_SHELL" == "0" ]]; then
     echo "Using bash [${YELLOW}$BASH${RESTORE}] version [${GREEN}$BASH_VERSION${RESTORE}]"
-    echo "Using terminal [${YELLOW}${TERM_PROGRAM}${RESTORE}] version [${GREEN}${TERM_PROGRAM_VERSION}${RESTORE}]"
+    echo "Using terminal [${YELLOW}${TERM_PROGRAM:-${TERMINAL_EMULATOR}}${RESTORE}] version [${GREEN}${TERM_PROGRAM_VERSION}${RESTORE}]"
 
     # need this because it goes in the prompt (!)
     # this is required because the iterm vars don't get set until late
