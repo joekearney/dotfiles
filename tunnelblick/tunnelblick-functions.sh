@@ -5,9 +5,15 @@ function tunnelblick() {
   elif [[ "$op" == "stop" ]]; then
     osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-stop.scpt
   elif [[ "$op" == "kill" ]]; then
-    while ps -e -o pid,comm | grep -i --quiet tunnelblick; do
-      echo "Killing tunnelblick..."
-      ps -e -o pid,comm | grep -i tunnelblick | awk '{print $1}' | xargs -n 1 sudo kill
+    local attempt=1
+    local killCommand=kill
+    while ps -e | grep -i --quiet tunnelblick; do
+      echo "Killing tunnelblick, attempt [${attempt}], using [${killCommand}]..."
+      ps -e | grep -i tunnelblick | awk '{ print $1 }' | xargs -n 1 sudo ${killCommand} > /dev/null 2>&1
+      ((attempt=attempt+1))
+      if [[ "${attempt}" == "10" ]]; then
+        killCommand="kill -9"
+      fi
     done
   elif [[ "$op" == "status" ]]; then
     osascript $DOT_FILES_DIR/tunnelblick/tunnelblick-status.scpt

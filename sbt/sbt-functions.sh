@@ -28,5 +28,5 @@ function repl() {
   (echoDebug "Going to $PROJECT_DIR..." && \
     cd $PROJECT_DIR && \
     echoDebug "Running [SBT_OPTS=${SBT_OPTS_FOR_REPL} sbt console-quick]..." && \
-    SBT_OPTS=${SBT_OPTS_FOR_REPL} sbt -Dsbt.boot.properties=/Users/joekearney/.sbt/boot/sbt.boot.properties console-quick)
+    SBT_OPTS=${SBT_OPTS_FOR_REPL} sbt consoleQuick)
 }

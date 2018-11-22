@@ -124,6 +124,8 @@ function setUpAliases() {
 }
 
 function setExports() {
+  export LANG=en_GB.UTF-8
+
   export MYSQL_PS1="\u@\h:\d \c> "
   # ensure EDITOR is set for git, shibboleth, whatever
   export EDITOR=vim
@@ -233,7 +235,7 @@ loadIfExists $DOT_FILES_DIR/colour/.bash_color_vars
 
 # Load RVM into a shell session *as a function*
 # if file exists and is non-empty
-#loadIfExists "$HOME/.rvm/scripts/rvm"
+loadIfExists "$HOME/.rvm/scripts/rvm"
 function rvmLoad() {
   loadIfExists "$HOME/.rvm/scripts/rvm"
 }
@@ -268,6 +270,9 @@ fi
 if [ -f "~/programs/google-cloud-sdk/completion.bash.inc" ]; then
   echoDebug "Loading bash_completion file for Google Cloud SDK"
   . "~/programs/google-cloud-sdk/completion.bash.inc"
+fi
+if which aws_completer > /dev/null 2>&1; then
+  complete -C "$(which aws_completer)" aws
 fi
 
 # load custom prompt

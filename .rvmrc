@@ -1,0 +1,2 @@
+# auto-detect Gemfile, and run bundle install automatically on cd
+rvm_autoinstall_bundler_flag=1

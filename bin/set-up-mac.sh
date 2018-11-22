@@ -51,9 +51,10 @@ function installBrewThings() {
   brew install \
     bash-completion tree \
     httpie \
-    maven sbt \
-    parallel \
-    pup jq diff-so-fancy xmlstarlet imagemagick
+    git maven sbt \
+    parallel pdsh gpg \
+    pup jq diff-so-fancy xmlstarlet imagemagick \
+    awscli
 }
 
 function installDocker() {
@@ -66,6 +67,26 @@ function installDocker() {
     ln -s ${etc}/docker.bash-completion ${target}/docker
     ln -s ${etc}/docker-machine.bash-completion ${target}/docker-machine
     ln -s ${etc}/docker-compose.bash-completion ${target}/docker-compose
+  fi
+}
+
+function installFonts() {
+  brew tap caskroom/fonts
+  brew cask install font-fira-code
+}
+
+function installRvm() {
+  if [ -d ~/.rvm/ ]; then
+    echo "RVM already installed"
+  else
+    echo "Installing RVM"
+    # first line is what rvm.io says to do normally
+    # seconf line is the fallback
+    gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB \
+      || curl -sSL https://rvm.io/mpapis.asc | gpg --import -
+    \curl -sSL https://get.rvm.io | bash -s stable
+
+    rvm install 2.4
   fi
 }
 
@@ -94,6 +115,6 @@ maybeInstall wget
 
 installBrewThings
 
-installDockerBashCompletion
+installRvm
 
 ${DOTFILES_BIN}/run-updates
