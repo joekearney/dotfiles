@@ -32,7 +32,11 @@ function abbrev_pwd() {
         NEW_PWD=${trunc_symbol}/${NEW_PWD#*/}
     fi
 
-    echo $NEW_PWD
+    if [[ "$NEW_PWD" == "~" ]]; then
+      echo "🏡"
+    else
+      echo $NEW_PWD
+    fi
 }
 
 function getBatteryStatus() {
@@ -175,7 +179,6 @@ function all_the_things() {
   local startPromptAt=$(current_time_millis)
 
   clear_line
-  shellTitle $(getExpectedHostname)
 
   rvmHacks
 
@@ -193,6 +196,13 @@ function all_the_things() {
   local last_command_exec_time_string=" in $(last_command_exec_time)"
 
   local user_colour=$(get_user_colour)
+
+  # if there's an alias show that
+  if [ -z "$LC_alias_of_target_host" ]; then
+    shellTitle $(basename "${apwd}")
+  else
+    shellTitle $(getExpectedHostname)
+  fi
 
   # prompt formatting helped by http://bashrcgenerator.com/
   __git_ps1 "${first_prompt_extras}${user_colour}\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]${expectedHostNameAndOriginal}\[$(tput sgr0)\]${batteryStatus}\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]${apwd}\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE" "${rvm_string}${detached_screens}${current_screen}${detached_tmuxs}${current_tmux}\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] ${time_zone} \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]${last_command_exec_time_string})\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
