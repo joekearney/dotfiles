@@ -49,12 +49,13 @@ function maybeInstall() {
 function installBrewThings() {
   echoErr "[brew install] Installing a bunch of brew packages..."
   brew install \
-    bash-completion tree \
+    bash-completion tree bats \
     httpie \
     git maven sbt \
     parallel pdsh gpg \
-    pup jq diff-so-fancy xmlstarlet imagemagick \
-    awscli
+    pup jq diff-so-fancy xmlstarlet imagemagick shellcheck graphviz \
+    awscli \
+    libxml2 sox ffmpeg
 }
 
 function installDocker() {
