@@ -5,7 +5,7 @@ if [[ "$DEBUG" == "yes" ]]; then
   set -x
 fi
 
-if [[ "${BASH_VERSION:0:1}" != "4" ]]; then
+if (( "${BASH_VERSION:0:1}" < "4" )); then
   echo "Requires Bash version 4, but found version ${BASH_VERSION}"
   echo "Exiting"
   exit
