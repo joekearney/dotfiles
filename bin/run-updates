@@ -32,13 +32,15 @@ function maybeRun() {
         echo "Skipping [$itemCommand] after earlier failure"
       fi
     done
+  else
+    echo "${mainCommand} was not found, skipping"
   fi
 }
 
 # maybeRun test "echo 1 1>&2; echo 2"
 
 maybeRun "apt-get" "sudo -s -- 'apt-get update && apt-get install'"
-maybeRun "brew" "brew update" "brew upgrade --cleanup" "brew cleanup -s"
+maybeRun "brew" "brew update" "brew upgrade" "brew cleanup -s"
 maybeRun "gcloud" "gcloud components update --quiet"
 maybeRun "npm" "npm upgrade -g" # update is a synonym
 maybeRun "mas" "mas upgrade"
