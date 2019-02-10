@@ -72,7 +72,7 @@ function command_timer_start() {
 }
 function command_timer_stop() {
   local millis=$(current_time_millis)
-  last_command_exec_time_secs=$(($millis - $command_in_progress_timer))
+  last_command_exec_time_secs=$(($millis - ${command_in_progress_timer:-0}))
   unset command_in_progress_timer
 }
 # prints out the execution time of the last command
