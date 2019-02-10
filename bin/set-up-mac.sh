@@ -18,12 +18,12 @@ function installHomebrew() {
   fi
 }
 
-function installBash4() {
-  if brew list bash --versions | grep --quiet "bash 4"; then
-    echoErr "bash 4 already installed"
+function installBashBrew() {
+  if mac-use-bash-brew.sh --check; then
+    echoErr "bash already installed"
   else
     brew install bash
-    ${DOTFILES_BIN}/mac-use-bash-4.sh
+    ${DOTFILES_BIN}/mac-use-bash-brew.sh
   fi
 }
 
@@ -49,7 +49,8 @@ function maybeInstall() {
 function installBrewThings() {
   echoErr "[brew install] Installing a bunch of brew packages..."
   brew install \
-    bash-completion tree bats \
+    coreutils binutils diffutils gawk gnutls gzip lzip screen watch wget \
+    bash-completion tree bats htop \
     httpie \
     git maven sbt \
     parallel pdsh gpg \
@@ -68,6 +69,20 @@ function installDocker() {
     ln -s ${etc}/docker.bash-completion ${target}/docker
     ln -s ${etc}/docker-machine.bash-completion ${target}/docker-machine
     ln -s ${etc}/docker-compose.bash-completion ${target}/docker-compose
+  fi
+}
+
+function installJava() {
+  if brew tap | grep -v "adoptopenjdk/openjdk"; then
+    echo "Java tap already installed"
+  else
+    brew tap AdoptOpenJDK/openjdk
+  fi
+
+  if brew cask list adoptopenjdk > /dev/null; then
+    echo "Java already installed"
+  else
+    brew cask install adoptopenjdk8
   fi
 }
 
@@ -92,29 +107,23 @@ function installRvm() {
 }
 
 installHomebrew
-installBash4
+installBashBrew
 setupDotFiles
 
 # Refer: https://www.topbug.net/blog/2013/04/14/install-and-use-gnu-command-line-tools-in-mac-os-x/
-maybeInstall coreutils
-maybeInstall binutils
-maybeInstall diffutils
 maybeInstall ed --with-default-names
 maybeInstall findutils --with-default-names
-maybeInstall gawk
 maybeInstall gnu-indent --with-default-names
 maybeInstall gnu-sed --with-default-names
 maybeInstall gnu-tar --with-default-names
 maybeInstall gnu-which --with-default-names
-maybeInstall gnutls
 maybeInstall grep --with-default-names
-maybeInstall gzip lzip
-maybeInstall screen
-maybeInstall watch
 maybeInstall wdiff --with-gettext
-maybeInstall wget
+
 
 installBrewThings
+installDocker
+installJava
 
 installRvm
 

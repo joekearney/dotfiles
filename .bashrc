@@ -71,6 +71,10 @@ function sortOutPathEntries() {
     prependToPath "/usr/local/opt/coreutils/libexec/gnubin"
   fi
 
+  if [ -d ~/programs/google-cloud-sdk/bin ]; then
+    prependToPath "~/programs/google-cloud-sdk/bin"
+  fi
+
   # add scripts in the dotfiles/bin, and any homedir/bin
   export DOT_FILES_DIR=$(readlink -f ~/.bash_profile | xargs dirname)
   echoDebug "Set dotfiles dir to $DOT_FILES_DIR"
