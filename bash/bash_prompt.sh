@@ -123,17 +123,30 @@ function get_time_zone() {
   echo -n $(date +'%Z')
 }
 
+function last_line_col() {
+  # curpos from https://stackoverflow.com/a/2575525
+
+  # based on a script from http://invisible-island.net/xterm/xterm.faq.html
+  exec < /dev/tty
+  oldstty=$(stty -g)
+  stty raw -echo min 0
+  # on my system, the following line can be replaced by the line below it
+  echo -en "\033[6n" > /dev/tty
+  # tput u7 > /dev/tty    # when TERM=xterm (and relatives)
+  IFS=';' read -r -d R -a pos
+  stty $oldstty
+  col=${pos[1]}
+
+  echo $col
+}
+
 # if the last printed line did not end in a newline
 # echo a marker character and a newline
 function clear_line() {
-  local curpos
-  echo -en "\E[6n"
-
-  # read current pos into variable
-  IFS=";" read -sdR -a curpos
+  local curpos=$(last_line_col)
 
   local marker="<eol>"
-  ((curpos[1]!=1)) && \
+  ((curpos!=1)) && \
     echo -e "\E[1m\E[41m\E[33m${marker}\E[0m" # print marker, and newline
 }
 

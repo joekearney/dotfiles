@@ -233,12 +233,6 @@ function srv() {
   fi
 }
 
-# gets the current number of millis since the epoch.
-# THIS DOESN'T WORK on normal mac. If it fails, check that gnubin is on the PATH
-function current_time_millis() {
-  echo $(($(date +%s%N)/1000000))
-}
-
 # converts milliseconds to a human-readable string
 function convert_time_string() {
   local total_millis="$1"

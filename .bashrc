@@ -5,21 +5,43 @@ if [[ "$DEBUG" == "yes" ]]; then
   set -x
 fi
 
-if (( "${BASH_VERSION:0:1}" < "4" )); then
-  echo "Requires Bash version 4, but found version ${BASH_VERSION}"
-  echo "Exiting"
-  exit
-fi
-
+function echoErr() {
+  cat <<< "$@" 1>&2
+}
 function echoDebug() {
   if [[ "$DEBUG" == "yes" ]]; then
-    cat <<< "$@" 1>&2
+    echoErr "$@"
   fi
 }
 
-function current_time_millis() {
-  echo $(($(date +%s%N)/1000000))
-}
+EXIT_WITHOUT_BASH_4=no
+
+if (( "${BASH_VERSION:0:1}" < "4" )); then
+  echoErr "Requires Bash version >= 4, but found version [${BASH_VERSION}]."
+
+  if [[ "${EXIT_WITHOUT_BASH_4}" == "yes" ]]; then
+    echoErr "Exiting in 10 seconds..."
+    sleep 10
+    exit
+  else
+    echoErr "Things might go wrong, but carrying on regardless 🤞"
+  fi
+fi
+
+# function to get the current number of millis since the epoch.
+# THIS DOESN'T WORK on normal mac. This bit of magic makes the function round
+# to seconds where necessary.
+DISABLE_NANOS=$(date +%s%N | grep -q 'N' && echo "yes" || echo "no")
+if [[ "${DISABLE_NANOS}" == "yes" ]]; then
+  echoErr "The [date] command does not support nanosecond-precision timing"
+  function current_time_millis() {
+    date +%s000
+  }
+else
+  function current_time_millis() {
+    echo $(($(date +%s%N)/1000000))
+  }
+fi
 
 STARTED_LOADING_BASH_RC=current_time_millis
 
@@ -76,7 +98,7 @@ function sortOutPathEntries() {
   fi
 
   # add scripts in the dotfiles/bin, and any homedir/bin
-  export DOT_FILES_DIR=$(readlink -f ~/.bash_profile | xargs dirname)
+  export DOT_FILES_DIR=$(cd ~/dotfiles && pwd)
   echoDebug "Set dotfiles dir to $DOT_FILES_DIR"
   prependToPath "$DOT_FILES_DIR/bin"
   prependToPath "~/bin"
@@ -91,10 +113,16 @@ function sortOutPathEntries() {
     # Add RVM to PATH for scripting
     echo $PATH | grep -qv "$HOME/.rvm/bin" && export PATH="$PATH:$HOME/.rvm/bin"
   fi
+
+  # homebrew
+  prependToPath "$HOME/homebrew/bin"
+  export LD_LIBRARY_PATH=$HOME/homebrew/lib:$LD_LIBRARY_PATH
+
+  prependToPath "/usr/local/bin"
 }
 
 function setUpAliases() {
-  alias ls='ls -G --color=auto'
+  #alias ls='ls -G --color=auto'
   alias ll='ls -lh'
   alias la='ls -lAh'
   alias ld='ls -lAdh .*'
@@ -126,6 +154,9 @@ function setUpAliases() {
 function setExports() {
   export LANG=en_GB.UTF-8
 
+  # pretty colours for `ls` even when it doesn't support --color=auto
+  export CLICOLOR=xterm-color
+
   export MYSQL_PS1="\u@\h:\d \c> "
   # ensure EDITOR is set for git, shibboleth, whatever
   export EDITOR=vim
@@ -136,13 +167,13 @@ function setExports() {
     export LESS=' -R '
   fi
 
-  if command -v /usr/libexec/java_home > /dev/null; then
+  if command -v /usr/libexec/java_home > /dev/null && /usr/libexec/java_home -v 1.8 2&>1 > /dev/null; then
     export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
   fi
 
-  # export LC_ALL=en_GB.UTF-8
-  # export LANG=en_GB.UTF-8
-  # export LANGUAGE=en_GB.UTF-8
+  export LC_ALL=en_GB.UTF-8
+  export LANG=en_GB.UTF-8
+  export LANGUAGE=en_GB.UTF-8
 
   export GOPATH=~/git
 }
@@ -158,12 +189,14 @@ function loadCredentials() {
   if [[ "$OSTYPE" == "darwin"* ]]; then
     keyPath=~/.ssh/id_rsa
 
-    # check whether the identity is already in the agent
-    ssh-add -L | grep -qv ${keyPath}
+    if [ -f ${keyPath} ]; then
+      # check whether the identity is already in the agent
+      ssh-add -L | grep -qv ${keyPath}
 
-    # if not, add it to the agent
-    if [[ "$?" == "0" ]]; then
-      ssh-add -K ${keyPath}
+      # if not, add it to the agent
+      if [[ "$?" == "0" ]]; then
+        ssh-add ${keyPath}
+      fi
     fi
   fi
 }

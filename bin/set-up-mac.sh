@@ -14,12 +14,12 @@ function installHomebrew() {
     echoErr "brew already installed"
     return
   else
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
   fi
 }
 
 function installBashBrew() {
-  if mac-use-bash-brew.sh --check; then
+  if ${DOTFILES_BIN}/mac-use-bash-brew.sh --check; then
     echoErr "bash already installed"
   else
     brew install bash
@@ -48,17 +48,14 @@ function maybeInstall() {
 
 function installBrewThings() {
   echoErr "[brew install] Installing a bunch of brew packages..."
-  brew install \
-    coreutils binutils diffutils gawk gnutls gzip lzip screen watch wget \
-    bash-completion tree bats htop \
-    httpie \
-    git maven sbt \
-    parallel pdsh gpg \
-    pup jq diff-so-fancy xmlstarlet imagemagick shellcheck graphviz \
-    awscli \
-    libxml2 sox ffmpeg
 
-  brew cask install balenaetcher
+  brew install \
+    gzip lzip \
+    bash-completion tree
+
+  # watch httpie git maven sbt parallel pdsh gpg pup jq diff-so-fancy xmlstarlet imagemagick shellcheck graphviz awscli libxml2 sox ffmpeg
+
+  # brew cask install balenaetcher
 }
 
 function installDocker() {
@@ -110,23 +107,17 @@ function installRvm() {
 
 installHomebrew
 installBashBrew
-setupDotFiles
-
-# Refer: https://www.topbug.net/blog/2013/04/14/install-and-use-gnu-command-line-tools-in-mac-os-x/
-maybeInstall ed --with-default-names
-maybeInstall findutils --with-default-names
-maybeInstall gnu-indent --with-default-names
-maybeInstall gnu-sed --with-default-names
-maybeInstall gnu-tar --with-default-names
-maybeInstall gnu-which --with-default-names
-maybeInstall grep --with-default-names
-maybeInstall wdiff --with-gettext
-
 
 installBrewThings
-installDocker
-installJava
+installFonts
+# installDocker
+# installJava
 
-installRvm
+# installRvm
+
+setupDotFiles
+
+# load everything !!!
+source ~/.bashrc
 
 ${DOTFILES_BIN}/run-updates

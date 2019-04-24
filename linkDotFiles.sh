@@ -2,7 +2,7 @@
 
 set -e
 
-DOT_FILES_DIR=$(dirname $(readlink -f $0))
+DOT_FILES_DIR=$(cd $(dirname $0) && pwd)
 
 for f in .bashrc .bash_profile .vimrc git/.gitconfig .screenrc .inputrc; do
 	ln -sf $DOT_FILES_DIR/$f ~/$(basename $f)

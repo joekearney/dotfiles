@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/usr/bin/env bash
 
 BREW_BASH_PATH=/usr/local/bin/bash
 
