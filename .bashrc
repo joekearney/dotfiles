@@ -57,8 +57,12 @@ if [[ "$DEBUG" == "yes" ]]; then
     echo "Running [$name] took ${elapsed}ms"
   }
 else
-  alias startTimer=true
-  alias endTimer=true
+  function startTimer() {
+    true
+  }
+  function endTimer() {
+    true
+  }
 fi
 
 echoDebug "In .bashrc"
@@ -119,6 +123,7 @@ function sortOutPathEntries() {
   export LD_LIBRARY_PATH=$HOME/homebrew/lib:$LD_LIBRARY_PATH
 
   prependToPath "/usr/local/bin"
+  prependToPath "$HOME/bin"
 }
 
 function setUpAliases() {
@@ -195,7 +200,7 @@ function loadCredentials() {
 
       # if not, add it to the agent
       if [[ "$?" == "0" ]]; then
-        ssh-add ${keyPath}
+        ssh-add -q ${keyPath}
       fi
     fi
   fi
@@ -307,6 +312,8 @@ loadIfExists "~/programs/google-cloud-sdk/completion.bash.inc"
 if which aws_completer > /dev/null 2>&1; then
   complete -C "$(which aws_completer)" aws
 fi
+
+loadIfExists "~/bin/local_completions.bash"
 
 # load custom prompt
 if [ -f ${DOT_FILES_DIR}/bash/bash_prompt.sh ]; then

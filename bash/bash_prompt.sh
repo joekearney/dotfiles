@@ -71,9 +71,16 @@ function command_timer_start() {
   command_in_progress_timer=${command_in_progress_timer:-$millis}
 }
 function command_timer_stop() {
-  local millis=$(current_time_millis)
-  last_command_exec_time_secs=$(($millis - ${command_in_progress_timer:-0}))
-  unset command_in_progress_timer
+  local end=$(current_time_millis)
+  local start=${command_in_progress_timer:-0}
+
+  if [[ "${start}" == "0" ]]; then
+    # something broke, give up
+    last_command_exec_time_secs=0
+  else
+    last_command_exec_time_secs=$((end - start))
+    unset command_in_progress_timer
+  fi
 }
 # prints out the execution time of the last command
 function last_command_exec_time() {
@@ -210,12 +217,16 @@ function all_the_things() {
 
   local user_colour=$(get_user_colour)
 
-  # if there's an alias show that
-  if [ -z "$LC_alias_of_target_host" ]; then
-    shellTitle $(basename "${apwd}")
+  # if we're remote, add a prefix
+  local shellPrefix=""
+  if [ -z ${SSH_CONNECTION+x} ]; then
+    # variable is unset, we are not connected over SSH
+    shellPrefix=""
   else
-    shellTitle $(getExpectedHostname)
+    shellPrefix="☎️:"
   fi
+
+  shellTitle "${shellPrefix}$(basename "${apwd}")"
 
   # prompt formatting helped by http://bashrcgenerator.com/
   __git_ps1 "${first_prompt_extras}${user_colour}\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]${expectedHostNameAndOriginal}\[$(tput sgr0)\]${batteryStatus}\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]${apwd}\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE" "${rvm_string}${detached_screens}${current_screen}${detached_tmuxs}${current_tmux}\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] ${time_zone} \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]${last_command_exec_time_string})\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
