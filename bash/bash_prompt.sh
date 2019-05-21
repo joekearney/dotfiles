@@ -191,6 +191,38 @@ function get_user_colour() {
   fi
 }
 
+function get_hg_prompt_string() {
+  if ! command -v hg > /dev/null; then
+    # no mercurial
+    return
+  fi
+
+  if [ -z "$(hg root 2>/dev/null)" ]; then
+    # no repo here
+    return
+  fi
+
+  # Show * for modified files, + for added files, and % for untracked files.
+  local hg_display_modifiers=""
+  local hg_status_summary="$(hg status | cut -c 1)"
+  if [[ "${hg_status_summary}" =~ .*M.* ]]; then
+    hg_display_modifiers="${hg_display_modifiers}*"
+  fi
+  if [[ "${hg_status_summary}" =~ .*A.* ]]; then
+    hg_display_modifiers="${hg_display_modifiers}+"
+  fi
+  if [[ "${hg_status_summary}" =~ .*\?.* ]]; then
+    hg_display_modifiers="${hg_display_modifiers}%"
+  fi
+  if [[ "${hg_display_modifiers}" != "" ]]; then
+    hg_display_modifiers=$(colorize "<light-red>${hg_display_modifiers}</light-red>")
+  fi
+
+  local hg_log_details=$(hg log -r . --template '{tags} {bookmarks}')
+
+  colorize " (<green>${hg_log_details}</green> ${hg_display_modifiers})" | sed 's/  / /g'
+}
+
 function all_the_things() {
   local lastExitCode=$?
 
@@ -206,6 +238,7 @@ function all_the_things() {
   local batteryStatus=$(getBatteryStatus)
   local apwd=$(abbrev_pwd)
   local rvm_string=$(get_rvm_string)
+  local hg_string=$(get_hg_prompt_string)
   local detached_screens=$(get_detached_screens)
   local current_screen=$(get_current_screen)
   local detached_tmuxs=$(get_detached_tmuxs)
@@ -229,7 +262,7 @@ function all_the_things() {
   shellTitle "${shellPrefix}$(basename "${apwd}")"
 
   # prompt formatting helped by http://bashrcgenerator.com/
-  __git_ps1 "${first_prompt_extras}${user_colour}\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]${expectedHostNameAndOriginal}\[$(tput sgr0)\]${batteryStatus}\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]${apwd}\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE" "${rvm_string}${detached_screens}${current_screen}${detached_tmuxs}${current_tmux}\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] ${time_zone} \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]${last_command_exec_time_string})\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+  __git_ps1 "${first_prompt_extras}${user_colour}\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]${expectedHostNameAndOriginal}\[$(tput sgr0)\]${batteryStatus}\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]${apwd}\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE" "${hg_string}${rvm_string}${detached_screens}${current_screen}${detached_tmuxs}${current_tmux}\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] ${time_zone} \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]${last_command_exec_time_string})\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
 
   NUM_COMMANDS_THIS_SHELL=$((NUM_COMMANDS_THIS_SHELL=NUM_COMMANDS_THIS_SHELL+1))
 
