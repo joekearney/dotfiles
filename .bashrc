@@ -17,14 +17,14 @@ function echoDebug() {
 EXIT_WITHOUT_BASH_4=no
 
 if (( "${BASH_VERSION:0:1}" < "4" )); then
-  echoErr "Requires Bash version >= 4, but found version [${BASH_VERSION}]."
+  echoDebug "Requires Bash version >= 4, but found version [${BASH_VERSION}]."
 
   if [[ "${EXIT_WITHOUT_BASH_4}" == "yes" ]]; then
     echoErr "Exiting in 10 seconds..."
     sleep 10
     exit
   else
-    echoErr "Things might go wrong, but carrying on regardless 🤞"
+    echoDebug "Things might go wrong, but carrying on regardless 🤞"
   fi
 fi
 
@@ -33,7 +33,7 @@ fi
 # to seconds where necessary.
 DISABLE_NANOS=$(date +%s%N | grep -q 'N' && echo "yes" || echo "no")
 if [[ "${DISABLE_NANOS}" == "yes" ]]; then
-  echoErr "The [date] command does not support nanosecond-precision timing"
+  echoDebug "The [date] command does not support nanosecond-precision timing"
   function current_time_millis() {
     date +%s000
   }
@@ -83,7 +83,7 @@ function prependOrBringToFrontOfArray() {
       unset "array[$i]"
     fi
   done
-  echo "$newEntry:$(joinStrings ':' ${array[@]})"
+  echo "$newEntry:$(joinStrings ':' ${array[*]})"
 }
 
 function sortOutPathEntries() {
@@ -98,14 +98,14 @@ function sortOutPathEntries() {
   fi
 
   if [ -d ~/programs/google-cloud-sdk/bin ]; then
-    prependToPath "~/programs/google-cloud-sdk/bin"
+    prependToPath "$HOME/programs/google-cloud-sdk/bin"
   fi
 
   # add scripts in the dotfiles/bin, and any homedir/bin
   export DOT_FILES_DIR=$(cd ~/dotfiles && pwd)
   echoDebug "Set dotfiles dir to $DOT_FILES_DIR"
   prependToPath "$DOT_FILES_DIR/bin"
-  prependToPath "~/bin"
+  prependToPath "$HOME/bin"
 
   # added Miniconda2 3.19.0 to head of path
   if [[ -s "$HOME/.miniconda2" ]]; then
@@ -172,7 +172,7 @@ function setExports() {
     export LESS=' -R '
   fi
 
-  if command -v /usr/libexec/java_home > /dev/null && /usr/libexec/java_home -v 1.8 2&>1 > /dev/null; then
+  if command -v /usr/libexec/java_home > /dev/null && /usr/libexec/java_home -v 1.8 2>&1 > /dev/null; then
     export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
   fi
 
@@ -213,6 +213,8 @@ function loadIfExists() {
     . $f
     endTimer ". $f"
     echoDebug "Sourced file $f"
+  else
+    echoDebug "No file $f found for sourcing"
   fi
 }
 function sensibleBashDefaults() {
@@ -285,9 +287,10 @@ done
 
 # load bash_completions from various sources
 # the standard ones -- this seems to break prompt on some hosts
-#if [ -f /etc/bash_completion ]; then
-#  . /etc/bash_completion
-#fi
+if [ -f /etc/bash_completion ]; then
+  . /etc/bash_completion
+fi
+
 # from brew-installed sources if they exist
 # this is really expensive
 if [[ $(command -v brew) && -f $(brew --prefix)/etc/bash_completion ]]; then
@@ -306,14 +309,14 @@ if [ -d ${DOT_FILES_DIR}/bash_completion ]; then
   done
 fi
 
-loadIfExists "~/programs/google-cloud-sdk/path.bash.inc"
-loadIfExists "~/programs/google-cloud-sdk/completion.bash.inc"
+loadIfExists "$HOME/programs/google-cloud-sdk/path.bash.inc"
+loadIfExists "$HOME/programs/google-cloud-sdk/completion.bash.inc"
 
 if which aws_completer > /dev/null 2>&1; then
   complete -C "$(which aws_completer)" aws
 fi
 
-loadIfExists "~/bin/local_completions.bash"
+loadIfExists "$HOME/bin/local_completions.bash"
 
 # load custom prompt
 if [ -f ${DOT_FILES_DIR}/bash/bash_prompt.sh ]; then
@@ -322,6 +325,8 @@ if [ -f ${DOT_FILES_DIR}/bash/bash_prompt.sh ]; then
 fi
 
 loadCredentials
+
+loadIfExists "$HOME/.machine-specific.bash"
 
 FINISHED_LOADING_BASH_RC=current_time_millis
 echoDebug "Loading bash took $((FINISHED_LOADING_BASH_RC-STARTED_LOADING_BASH_RC))ms"

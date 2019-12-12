@@ -67,8 +67,10 @@ function get_rvm_string() {
 }
 
 function command_timer_start() {
-  local millis=$(current_time_millis)
-  command_in_progress_timer=${command_in_progress_timer:-$millis}
+  if [ -z ${command_in_progress_timer+x} ]; then
+    local millis=$(current_time_millis)
+    command_in_progress_timer=${command_in_progress_timer:-$millis}
+  fi
 }
 function command_timer_stop() {
   local end=$(current_time_millis)
@@ -172,8 +174,22 @@ function rvmHacks() {
 
 function get_first_prompt_extras() {
   if [[ "$NUM_COMMANDS_THIS_SHELL" == "0" ]]; then
-    echo "Using bash [${YELLOW}$BASH${RESTORE}] version [${GREEN}$BASH_VERSION${RESTORE}]"
-    echo "Using terminal [${YELLOW}${TERM_PROGRAM:-${TERMINAL_EMULATOR}}${RESTORE}] version [${GREEN}${TERM_PROGRAM_VERSION}${RESTORE}]"
+    local hostDeclaration="On host: [$(hostname -f | sed -E "s/([^.]+)(.*)/${GREEN}\1${RESTORE}\2/")]"
+    local all_bits="Using:   bash[${YELLOW}${BASH}${RESTORE}]"
+    if ! [ -z "${BASH_VERSION}" ]; then
+      all_bits="${all_bits} version[${GREEN}${BASH_VERSION}${RESTORE}]"
+    fi
+
+    local some_terminal_info="${TERM_PROGRAM:-${TERMINAL_EMULATOR:-${TERM}}}"
+    if ! [ -z "${BASH_VERSION}" ]; then
+      all_bits="${all_bits} terminal[${YELLOW}${some_terminal_info}${RESTORE}]"
+      if ! [ -z "${TERM_PROGRAM_VERSION}" ]; then
+        all_bits="${all_bits} version[${GREEN}${TERM_PROGRAM_VERSION}${RESTORE}]"
+      fi
+    fi
+
+    echo "${hostDeclaration}"
+    echo -n "${all_bits}"
 
     # need this because it goes in the prompt (!)
     # this is required because the iterm vars don't get set until late
@@ -202,25 +218,21 @@ function get_hg_prompt_string() {
     return
   fi
 
-  # Show * for modified files, + for added files, and % for untracked files.
   local hg_display_modifiers=""
-  local hg_status_summary="$(hg status | cut -c 1)"
-  if [[ "${hg_status_summary}" =~ .*M.* ]]; then
-    hg_display_modifiers="${hg_display_modifiers}*"
-  fi
-  if [[ "${hg_status_summary}" =~ .*A.* ]]; then
-    hg_display_modifiers="${hg_display_modifiers}+"
-  fi
-  if [[ "${hg_status_summary}" =~ .*\?.* ]]; then
-    hg_display_modifiers="${hg_display_modifiers}%"
-  fi
-  if [[ "${hg_display_modifiers}" != "" ]]; then
-    hg_display_modifiers=$(colorize "<light-red>${hg_display_modifiers}</light-red>")
+  local hg_status_summary
+  hg_status_summary="$(hg status | cut -c 1 | uniq | tr -d '\n')"
+  if [[ "${hg_status_summary}" != "" ]]; then
+    hg_display_modifiers=" <light-red>${hg_status_summary}</light-red>"
   fi
 
-  local hg_log_details=$(hg log -r . --template '{tags} {bookmarks}')
+  local hg_log_details
+  hg_log_details=$(hg log -r . --template "{p4head} current[{clnames}] willUpdate[{willupdatecl}]" | \
+    sed -E 's/[^ ]*\[\]//g' | \
+    sed -E 's/(^[ ]*|[ ]+$)//g' | \
+    sed 's/  / /g' | \
+    sed 's|\[|\[<none>|g' | sed 's|\]|</none>\]|g')
 
-  colorize " (<green>${hg_log_details}</green> ${hg_display_modifiers})" | sed 's/  / /g'
+  colorize " (<green>${hg_log_details}</green>${hg_display_modifiers})"
 }
 
 function all_the_things() {
@@ -238,7 +250,7 @@ function all_the_things() {
   local batteryStatus=$(getBatteryStatus)
   local apwd=$(abbrev_pwd)
   local rvm_string=$(get_rvm_string)
-  local hg_string=$(get_hg_prompt_string)
+  local hg_string="" #$(get_hg_prompt_string)
   local detached_screens=$(get_detached_screens)
   local current_screen=$(get_current_screen)
   local detached_tmuxs=$(get_detached_tmuxs)

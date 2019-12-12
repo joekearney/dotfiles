@@ -12,9 +12,9 @@ fi
 
 function runCommand() {
   if [[ "${ECHO_ONLY}" == "true" ]]; then
-    echoErr "    [runCommand] $@"
+    echoErr "    [runCommand] $*"
   else
-    echoErr "    [runCommand] $@"
+    echoErr "    [runCommand] $*"
     "$@"
   fi
 }
@@ -249,11 +249,19 @@ function convert_time_string() {
   ((h=total_secs/3600))
 
   local time_string=""
-  if   ((h>0)); then time_string="${h}h${m}m${s}s"
-  elif ((m>0)); then time_string="${m}m${s}s"
-  elif ((s>3)); then time_string="${s}s"
-  elif ((s>0)); then time_string="${s}.$(printf "%0*d" 3 $ms | sed -e 's/[0]*$//g')s"
-  else               time_string="${ms}ms"
+  if   ((h>0)); then
+    time_string="${h}h${m}m${s}s"
+  elif ((m>0)); then
+    time_string="${m}m${s}s"
+  elif ((s>3)); then
+    time_string="${s}s"
+  elif ((s>0)); then
+    # sort out trailing 0s after the decimal
+    time_string="$(printf "%d.%0*d" ${s} 3 ${ms} | sed '/\./ s/\.\{0,1\}0\{1,\}$//')s"
+  elif ((ms==0)); then
+    time_string="0s"
+  else
+    time_string="${ms}ms"
   fi
 
   echo -n "${time_string}"
