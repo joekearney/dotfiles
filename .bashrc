@@ -122,6 +122,8 @@ function sortOutPathEntries() {
   prependToPath "$HOME/homebrew/bin"
   export LD_LIBRARY_PATH=$HOME/homebrew/lib:$LD_LIBRARY_PATH
 
+  prependToPath "/snap/bin"
+
   prependToPath "/usr/local/bin"
   prependToPath "$HOME/bin"
 }
