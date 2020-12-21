@@ -230,7 +230,7 @@ function all_the_things() {
 
   local startPromptAt=$(current_time_millis)
 
-  clear_line
+  #clear_line
 
   rvmHacks
 
