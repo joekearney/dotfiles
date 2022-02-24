@@ -12,11 +12,13 @@ gnu-indent
 gnu-sed
 gnu-tar
 grep
+hg
 htop
 httpie
 imagemagick
 jq
 lsusb
+parallel
 rclone
 shellcheck
 tree

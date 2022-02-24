@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# git stuff
-GIT_PS1_SHOWDIRTYSTATE=yes
-GIT_PS1_SHOWSTASHSTATE=yes
-GIT_PS1_SHOWUNTRACKEDFILES=yes
-GIT_PS1_SHOWCOLORHINTS=yes
-GIT_PS1_SHOWUPSTREAM="auto verbose"
-. $DOT_FILES_DIR/git/git-prompt.sh
-
 ##################################################
 # The home directory (HOME) is replaced with a ~
 # The last pwdmaxlen characters of the PWD are displayed
@@ -16,8 +8,6 @@ GIT_PS1_SHOWUPSTREAM="auto verbose"
 #   /usr/share/big_dir_name -> .../share/big_dir_name if pwdmaxlen=20
 ##################################################
 function abbrev_pwd() {
-    local lastExitStatus=$?
-
     # How many characters of the $PWD should be kept
     local pwdmaxlen=60
     # Indicate that there has been dir truncation
@@ -67,11 +57,13 @@ function get_rvm_string() {
 }
 
 function command_timer_start() {
-  local millis=$(current_time_millis)
+  local millis
+  millis=$(current_time_millis)
   command_in_progress_timer=${command_in_progress_timer:-$millis}
 }
 function command_timer_stop() {
-  local end=$(current_time_millis)
+  local end
+  end=$(current_time_millis)
   local start=${command_in_progress_timer:-0}
 
   if [[ "${start}" == "0" ]]; then
@@ -79,8 +71,8 @@ function command_timer_stop() {
     last_command_exec_time_secs=0
   else
     last_command_exec_time_secs=$((end - start))
-    unset command_in_progress_timer
   fi
+  unset command_in_progress_timer
 }
 # prints out the execution time of the last command
 function last_command_exec_time() {
@@ -157,28 +149,11 @@ function clear_line() {
     echo -e "\E[1m\E[41m\E[33m${marker}\E[0m" # print marker, and newline
 }
 
-function containsRubyDirective() {
-  grep -i -E -q -L "^(ruby \"\S+\"|#ruby=\S+)$" $1
-}
-function rvmHacks() {
-  # HACK RVM tries to be clever with going back to the previous environment
-  # on a directory change, but with multiple ruby projects on multiple versions
-  # you end up with non-ruby directories getting a specifiv rvm-ruby version,
-  # which is wierd. This is a way of disabling this behaviour - set this value
-  # in every directory. Can't do this in the cd() function, because rvm has
-  # taken over that as well!
-  rvm_previous_environment="system"
-}
-
 function get_first_prompt_extras() {
-  if [[ "$NUM_COMMANDS_THIS_SHELL" == "0" ]]; then
-    echo "Using bash [${YELLOW}$BASH${RESTORE}] version [${GREEN}$BASH_VERSION${RESTORE}]"
-    echo "Using terminal [${YELLOW}${TERM_PROGRAM:-${TERMINAL_EMULATOR}}${RESTORE}] version [${GREEN}${TERM_PROGRAM_VERSION}${RESTORE}]"
+  echo "Using bash [${YELLOW}$BASH${RESTORE}] version [${GREEN}$BASH_VERSION${RESTORE}]"
+  echo "Using terminal [${YELLOW}${TERM_PROGRAM:-${TERMINAL_EMULATOR}}${RESTORE}] version [${GREEN}${TERM_PROGRAM_VERSION}${RESTORE}]"
 
-    # need this because it goes in the prompt (!)
-    # this is required because the iterm vars don't get set until late
-    echo "\n"
-  fi
+  echo ""
 }
 
 NUM_COMMANDS_THIS_SHELL=0
@@ -226,25 +201,11 @@ function get_hg_prompt_string() {
 function all_the_things() {
   local lastExitCode=$?
 
-  command_timer_stop
-
-  local startPromptAt=$(current_time_millis)
-
   #clear_line
 
-  rvmHacks
-
-  local expectedHostNameAndOriginal=$(getExpectedHostnameAndOriginal)
   local batteryStatus=$(getBatteryStatus)
+  local hostname=$(hostname -s)
   local apwd=$(abbrev_pwd)
-  local rvm_string=$(get_rvm_string)
-  local hg_string=$(get_hg_prompt_string)
-  local detached_screens=$(get_detached_screens)
-  local current_screen=$(get_current_screen)
-  local detached_tmuxs=$(get_detached_tmuxs)
-  local current_tmux=$(get_current_tmux)
-  local time_zone=$(get_time_zone)
-  local first_prompt_extras=$(get_first_prompt_extras)
 
   local last_command_exec_time_string=" in $(last_command_exec_time)"
 
@@ -262,7 +223,7 @@ function all_the_things() {
   shellTitle "${shellPrefix}$(basename "${apwd}")"
 
   # prompt formatting helped by http://bashrcgenerator.com/
-  __git_ps1 "${first_prompt_extras}${user_colour}\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]${expectedHostNameAndOriginal}\[$(tput sgr0)\]${batteryStatus}\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]${apwd}\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE" "${hg_string}${rvm_string}${detached_screens}${current_screen}${detached_tmuxs}${current_tmux}\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] ${time_zone} \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]${last_command_exec_time_string})\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+  __git_ps1 "${user_colour}\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]${hostname}\[$(tput sgr0)\]${batteryStatus}\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]${apwd}\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE" "\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] ${time_zone} \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]${last_command_exec_time_string})\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
 
   NUM_COMMANDS_THIS_SHELL=$((NUM_COMMANDS_THIS_SHELL=NUM_COMMANDS_THIS_SHELL+1))
 
@@ -270,5 +231,20 @@ function all_the_things() {
   ((prompt_creation_time_ms=endPromptAt-startPromptAt))
 }
 
-# don't export this
-PROMPT_COMMAND=all_the_things
+get_first_prompt_extras
+
+if [[ "${TERM_PROGRAM:-${TERMINAL_EMULATOR}}" == "WarpTerminal" ]]; then
+  echo "Skipping fancy prompt"
+  # PS1="${user_colour}\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]$(hostname -s)\[$(tput sgr0)\]$(getBatteryStatus)\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE \[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] $(get_time_zone) \[$(tput sgr0)\]"
+else
+  # don't export this
+  PROMPT_COMMAND=all_the_things
+
+  . "$DOT_FILES_DIR/bash/bash-preexec.sh"
+
+  function preexec_start_timer() { command_timer_start; }
+  preexec_functions+=(preexec_start_timer)
+
+  function precmd_stop_timer() { command_timer_stop; }
+  precmd_functions+=(precmd_stop_timer)
+fi

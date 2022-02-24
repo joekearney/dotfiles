@@ -36,69 +36,9 @@ function reloadDotFiles() {
   . ~/.bash_profile
 }
 
-# sleeps for a number of seconds, displaying the number of seconds remaining.
-function countdown() {
-  local remaining=$1
-  while ((remaining>0)); do
-    echoErr $remaining
-    sleep 1
-    ((remaining=remaining-1))
-  done
-}
-
 # sets the shell title
 function shellTitle() {
     echo -ne "\033]0;"$*"\007"
-}
-
-# head and grep
-function hag() {
-  sed -e '1p' -e "/$1/!d"
-}
-
-export KNOWN_HOSTS_FILE=$DOT_FILES_DIR/.known_hosts
-# ssh, but passing an LC environment variable with the expected target host name.
-# This is so that you can ssh to some alias, that lands you on some target
-# machine of a cluster, and be able to find out later what you though the host
-# was called.
-#
-# If there are more arguments then we just delegate to the default ssh, and
-# don't get the hostname passed through.
-function ash() {
-  if [[ "$1" == "" ]]; then
-    # delegate to the error that ssh gives with no args
-    ssh
-  else
-    local target_host=$1
-    local shortname=$(echo $target_host | sed -e 's/\..*^//')
-    grep -qFx "$target_host" $KNOWN_HOSTS_FILE || echo $target_host >> $KNOWN_HOSTS_FILE
-    LC_alias_of_target_host=$shortname ssh $target_host
-  fi
-}
-# bash auto completion for host names
-function _ash_complete_options() {
-  local curr_arg=${COMP_WORDS[COMP_CWORD]}
-  local lines
-  IFS=$'\n' read -d '' -r -a lines < $KNOWN_HOSTS_FILE
-  COMPREPLY=( $(compgen -W '${lines[@]}' -- $curr_arg ) )
-}
-complete -F _ash_complete_options ash
-
-# Gets the hostname entered when ssh-ing to the machine.
-function getExpectedHostname() {
-  if [ ! -z "$LC_alias_of_target_host" ]; then
-    echo "$LC_alias_of_target_host"
-  else
-    hostname -s
-  fi
-}
-# Gets the hostname entered when ssh-ing to the machine.
-function getExpectedHostnameAndOriginal() {
-  if [ ! -z "$LC_alias_of_target_host" ]; then
-    echo "$LC_alias_of_target_host = $(hostname -s)"
-  else
-    hostname -s
-  fi
 }
 
 # indents stdout by two spaces, prefixed by the argument
@@ -134,16 +74,6 @@ function cd() {
   fi
 }
 
-# pipe from http to less, for a given URL
-function httpless() {
-  # --print=hb means print response headers and response body.
-  http --pretty=all --print=hb "$@" | less
-}
-
-function weather() {
-  http --body "wttr.in/$1"
-}
-
 # I can never remember which way round symlinks go
 function mkLink() {
   echoErr "This will create a symlink from <name> -> <actual-file>."
@@ -155,82 +85,6 @@ function mkLink() {
   echo "Creating symlink $name -> $target"
 
   ln -s $target $name
-}
-
-function runOn() {
-  usage="Usage: $0 <host> [-b] <command...>"
-
-  target=$1
-  if [[ "$target" == "" ]]; then
-    echo usage
-    return 1
-  fi
-
-  shift 1
-
-  background=no
-  if [[ "$1" == "-b" ]]; then
-    background=yes
-    shift 1
-  fi
-
-  remoteCommands="$*"
-
-  echo -n "Running: [$remoteCommands] on [$target]"
-  if [[ "$background" == "yes" ]]; then
-    echo " in the background..."
-    ssh -A $target nohup $remoteCommands > /dev/null 2> /dev/null < /dev/null &
-  else
-    echo "..."
-    ssh -A $target $remoteCommands
-  fi
-}
-
-function rlf() {
-  if [[ "$#" != 1 ]]; then
-    echoErr "Usage: rlf <path>"
-    echoErr "Finds the real path of the item given"
-    return 1
-  fi
-
-  local thing=$1
-  local whichThing=$(which $thing)
-
-  if [[ "$whichThing" != "" ]]; then
-    readlink -f $whichThing
-  elif [[ -a "$thing" ]]; then
-    readlink -f $thing
-  else
-    echoErr "[$thing] not found"
-  fi
-}
-
-function srv() {
-  if [[ "$#" != 1 ]]; then
-    echoErr "Usage: srv <server>"
-    echoErr "Echos a randomly chosen host:port from the SRV records for the server"
-    return 1
-  fi
-
-  # server is the name in nslookup of the parameter
-  local server=$1
-
-  function doLookup() {
-    nslookup -type=SRV $server \
-      | grep --only-matching "service = .*" \
-      | cut -d " " -f 5,6 \
-      | sed -r 's/([0-9]*) (.*)\./\2:\1/' \
-      | shuf -n 1
-  }
-
-  local answer=$(doLookup)
-  if [[ "$answer" == "" ]]; then
-    # none found
-    return 1
-  else
-    echo $answer
-    return 0
-  fi
 }
 
 # converts milliseconds to a human-readable string
@@ -266,49 +120,12 @@ function convert_time_string() {
   unset total_secs
 }
 
-function sumLines() {
-  paste -s -d+ | bc
-}
-
-function cassandraNetstatsSendingProgress() {
-  nodetool netstats | awk '/Sending/ { soFar += $9; total += $2 }; END { print soFar * 100 / total "%" }'
-}
-
 function lsSockets() {
   local prefix=
   if [[ "$1" == -s ]]; then
     prefix="sudo"
   fi
   ${prefix} netstat -lntap | sed -e '2p' -e '/LISTEN/!d'
-}
-
-function ff() {
-  local target=$1
-  if [[ "$target" == "" ]]; then
-    echoErr "Finds files with names containing the parameter"
-    echoErr "Usage: $FUNCNAME <target-filename>"
-    return 1;
-  else
-    if [[ $(command -v ag) ]]; then
-      ag -g ".*${target}.*"
-    elif [[ $(command -v ack) ]]; then
-      ack -g ".*${target}.*"
-    else
-      find . -name "*${target}.*"
-    fi
-  fi
-}
-
-function chromeApp() {
-  local url="$1"
-  if [[ "$url" == "" ]]; then
-    echoErr "Usage: chromeApp <url>"
-    return 1
-  fi
-
-  local chrome='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-
-  "$chrome" --app="$url"
 }
 
 function sshl() {
@@ -350,14 +167,6 @@ function scratch() {
       cp "$f" "${SCRATCHPAD_DIR}"
     done
   fi
-}
-
-function unslacked() {
-  local channel=$1
-  shift
-  local message="$@"
-
-  curl --data "channel=#${channel}&message=${message}&username=joe" http://unslacked/
 }
 
 function httpServe() {

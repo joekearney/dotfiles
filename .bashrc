@@ -1,15 +1,5 @@
 #!/bin/bash
 
-#### FIG ENV VARIABLES ####
-# Please make sure this block is at the start of this file.
-[ -s ~/.fig/shell/pre.sh ] && source ~/.fig/shell/pre.sh
-#### END FIG ENV VARIABLES ####
-
-DEBUG=no
-if [[ "$DEBUG" == "yes" ]]; then
-  set -x
-fi
-
 function echoErr() {
   cat <<< "$@" 1>&2
 }
@@ -19,33 +9,31 @@ function echoDebug() {
   fi
 }
 
-EXIT_WITHOUT_BASH_4=no
-
 if (( "${BASH_VERSION:0:1}" < "4" )); then
   echoErr "Requires Bash version >= 4, but found version [${BASH_VERSION}]."
-
-  if [[ "${EXIT_WITHOUT_BASH_4}" == "yes" ]]; then
-    echoErr "Exiting in 10 seconds..."
-    sleep 10
-    exit
-  else
-    echoErr "Things might go wrong, but carrying on regardless 🤞"
-  fi
+  echoErr "Things might go wrong, but carrying on regardless 🤞"
 fi
 
 # function to get the current number of millis since the epoch.
 # THIS DOESN'T WORK on normal mac. This bit of magic makes the function round
 # to seconds where necessary.
-DISABLE_NANOS=$(date +%s%N | grep -q 'N' && echo "yes" || echo "no")
-if [[ "${DISABLE_NANOS}" == "yes" ]]; then
-  echoErr "The [date] command does not support nanosecond-precision timing"
+
+if command -v gdate >/dev/null; then
   function current_time_millis() {
-    date +%s000
+    echo $(($(gdate +%s%N)/1000000))
   }
 else
-  function current_time_millis() {
-    echo $(($(date +%s%N)/1000000))
-  }
+  DISABLE_NANOS=$(date +%s%N | grep -q 'N' && echo "yes" || echo "no")
+  if [[ "${DISABLE_NANOS}" == "yes" ]]; then
+    echoErr "The [date] command does not support nanosecond-precision timing. Falling back to second-precision."
+    function current_time_millis() {
+      date +%s000
+    }
+  else
+    function current_time_millis() {
+      echo $(($(date +%s%N)/1000000))
+    }
+  fi
 fi
 
 STARTED_LOADING_BASH_RC=current_time_millis
@@ -107,10 +95,10 @@ function sortOutPathEntries() {
   fi
 
   # add scripts in the dotfiles/bin, and any homedir/bin
-  export DOT_FILES_DIR=$(cd ~/dotfiles && pwd)
+  export DOT_FILES_DIR="$(cd ~/dotfiles2 && pwd)"
   echoDebug "Set dotfiles dir to $DOT_FILES_DIR"
   prependToPath "$DOT_FILES_DIR/bin"
-  prependToPath "~/bin"
+  prependToPath "$HOME/bin"
 
   # added Miniconda2 3.19.0 to head of path
   if [[ -s "$HOME/.miniconda2" ]]; then
@@ -137,20 +125,15 @@ function setUpAliases() {
   #alias ls='ls -G --color=auto'
   alias ll='ls -lh'
   alias la='ls -lAh'
-  alias ld='ls -lAdh .*'
 
-  alias cb='popd'
-  alias cdd='cd ~/dotfiles'
-  alias cds='cd ~/scratchpad'
-
-  alias dir='dir --color=auto'
-  alias vdir='vdir --color=auto'
-
-  alias grep='grep --color=auto'
-  alias fgrep='fgrep --color=auto'
-  alias egrep='egrep --color=auto'
-
-  alias rud='rvm use default'
+  # alias dir='dir --color=auto'
+  # alias vdir='vdir --color=auto'
+  #
+  # alias grep='grep --color=auto'
+  # alias fgrep='fgrep --color=auto'
+  # alias egrep='egrep --color=auto'
+  #
+  # alias rud='rvm use default'
 
   alias atomd='atom ~/dotfiles ~/bin ~/.ssh ~'
   alias atoms='atom ~/scratchpad'
@@ -166,12 +149,9 @@ function setUpAliases() {
 }
 
 function setExports() {
-  export LANG=en_GB.UTF-8
-
   # pretty colours for `ls` even when it doesn't support --color=auto
   export CLICOLOR=xterm-color
 
-  export MYSQL_PS1="\u@\h:\d \c> "
   # ensure EDITOR is set for git, shibboleth, whatever
   export EDITOR=vim
 
@@ -181,15 +161,9 @@ function setExports() {
     export LESS=' -R '
   fi
 
-  if command -v /usr/libexec/java_home > /dev/null && /usr/libexec/java_home -v 1.8 > /dev/null 2>&1; then
-    export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
-  fi
-
   export LC_ALL=en_GB.UTF-8
   export LANG=en_GB.UTF-8
   export LANGUAGE=en_GB.UTF-8
-
-  export GOPATH=~/git
 }
 
 function loadCredentials() {
@@ -199,20 +173,6 @@ function loadCredentials() {
       . $b
     done
   fi
-
-  # if [[ "$OSTYPE" == "darwin"* ]]; then
-  #   keyPath=~/.ssh/id_rsa
-  #
-  #   if [ -f ${keyPath} ]; then
-  #     # check whether the identity is already in the agent
-  #     ssh-add -L | grep -qv ${keyPath}
-  #
-  #     # if not, add it to the agent
-  #     if [[ "$?" == "0" ]]; then
-  #       ssh-add -q ${keyPath}
-  #     fi
-  #   fi
-  # fi
 }
 function loadIfExists() {
   local f=$1
@@ -224,6 +184,7 @@ function loadIfExists() {
     echoDebug "Sourced file $f"
   fi
 }
+
 function sensibleBashDefaults() {
   # from https://github.com/mrzool/bash-sensible/blob/master/sensible.bash
 
@@ -261,6 +222,9 @@ function sensibleBashDefaults() {
 
   # Useful timestamp format
   HISTTIMEFORMAT='%F %T '
+
+  # this is a safe and sensible umask
+  umask 027
 }
 
 sortOutPathEntries
@@ -268,28 +232,22 @@ setUpAliases
 setExports
 sensibleBashDefaults
 
-# this is a safe and sensible umask
-umask 027
-
 # Source global definitions
 loadIfExists /etc/bashrc
 
 # Source machine-local environment
-loadIfExists ~/.local_env.sh
+loadIfExists "$HOME/.local_env.sh"
 
 # load colours
-loadIfExists $DOT_FILES_DIR/colour/.bash_color_vars
+loadIfExists "$DOT_FILES_DIR/colour/.bash_color_vars"
 
 # Load RVM into a shell session *as a function*
 # if file exists and is non-empty
 loadIfExists "$HOME/.rvm/scripts/rvm"
-function rvmLoad() {
-  loadIfExists "$HOME/.rvm/scripts/rvm"
-}
 
 # load functions
 for thing in bash git sbt tunnelblick; do
-  loadIfExists ${DOT_FILES_DIR}/$thing/$thing-functions.sh
+  loadIfExists "${DOT_FILES_DIR}/$thing/$thing-functions.sh"
 done
 
 # load bash_completions from various sources
@@ -315,19 +273,9 @@ if [ -d ${DOT_FILES_DIR}/bash_completion ]; then
   done
 fi
 
-loadIfExists "$HOME/programs/google-cloud-sdk/path.bash.inc"
-loadIfExists "$HOME/programs/google-cloud-sdk/completion.bash.inc"
-
-if which aws_completer > /dev/null 2>&1; then
-  complete -C "$(which aws_completer)" aws
-fi
-
-loadIfExists "$HOME/bin/local_completions.bash"
-
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
 loadIfExists "$SDKMAN_DIR/bin/sdkman-init.sh"
-
 
 # load custom prompt
 if [ -f ${DOT_FILES_DIR}/bash/bash_prompt.sh ]; then
@@ -339,8 +287,3 @@ loadCredentials
 
 FINISHED_LOADING_BASH_RC=current_time_millis
 echoDebug "Loading bash took $((FINISHED_LOADING_BASH_RC-STARTED_LOADING_BASH_RC))ms"
-
-#### FIG ENV VARIABLES ####
-# Please make sure this block is at the end of this file.
-[ -s ~/.fig/fig.sh ] && source ~/.fig/fig.sh
-#### END FIG ENV VARIABLES ####

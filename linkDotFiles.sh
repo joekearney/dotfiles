@@ -2,15 +2,25 @@
 
 set -e
 
-DOT_FILES_DIR=$(cd $(dirname $0) && pwd)
+DOT_FILES_DIR=$(cd "$(dirname $0)" && pwd)
 
-for f in .bashrc .bash_profile .vimrc git/.gitconfig .screenrc .inputrc; do
-	ln -sf $DOT_FILES_DIR/$f ~/$(basename $f)
-done
+function create_link() {
+	local f="$1"
+	ln -sf $DOT_FILES_DIR/$f "$HOME/$(basename $f)"
+}
 
-DROPBOX_LOCAL_ENV="~/Dropbox/.local_env.sh"
-if [[ -f "${DROPBOX_LOCAL_ENV}" ]]; then
-	ln -s "${DROPBOX_LOCAL_ENV}" $(basename "${DROPBOX_LOCAL_ENV}")
+function delete_link() {
+	local f="$1"
+	rm "$HOME/$(basename $f)"
+}
+
+if [[ "$1" == "--remove" ]]; then
+	ACTION=delete_link
+else
+	ACTION=create_link
+	echo "If you need to commit to git, remember to update your email in $HOME/.config/git/config, in a [user].email property."
 fi
 
-echo "If you need to commit to git, remember to update your email in $HOME/.config/git/config, in a [user].email property."
+for f in .bashrc .bash_profile git/.gitconfig ; do
+	$ACTION "$f"
+done
