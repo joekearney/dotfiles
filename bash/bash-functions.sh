@@ -20,12 +20,7 @@ function runCommand() {
 }
 # Pushes the dotfiles directory to the target machine and links them
 function pushDotFilesTo() {
-  if [[ "$1" == "" ]]; then
-    echoErr "Usage: pushDotFilesTo <host>"
-  else
-    local host=$1
-    ${DOT_FILES_DIR}/pushDotFiles.sh $host
-  fi
+  ${DOT_FILES_DIR}/pushDotFiles.sh "$@"
 }
 function pushDotFilesAndSshTo() {
   pushDotFilesTo $1 && ash $1
@@ -264,7 +259,7 @@ function convert_time_string() {
     time_string="${ms}ms"
   fi
 
-  echo -n "${time_string}"
+  echo "${time_string}"
 
   # how do you do local vars on arithmetic?
   unset ms
@@ -323,24 +318,31 @@ function sshl() {
   local startTime=$(current_time_millis)
   local -i sleeptime=5;
   if [[ -z $1 ]]; then
+    echoErr "Ssh's to a host, retrying every 5 seconds until successful."
+    echoErr "Requires terminal-notifier to be on the path."
     echoErr 'usage: sshl <host> <command...>'
     return 1;
   fi;
 
-  local ip=$1;
+  local host=$1
+  local hostResolved=$(ssh -G "${host}" | awk '$1 == "hostname" { print $2 }');
   shift;
-  cmd=$@;
+
+  echoErr "Trying to ssh with:"
+  echoErr "  host: $hostResolved"
+  echoErr "  time between attempts: ${sleeptime}s"
+
   while true; do
-    ( ssh ${ip} 'uptime' > /dev/null 2>&1 ) && break;
-    echoErr "$(date) - Not connected [${ip}]: sleeping ${sleeptime} seconds";
+    ( ssh ${host} 'uptime' > /dev/null 2>&1 ) && break;
+    echoErr "$(date) - Not connected [${host}]: sleeping ${sleeptime} seconds";
     sleep ${sleeptime};
   done;
 
   if [[ $(command -v terminal-notifier) ]]; then
     local endTime=$(current_time_millis)
-    terminal-notifier -message "Connected to ${ip} after $(convert_time_string $(($endTime - $startTime)) )";
+    terminal-notifier -message "Connected to ${hostResolved} after $(convert_time_string $(($endTime - $startTime)) )";
   fi
-  ssh "${ip}" "${cmd}"
+  ssh "${host}" "$@"
 }
 
 SCRATCHPAD_DIR=~/scratchpad
@@ -358,14 +360,6 @@ function scratch() {
       cp "$f" "${SCRATCHPAD_DIR}"
     done
   fi
-}
-
-function unslacked() {
-  local channel=$1
-  shift
-  local message="$@"
-
-  curl --data "channel=#${channel}&message=${message}&username=joe" http://unslacked/
 }
 
 function httpServe() {

@@ -91,7 +91,7 @@ function last_command_exec_time() {
   fi
 }
 # start the timer on each command
-trap 'command_timer_start' DEBUG
+#trap 'command_timer_start' DEBUG
 
 function screen_command_exists() {
   [[ $(command -v screen) ]]
@@ -174,8 +174,8 @@ function rvmHacks() {
 
 function get_first_prompt_extras() {
   if [[ "$NUM_COMMANDS_THIS_SHELL" == "0" ]]; then
-    local hostDeclaration="On host: [$(hostname -f | sed -E "s/([^.]+)(.*)/${GREEN}\1${RESTORE}\2/")]"
-    local all_bits="Using:   bash[${YELLOW}${BASH}${RESTORE}]"
+    local hostDeclaration="On:         host[$(hostname -f | sed -E "s/([^.]+)(.*)/${GREEN}\1${RESTORE}\2/")]"
+    local all_bits="Using:      bash[${YELLOW}${BASH}${RESTORE}]"
     if ! [ -z "${BASH_VERSION}" ]; then
       all_bits="${all_bits} version[${GREEN}${BASH_VERSION}${RESTORE}]"
     fi
@@ -242,7 +242,9 @@ function all_the_things() {
 
   local startPromptAt=$(current_time_millis)
 
-  clear_line
+  if [[ "$NUM_COMMANDS_THIS_SHELL" != "0" ]]; then
+    clear_line
+  fi
 
   rvmHacks
 

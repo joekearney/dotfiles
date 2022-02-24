@@ -145,11 +145,13 @@ function setUpAliases() {
 
   alias rud='rvm use default'
 
-  alias atomd='atom ~/dotfiles ~/bin ~/.ssh ~'
+  alias atomd='atom ~/dotfiles ~/bin ~/.ssh ~/.machine-specific.bash'
   alias atoms='atom ~/scratchpad'
   alias tn='network-test.sh'
 
   alias clearDnsCache="sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder;say flushed"
+
+  alias backup-athens="cp ~/Documents/athens/index.transit ~/Documents/athens-backups/index.transit.bak-\$(date "+%Y-%m-%d-%H-%M")"
 
   if [ -f ~/.iterm2/imgcat ]; then
     alias imgcat=~/.iterm2/imgcat
@@ -181,6 +183,8 @@ function setExports() {
   export LANGUAGE=en_GB.UTF-8
 
   export GOPATH=~/git
+
+  export BASH_SILENCE_DEPRECATION_WARNING=1
 }
 
 function loadCredentials() {
