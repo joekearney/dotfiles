@@ -1,0 +1,9 @@
+#cloud-config
+
+users:
+  - name: joe
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/zcyJha9JC/BnlzgoyfkPvHumB6rZvjKFsX6Ak/+quC0E4kg2ZkdRvaqa5rNqi363lDJz9cvZglJXDRH8b3f9+b0yzMHzVStJl4045waNufyj7NH7Cf3XaoWLNMc30Tuw9Z/1wjctyxlR//2IQs3GDDCruPA1nY0QE+3m2UAPsGASgUKGct44DGHym1+Bq0Jrlus+xVuU1Wj6ULrJVMPJ0Xsp968bhvuO4HUJnr9nOCw2bjUqMo0XhJ2R9gLGdRHB/QStFuKoN9Kx1XVZOR7fohrCWoy9vYuyo96hi7B9aDO2bKd0YDRJFmCVbsREvvV/0EigkVlN3+JF9vZs5CuurxW3D54er2lZXIZ6BxQrqWuY+5pbeQQjcRKqf80eg4C771MDmFa4cuQ5qbfRgKBGAF7b3G5ByNnuFU6Czp8mbYbaabEMScBLcKseLS0wroOhgtDrlpsnTvVxCtEN1689eBR/guVymf6qZasMiUhGwd80gBKrffXvrjJHaor6hRdV9khuuBW9l9mWkNQGL3GNqvS5i8dghx3qWX5Qnekpfj3LQJICmO1kGCC/6sD8gKJEXSjzDv6XoC1B6W+7I3eWQkLv12F6/za15I86Yx13i3p1fVKyM4uA1SgQyBbMKXHbdNaYP17UciQ0700z+DbKsdAZEZkOskTSzZNfzB6PGQ== mail@joekearney.co.uk
+    shell: /bin/bash

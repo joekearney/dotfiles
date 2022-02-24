@@ -395,3 +395,18 @@ function javaHomePicker() {
     fi
   fi
 }
+
+# track brew installs
+function brew() {
+  is_install_command="no"
+  for i in "$@"; do
+    if [[ "${is_install_command}" == "yes" ]]; then
+      echo $i >> "${DOT_FILES_DIR}/config/homebrew-formulae"
+    elif [[ "$i" == "install" ]]; then
+      is_install_command="yes"
+    fi
+  done
+  sort -u -o "${DOT_FILES_DIR}/config/homebrew-formulae" "${DOT_FILES_DIR}/config/homebrew-formulae"
+
+  /usr/local/bin/brew "$@"
+}

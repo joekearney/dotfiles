@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#### FIG ENV VARIABLES ####
+# Please make sure this block is at the start of this file.
+[ -s ~/.fig/shell/pre.sh ] && source ~/.fig/shell/pre.sh
+#### END FIG ENV VARIABLES ####
+
 DEBUG=no
 if [[ "$DEBUG" == "yes" ]]; then
   set -x
@@ -83,7 +88,7 @@ function prependOrBringToFrontOfArray() {
       unset "array[$i]"
     fi
   done
-  echo "$newEntry:$(joinStrings ':' ${array[@]})"
+  echo "$newEntry:$(joinStrings ':' "${array[@]}")"
 }
 
 function sortOutPathEntries() {
@@ -119,8 +124,8 @@ function sortOutPathEntries() {
   fi
 
   # homebrew
-  prependToPath "$HOME/homebrew/bin"
-  export LD_LIBRARY_PATH=$HOME/homebrew/lib:$LD_LIBRARY_PATH
+  # prependToPath "$HOME/homebrew/bin"
+  # export LD_LIBRARY_PATH=$HOME/homebrew/lib:$LD_LIBRARY_PATH
 
   prependToPath "/snap/bin"
 
@@ -153,6 +158,8 @@ function setUpAliases() {
 
   alias clearDnsCache="sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder;say flushed"
 
+  alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+
   if [ -f ~/.iterm2/imgcat ]; then
     alias imgcat=~/.iterm2/imgcat
   fi
@@ -174,7 +181,7 @@ function setExports() {
     export LESS=' -R '
   fi
 
-  if command -v /usr/libexec/java_home > /dev/null && /usr/libexec/java_home -v 1.8 2&>1 > /dev/null; then
+  if command -v /usr/libexec/java_home > /dev/null && /usr/libexec/java_home -v 1.8 > /dev/null 2>&1; then
     export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
   fi
 
@@ -193,19 +200,19 @@ function loadCredentials() {
     done
   fi
 
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    keyPath=~/.ssh/id_rsa
-
-    if [ -f ${keyPath} ]; then
-      # check whether the identity is already in the agent
-      ssh-add -L | grep -qv ${keyPath}
-
-      # if not, add it to the agent
-      if [[ "$?" == "0" ]]; then
-        ssh-add -q ${keyPath}
-      fi
-    fi
-  fi
+  # if [[ "$OSTYPE" == "darwin"* ]]; then
+  #   keyPath=~/.ssh/id_rsa
+  #
+  #   if [ -f ${keyPath} ]; then
+  #     # check whether the identity is already in the agent
+  #     ssh-add -L | grep -qv ${keyPath}
+  #
+  #     # if not, add it to the agent
+  #     if [[ "$?" == "0" ]]; then
+  #       ssh-add -q ${keyPath}
+  #     fi
+  #   fi
+  # fi
 }
 function loadIfExists() {
   local f=$1
@@ -295,7 +302,7 @@ done
 if [[ $(command -v brew) && -f $(brew --prefix)/etc/bash_completion ]]; then
   echoDebug "Loading bash_completion file for brew"
   startTimer
-  . $(brew --prefix)/etc/bash_completion
+  . "$(brew --prefix)/etc/bash_completion"
   endTimer "load brew bash completions"
 fi
 # any custom ones
@@ -308,22 +315,32 @@ if [ -d ${DOT_FILES_DIR}/bash_completion ]; then
   done
 fi
 
-loadIfExists "~/programs/google-cloud-sdk/path.bash.inc"
-loadIfExists "~/programs/google-cloud-sdk/completion.bash.inc"
+loadIfExists "$HOME/programs/google-cloud-sdk/path.bash.inc"
+loadIfExists "$HOME/programs/google-cloud-sdk/completion.bash.inc"
 
 if which aws_completer > /dev/null 2>&1; then
   complete -C "$(which aws_completer)" aws
 fi
 
-loadIfExists "~/bin/local_completions.bash"
+loadIfExists "$HOME/bin/local_completions.bash"
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+loadIfExists "$SDKMAN_DIR/bin/sdkman-init.sh"
+
 
 # load custom prompt
 if [ -f ${DOT_FILES_DIR}/bash/bash_prompt.sh ]; then
   echoDebug "Loading bash prompt definition..."
-  . ${DOT_FILES_DIR}/bash/bash_prompt.sh
+  source "${DOT_FILES_DIR}/bash/bash_prompt.sh"
 fi
 
 loadCredentials
 
 FINISHED_LOADING_BASH_RC=current_time_millis
 echoDebug "Loading bash took $((FINISHED_LOADING_BASH_RC-STARTED_LOADING_BASH_RC))ms"
+
+#### FIG ENV VARIABLES ####
+# Please make sure this block is at the end of this file.
+[ -s ~/.fig/fig.sh ] && source ~/.fig/fig.sh
+#### END FIG ENV VARIABLES ####
