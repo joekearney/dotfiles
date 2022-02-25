@@ -11,7 +11,7 @@
 #
 # V0.4.1
 #
-
+exit
 # General Usage:
 #
 #  1. Source this file at the end of your bash profile so as not to interfere

@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# git stuff
-GIT_PS1_SHOWDIRTYSTATE=yes
-GIT_PS1_SHOWSTASHSTATE=yes
-GIT_PS1_SHOWUNTRACKEDFILES=yes
-GIT_PS1_SHOWCOLORHINTS=yes
-GIT_PS1_SHOWUPSTREAM="auto verbose"
-loadIfExists $DOT_FILES_DIR/git/git-prompt.sh
-
 ##################################################
 # The home directory (HOME) is replaced with a ~
 # The last pwdmaxlen characters of the PWD are displayed
@@ -78,20 +70,18 @@ function command_timer_stop() {
 
   if [[ "${start}" == "0" ]]; then
     # something broke, give up
-    last_command_exec_time_secs=0
+    last_command_exec_time_millis=0
   else
-    last_command_exec_time_secs=$((end - start))
+    last_command_exec_time_millis=$((end - start))
   fi
   unset command_in_progress_timer
 }
 # prints out the execution time of the last command
 function last_command_exec_time() {
-  if [[ "$last_command_exec_time_secs" != "" ]]; then
-    convert_time_string $last_command_exec_time_secs
+  if [[ "$last_command_exec_time_millis" != "" ]]; then
+    convert_time_string $last_command_exec_time_millis
   fi
 }
-# start the timer on each command
-trap 'command_timer_start' DEBUG
 
 function screen_command_exists() {
   [[ $(command -v screen) ]]
@@ -258,21 +248,35 @@ function all_the_things() {
 
 # print nice stuff if in interactive mode
 if [[ $- == *i* ]]; then
+  # start eagerly, so that we see how long it took to build the prompt
+  command_timer_start
+
+  # git stuff
+  GIT_PS1_SHOWDIRTYSTATE=yes
+  GIT_PS1_SHOWSTASHSTATE=yes
+  GIT_PS1_SHOWUNTRACKEDFILES=yes
+  GIT_PS1_SHOWCOLORHINTS=yes
+  GIT_PS1_SHOWUPSTREAM="auto verbose"
+  loadIfExists $DOT_FILES_DIR/git/git-prompt.sh
+
   get_first_prompt_extras
-fi
 
-if [[ "${TERM_PROGRAM:-${TERMINAL_EMULATOR}}" == "WarpTerminal" ]]; then
-  echoErr "Skipping fancy prompt"
-  # PS1="${user_colour}\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]$(hostname -s)\[$(tput sgr0)\]$(getBatteryStatus)\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE \[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] $(get_time_zone) \[$(tput sgr0)\]"
-else
-  # don't export this
-  PROMPT_COMMAND=all_the_things
+  if [[ "${TERM_PROGRAM:-${TERMINAL_EMULATOR}}" == "WarpTerminal" ]]; then
+    echoErr "Skipping fancy prompt"
+    # PS1="${user_colour}\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]$(hostname -s)\[$(tput sgr0)\]$(getBatteryStatus)\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE \[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] $(get_time_zone) \[$(tput sgr0)\]"
+  elif [[ "${PROMPT_COMMAND:-}" == *"all_the_things"* ]]; then
+    echoErr "PROMPT_COMMAND is already set [$PROMPT_COMMAND], not overwriting it."
+    echoErr "If you changed something in the prompt you may need a fully new shell."
+  else
+    # don't export this
+    PROMPT_COMMAND=all_the_things
 
-  . "$DOT_FILES_DIR/bash/bash-preexec.sh"
+    # . "$DOT_FILES_DIR/bash/bash-preexec.sh"
 
-  function preexec_start_timer() { command_timer_start; }
-  preexec_functions+=(preexec_start_timer)
+    function preexec_start_timer() { command_timer_start; }
+    preexec_functions+=(preexec_start_timer)
 
-  function precmd_stop_timer() { command_timer_stop; }
-  precmd_functions+=(precmd_stop_timer)
+    function precmd_stop_timer() { command_timer_stop; }
+    precmd_functions+=(precmd_stop_timer)
+  fi
 fi
