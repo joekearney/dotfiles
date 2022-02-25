@@ -64,7 +64,7 @@ function runTest() {
     for index in "${failedTargets[@]}"; do
       echoErr "  | failed: [${RED}${TARGETS[${index}]}${RESTORE}]"
     done
-    echoErr "  | failed ${RED}${numFailedTargets}${RESTORE}/$NUM_TARGETS instances of [$RED$name$RESTORE]" | indent " |"
+    echoErr "  | failed ${RED}${numFailedTargets}${RESTORE}/$NUM_TARGETS instances of [$RED$name$RESTORE]"
   fi
 
   echo $numFailedTargets

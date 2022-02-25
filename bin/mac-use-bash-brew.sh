@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 BREW_BASH_PATH=/usr/local/bin/bash
 
-if [[ "$1" == "--check" ]]; then
+if [[ "${1:-}" == "--check" ]]; then
   if [[ "$(which bash)" == "${BREW_BASH_PATH}" ]]; then
     exit 0
   else
@@ -10,9 +12,9 @@ if [[ "$1" == "--check" ]]; then
   fi
 fi
 
-if ! grep -v ${BREW_BASH_PATH} /etc/shells; then
-  echo /usr/local/bin/bash | sudo tee -a /etc/shells
+if ! grep ${BREW_BASH_PATH} /etc/shells; then
+  echo ${BREW_BASH_PATH} | sudo tee -a /etc/shells
 fi
 
-chsh -s /usr/local/bin/bash
-sudo chsh -s /usr/local/bin/bash
+chsh -s ${BREW_BASH_PATH}
+sudo chsh -s ${BREW_BASH_PATH}
