@@ -160,7 +160,6 @@ function clear_line() {
 }
 
 function get_first_prompt_extras() {
-
     local hostDeclaration="On:         host[$(hostname -f | sed -E "s/([^.]+)(.*)/${GREEN}\1${RESTORE}\2/")]"
     local all_bits="Using:      bash[${YELLOW}${BASH}${RESTORE}]"
     if ! [ -z "${BASH_VERSION}" ]; then
@@ -175,9 +174,9 @@ function get_first_prompt_extras() {
       fi
     fi
 
-    echo "${hostDeclaration}"
-    echo "${all_bits}"
-    echo ""
+    echoErr "${hostDeclaration}"
+    echoErr "${all_bits}"
+    echoErr ""
 }
 
 NUM_COMMANDS_THIS_SHELL=0
@@ -229,7 +228,11 @@ function all_the_things() {
   local hostname=$(hostname -s)
   local apwd=$(abbrev_pwd)
 
-  local last_command_exec_time_string=" in $(last_command_exec_time)"
+  local last_command_exec_time_string=""
+  local last_command_exec_time_ms="$(last_command_exec_time)"
+  if [[ "$last_command_exec_time_ms" != "" ]]; then
+    last_command_exec_time_string=" in ${last_command_exec_time_ms}"
+  fi
 
   local user_colour=$(get_user_colour)
 
@@ -253,10 +256,13 @@ function all_the_things() {
   ((prompt_creation_time_ms=endPromptAt-startPromptAt))
 }
 
-get_first_prompt_extras
+# print nice stuff if in interactive mode
+if [[ $- == *i* ]]; then
+  get_first_prompt_extras
+fi
 
 if [[ "${TERM_PROGRAM:-${TERMINAL_EMULATOR}}" == "WarpTerminal" ]]; then
-  echo "Skipping fancy prompt"
+  echoErr "Skipping fancy prompt"
   # PS1="${user_colour}\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]$(hostname -s)\[$(tput sgr0)\]$(getBatteryStatus)\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]$(abbrev_pwd)\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE \[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] $(get_time_zone) \[$(tput sgr0)\]"
 else
   # don't export this

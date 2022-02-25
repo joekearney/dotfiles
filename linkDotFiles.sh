@@ -18,7 +18,9 @@ if [[ "$1" == "--remove" ]]; then
 	ACTION=delete_link
 else
 	ACTION=create_link
-	echo "If you need to commit to git, remember to update your email in $HOME/.config/git/config, in a [user].email property."
+	if [[ "${SUPPRESS_GIT_CONFIG_EMAIL_MESSAGE:-}" != "yes" ]]; then
+		echo "If you need to commit to git, remember to update your email in $HOME/.config/git/config, in a [user].email property."
+	fi
 fi
 
 for f in .bashrc .bash_profile git/.gitconfig ; do

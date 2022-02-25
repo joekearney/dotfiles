@@ -3,20 +3,19 @@
 INCLUDE_SSH_CERTS=false
 DO_LINKING=true
 
+set -euo pipefail
 
-set -e
+SOURCE_DIR="$(dirname $0)"
+source "${SOURCE_DIR}/bash/bash-functions.sh"
+source "${SOURCE_DIR}/colour/.bash_color_vars"
 
-SOURCE_DIR=$(dirname $0)
-source ${SOURCE_DIR}/bash/bash-functions.sh
-source ${SOURCE_DIR}/colour/.bash_color_vars
-
-SOURCE_HOME=$(cd ~; pwd)
+SOURCE_HOME="$(cd ~ && pwd)"
 
 function copyFilesTo() {
   local TARGET_HOST=$1
 
   local TARGET_HOST_RESOLVED
-  TARGET_HOST_RESOLVED=$(ssh -G ${TARGET_HOST} | awk '$1 == "hostname" { print $2 }')
+  TARGET_HOST_RESOLVED="$(ssh -G ${TARGET_HOST} | awk '$1 == "hostname" { print $2 }')"
   echoErr "Processing for host [${RED}${TARGET_HOST}${RESTORE}], resolved to [${RED}${TARGET_HOST_RESOLVED}${RESTORE}]"
 
   local TARGET_HOME
@@ -47,7 +46,7 @@ function copyFilesTo() {
   echoErr
 }
 
-if [[ $1 == "" ]]; then
+if [[ ${1:-} == "" ]]; then
   echoErr "Usage: $0 <target_host> ..."
   exit 1
 fi

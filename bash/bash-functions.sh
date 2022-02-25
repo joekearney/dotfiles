@@ -11,7 +11,7 @@ if [[ "$DOT_FILES_DIR" == "" ]]; then
 fi
 
 function runCommand() {
-  if [[ "${ECHO_ONLY}" == "true" ]]; then
+  if [[ "${ECHO_ONLY:-false}" == "true" ]]; then
     echoErr "    [runCommand] $*"
   else
     echoErr "    [runCommand] $*"
@@ -220,17 +220,19 @@ function javaHomePicker() {
   fi
 }
 
-# track brew installs
-function brew() {
-  is_install_command="no"
-  for i in "$@"; do
-    if [[ "${is_install_command}" == "yes" ]]; then
-      echo $i >> "${DOT_FILES_DIR}/config/homebrew-formulae"
-    elif [[ "$i" == "install" ]]; then
-      is_install_command="yes"
-    fi
-  done
-  sort -u -o "${DOT_FILES_DIR}/config/homebrew-formulae" "${DOT_FILES_DIR}/config/homebrew-formulae"
+if [[ $(command -v brew) ]]; then
+  # track brew installs
+  function brew() {
+    is_install_command="no"
+    for i in "$@"; do
+      if [[ "${is_install_command}" == "yes" ]]; then
+        echo $i >> "${DOT_FILES_DIR}/config/homebrew-formulae"
+      elif [[ "$i" == "install" ]]; then
+        is_install_command="yes"
+      fi
+    done
+    sort -u -o "${DOT_FILES_DIR}/config/homebrew-formulae" "${DOT_FILES_DIR}/config/homebrew-formulae"
 
-  "$(which brew)" "$@"
-}
+    "$(which brew)" "$@"
+  }
+fi

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CODE_ROOT=$(cd ~/git/src; pwd)
+CODE_ROOT="$(cd ~ && pwd)/git/src"
 # TODO eventually ${CODE_ROOT}
 GITHUB_ROOT=${CODE_ROOT}/github.com
 
@@ -18,13 +18,15 @@ function g() {
   else
     local repoName=$1
     shift 1
-    local operation="$@"
-    local paths=($(find ${CODE_ROOT} -maxdepth 4 -type d -name ".git" -or -name "src" | egrep -i "/[^/]*${repoName}[^/]*/(.git|src)" | xargs dirname | sort -u))
+    local operation="$*"
+
+    local paths=()
+    while IFS='' read -r line; do array+=("$line"); done < <(find ${CODE_ROOT} -maxdepth 4 -type d -name ".git" -or -name "src" | egrep -i "/[^/]*${repoName}[^/]*/(.git|src)" | xargs dirname | sort -u)
 
     local count=${#paths[@]}
 
     if [[ "$count" == "1" ]]; then
-      $operation $paths
+      $operation "${paths[0]}"
       return $?
     elif (( $count > 1 )); then
       echo -e "Found $count directories matching [${WHITE}$repoName${RESTORE}]"
