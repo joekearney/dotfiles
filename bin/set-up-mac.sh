@@ -14,7 +14,7 @@ function installHomebrew() {
     echoErr "brew already installed"
     return
   else
-    mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   fi
 }
 
@@ -42,7 +42,7 @@ function maybeInstall() {
     echoErr "[brew install] ${package} already installed, skipping"
   else
     echoErr "[brew install] ${package} not yet installed, installing now..."
-    brew install ${package} $@
+    brew install ${package} "$@"
   fi
 }
 
@@ -51,7 +51,8 @@ function installBrewThings() {
 
   brew install \
     gzip lzip \
-    bash-completion tree
+    bash-completion tree htop shellcheck \
+    coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep
 
   # watch httpie git maven sbt parallel pdsh gpg pup jq diff-so-fancy xmlstarlet imagemagick shellcheck graphviz awscli libxml2 sox ffmpeg
 

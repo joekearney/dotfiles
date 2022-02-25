@@ -2,21 +2,25 @@
 
 set -e
 
-DOT_FILES_DIR=$(cd $(dirname $0) && pwd)
+DOT_FILES_DIR=$(cd "$(dirname $0)" && pwd)
 
-function echoErr() {
-  cat <<< "$@" 1>&2
+function create_link() {
+	local f="$1"
+	ln -sf $DOT_FILES_DIR/$f "$HOME/$(basename $f)"
 }
 
-for f in .bashrc .bash_profile .vimrc git/.gitconfig .screenrc .inputrc; do
-	ln -sf $DOT_FILES_DIR/$f ~/$(basename $f)
+function delete_link() {
+	local f="$1"
+	rm "$HOME/$(basename $f)"
+}
+
+if [[ "$1" == "--remove" ]]; then
+	ACTION=delete_link
+else
+	ACTION=create_link
+	echo "If you need to commit to git, remember to update your email in $HOME/.config/git/config, in a [user].email property."
+fi
+
+for f in .bashrc .bash_profile git/.gitconfig ; do
+	$ACTION "$f"
 done
-
-DROPBOX_LOCAL_ENV="~/Dropbox/.local_env.sh"
-if [[ -f "${DROPBOX_LOCAL_ENV}" ]]; then
-	ln -s "${DROPBOX_LOCAL_ENV}" $(basename "${DROPBOX_LOCAL_ENV}")
-fi
-
-if [[ ${SUPPRESS_GIT_CONFIG_EMAIL_MESSAGE} != "yes" ]]; then
-	echoErr "If you need to commit to git, remember to update your email in $HOME/.config/git/config, in a [user].email property."
-fi

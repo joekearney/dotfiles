@@ -8,8 +8,8 @@
 
 [user]
 # set email in $HOME/.config/git/config
-  name = Joe Kearney
-	email = jjk@soundcloud.com
+	name = Joe Kearney
+	email = mail@joekearney.co.uk
 
 [color]
   diff = auto
@@ -57,3 +57,5 @@
   serve = "daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/"
   root = !pwd
   change-commits = "!f() { VAR=$1; OLD=$2; NEW=$3; shift 3; git filter-branch --env-filter \"if [[ \\\"$`echo $VAR`\\\" = '$OLD' ]]; then export $VAR='$NEW'; fi\" $@; }; f "
+[init]
+	defaultBranch = main
