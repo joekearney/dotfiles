@@ -82,11 +82,12 @@ function prependOrBringToFrontOfArray() {
   echo "$newEntry:$(joinStrings ':' ${array[*]})"
 }
 
+function prependToPath() {
+  local newEntry=$1
+  export PATH=$(prependOrBringToFrontOfArray $PATH $newEntry ':')
+}
+
 function sortOutPathEntries() {
-  function prependToPath() {
-    local newEntry=$1
-    export PATH=$(prependOrBringToFrontOfArray $PATH $newEntry ':')
-  }
 
   # Add gnu niceness. Probably on a mac if we have to do this
   if [ -d /usr/local/opt/coreutils/libexec/gnubin ]; then

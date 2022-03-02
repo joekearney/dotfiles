@@ -236,3 +236,49 @@ if [[ $(command -v brew) ]]; then
     "$(which brew)" "$@"
   }
 fi
+
+function maybeRunUpdate() {
+  local mainCommand=$1
+  shift
+
+  local label
+  label="$(printf '%-10s\n' [${mainCommand}])"
+
+  if [[ "$(command -v ${mainCommand})" ]]; then
+    local result="pass"
+    while [[ "$1" != "" ]]; do
+      local itemCommand="$1"
+      shift
+
+      if [[ "$result" == "pass" ]]; then
+        echo "Running update command [$itemCommand]..." | indent "$label" >&2
+        (bash -ce "$itemCommand" 2>&1) | indent "$label" >&2
+
+        if [ $? ]; then
+          result="pass"
+        else
+          result="fail"
+        fi
+
+      else
+        echo "Skipping [$itemCommand] after earlier failure" | indent "$label" >&2
+      fi
+    done
+  else
+    echo "${mainCommand} was not found, skipping" | indent "$label" >&2
+  fi
+}
+
+function run-updates() {
+  if [[ $(type -t machine-specific-run-updates) == function ]]; then
+    machine-specific-run-updates
+  else
+    echoErr "No machine-specific updaters found"
+  fi
+
+  maybeRunUpdate "apt-get" "sudo apt-get update" "sudo apt-get upgrade"
+  maybeRunUpdate "brew" "brew update" "brew upgrade" "brew cleanup -s"
+  maybeRunUpdate "gcloud" "gcloud components update --quiet"
+  maybeRunUpdate "npm" "npm upgrade -g" # update is a synonym
+  maybeRunUpdate "mas" "mas upgrade"
+}
