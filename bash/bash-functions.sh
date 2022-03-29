@@ -270,6 +270,9 @@ function maybeRunUpdate() {
 }
 
 function run-updates() {
+  # we know we need sudo, so make sure access works eagerly
+  sudo --validate
+
   if [[ $(type -t machine-specific-run-updates) == function ]]; then
     machine-specific-run-updates
   else
@@ -277,7 +280,7 @@ function run-updates() {
   fi
 
   maybeRunUpdate "apt-get" "sudo apt-get update" "sudo apt-get upgrade"
-  maybeRunUpdate "brew" "brew update" "brew upgrade" "brew cleanup -s"
+  maybeRunUpdate "brew" "brew update" "HOMEBREW_NO_ENV_HINTS=true brew upgrade" "brew cleanup -s"
   maybeRunUpdate "gcloud" "gcloud components update --quiet"
   maybeRunUpdate "npm" "npm upgrade -g" # update is a synonym
   maybeRunUpdate "mas" "mas upgrade"
