@@ -229,8 +229,7 @@ function sensibleBashDefaults() {
   # Useful timestamp format
   HISTTIMEFORMAT='%F %T '
 
-  # this is a safe and sensible umask
-  umask 027
+  umask 022
 }
 
 sortOutPathEntries
