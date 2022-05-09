@@ -248,7 +248,7 @@ loadIfExists "$DOT_FILES_DIR/colour/.bash_color_vars"
 loadIfExists "$HOME/.rvm/scripts/rvm"
 
 # load functions
-for thing in bash git sbt tunnelblick; do
+for thing in bash git sbt; do
   loadIfExists "${DOT_FILES_DIR}/$thing/$thing-functions.sh"
 done
 
