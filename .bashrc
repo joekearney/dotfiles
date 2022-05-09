@@ -116,6 +116,10 @@ function sortOutPathEntries() {
   # prependToPath "$HOME/homebrew/bin"
   # export LD_LIBRARY_PATH=$HOME/homebrew/lib:$LD_LIBRARY_PATH
 
+  if [ -d /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  fi
+
   prependToPath "/snap/bin"
 
   prependToPath "/usr/local/bin"
@@ -262,21 +266,18 @@ fi
 loadIfExists "$HOME/.machine-specific.bash"
 loadIfExists "$HOME/.local_env.sh"
 
-# from brew-installed sources if they exist
+# load brew-installed completions if they exist
 # this is really expensive
 if [[ $(command -v brew) && -f $(brew --prefix)/etc/bash_completion ]]; then
-  echoDebug "Loading bash_completion file for brew"
-  startTimer
-  . "$(brew --prefix)/etc/bash_completion"
-  endTimer "load brew bash completions"
+  BREW_PREFIX="$(brew --prefix)"
+  loadIfExists "$BREW_PREFIX/etc/bash_completion"
+  loadIfExists "$BREW_PREFIX/etc/profile.d/bash_completion.sh"
 fi
-# any custom ones
+
+# load custom bash completion scripts
 if [ -d ${DOT_FILES_DIR}/bash_completion ]; then
   for b in ${DOT_FILES_DIR}/bash_completion/*; do
-    startTimer
-    echoDebug "Loading bash_completion file [$b]"
-    . $b
-    endTimer "load bash completions from $b"
+    loadIfExists "$b"
   done
 fi
 
@@ -285,10 +286,7 @@ export SDKMAN_DIR="$HOME/.sdkman"
 loadIfExists "$SDKMAN_DIR/bin/sdkman-init.sh"
 
 # load custom prompt
-if [ -f ${DOT_FILES_DIR}/bash/bash_prompt.sh ]; then
-  echoDebug "Loading bash prompt definition..."
-  source "${DOT_FILES_DIR}/bash/bash_prompt.sh"
-fi
+loadIfExists "${DOT_FILES_DIR}/bash/bash_prompt.sh"
 
 loadCredentials
 
