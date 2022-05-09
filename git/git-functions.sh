@@ -7,13 +7,13 @@ GITHUB_ROOT=${CODE_ROOT}/github.com
 # do something given a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
 function g() {
   if [[ "$1" == "" || "$2" == "" ]]; then
-    echo "Usage: ${FUNCNAME[0]} <repo-name> <operation>"
-    echo ""
-    echo "Passes the directory of the repo to the operation as an argument"
-    echo "Example:"
-    echo "  g <repo> atom"
-    echo "runs:"
-    echo "  atom <repo-dir>"
+    echoErr "Usage: ${FUNCNAME[0]} <repo-name> <operation>"
+    echoErr ""
+    echoErr "Passes the directory of the repo to the operation as an argument"
+    echoErr "Example:"
+    echoErr "  g <repo> atom"
+    echoErr "runs:"
+    echoErr "  atom <repo-dir>"
     return 1
   else
     local repoName=$1
@@ -21,7 +21,12 @@ function g() {
     local operation="$*"
 
     local paths=()
-    while IFS='' read -r line; do array+=("$line"); done < <(find ${CODE_ROOT} -maxdepth 4 -type d -name ".git" -or -name "src" | egrep -i "/[^/]*${repoName}[^/]*/(.git|src)" | xargs dirname | sort -u)
+    while IFS='' read -r line; do
+      paths+=("$line")
+    done < <(find ${CODE_ROOT} -maxdepth 4 -type d -name ".git" | \
+      egrep -i "/[^/]*${repoName}[^/]*/(.git|src)" | \
+      xargs dirname | \
+      sort -u)
 
     local count=${#paths[@]}
 
@@ -29,18 +34,17 @@ function g() {
       $operation "${paths[0]}"
       return $?
     elif (( $count > 1 )); then
-      echo -e "Found $count directories matching [${WHITE}$repoName${RESTORE}]"
       local index=1
       for path in "${paths[@]}"; do
         local parentDir=$(dirname $path)
         local head=$(dirname $parentDir)
         local middle=$(basename $parentDir)
         local tail=$(basename $path)
-        echo "  [${GREEN}$index${RESTORE}] ${head}/${YELLOW}${middle}${RESTORE}/${GREEN}${tail}${RESTORE}"
+        echoErr "  [${GREEN}$index${RESTORE}] ${head}/${YELLOW}${middle}${RESTORE}/${GREEN}${tail}${RESTORE}"
         ((index=index+1))
       done
 
-      echo -n "Enter an repo to use, or <enter> to stop: "
+      echoErr -n "Enter an repo to use, or <enter> to stop: "
       read g
       if [[ "$g" != "" ]]; then
         if [[ "$g" -le "$count" ]]; then
@@ -48,12 +52,12 @@ function g() {
           $operation ${paths[gotoIndex]}
           return $?
         else
-          echo -e "Invalid index [${RED}$g${RESTORE}]"
+          echoErr -e "Invalid index [${RED}$g${RESTORE}]"
           return 1
         fi
       fi
     else
-      echo -e "Found no directories matching [${RED}$repoName${RESTORE}]"
+      echoErr -e "Found no directories matching [${RED}$repoName${RESTORE}]"
       return 1
     fi
   fi
