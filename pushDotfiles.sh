@@ -1,7 +1,7 @@
 #!/bin/bash
 
-INCLUDE_SSH_CERTS=false
-DO_LINKING=true
+INCLUDE_SSH_CERTS="false"
+DO_LINKING="true"
 
 set -euo pipefail
 

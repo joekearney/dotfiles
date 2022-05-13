@@ -294,3 +294,11 @@ function man() {
         LESS_TERMCAP_us="$(printf "\e[1;32m")" \
             man "$@"
 }
+
+function is_mac() {
+  [[ "$(uname)" =~ "Darwin" ]]
+}
+
+function is_linux() {
+  [[ "$(uname)" =~ "Linux" ]]
+}

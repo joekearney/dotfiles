@@ -4,3 +4,4 @@ target/
 .ivy2/
 .sbt/
 .credentials/
+.bash_profile
