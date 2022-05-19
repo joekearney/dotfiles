@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 
+hostname
 echo "Cores:  $(nproc)"
 echo "Memory: $(free -h | grep "^Mem" | awk '{print $2}')"
