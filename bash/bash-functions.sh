@@ -272,9 +272,9 @@ function maybeRunUpdate() {
   fi
 }
 
-function run-updates() {
-  if [[ $(type -t machine-specific-run-updates) == function ]]; then
-    machine-specific-run-updates
+function runUpdates() {
+  if [[ $(type -t machineSpecificRunUpdates) == function ]]; then
+    machineSpecificRunUpdates
   else
     echoErr "No machine-specific updaters found"
   fi

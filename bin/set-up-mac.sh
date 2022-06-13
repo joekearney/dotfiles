@@ -121,4 +121,4 @@ setupDotFiles
 # load everything !!!
 source ~/.bashrc
 
-${DOTFILES_BIN}/run-updates
+${DOTFILES_BIN}/runUpdates
