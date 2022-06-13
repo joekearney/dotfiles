@@ -1,8 +1,18 @@
 #!/bin/bash
 
 CODE_ROOT="$(cd ~ && pwd)/git/src"
-# TODO eventually ${CODE_ROOT}
-GITHUB_ROOT=${CODE_ROOT}/github.com
+
+function findGitRepoPaths() {
+  local repoName=${1}
+  find ${CODE_ROOT} -maxdepth 4 -type d -name ".git" | \
+    egrep -i "/[^/]*${repoName}[^/]*/(.git|src)" | \
+    xargs dirname | \
+    sort -u
+}
+
+function listGitRepos() {
+  findGitRepoPaths ".*" | xargs basename
+}
 
 # do something given a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
 function g() {
@@ -23,10 +33,7 @@ function g() {
     local paths=()
     while IFS='' read -r line; do
       paths+=("$line")
-    done < <(find ${CODE_ROOT} -maxdepth 4 -type d -name ".git" | \
-      egrep -i "/[^/]*${repoName}[^/]*/(.git|src)" | \
-      xargs dirname | \
-      sort -u)
+    done < <(findGitRepoPaths "${repoName}")
 
     local count=${#paths[@]}
 
@@ -70,10 +77,11 @@ function _do_with_git_complete_options() {
   local curr_arg=${COMP_WORDS[COMP_CWORD]}
 
   # get the list of git repos in known positions
+  declare -a repos
 
   # this comment syntax for a multiline command is a pretty horrific abuse of
   # substitution, inspired by this: http://stackoverflow.com/questions/9522631
-  local repos=$(find                                                                       \
+  repos=$(find                                                                       \
           ${CODE_ROOT}                    `# assumed base of where all of your repos live` \
           -mindepth 2 -maxdepth 4         `# either at ${CODE_ROOT}/*/.git or ${CODE_ROOT}/*/*/.git`     \
           -type d                         `# looking for directories`                      \
@@ -91,36 +99,17 @@ function cdg() {
   g $1 "cd"
   return $?
 }
-# cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name,
-# and do git pull
-function cdgp() {
-  cdg $1 && git pull
+
+function codeg() {
+  g $1 "code"
 }
-
-# Pulls a repo up to date, switches to that directory, and opens it in Atom
-function cdga() {
-  local repoIsh=$1
-
-  if cdg ${repoIsh}; then
-    local thisDir=$(basename ${PWD})
-    local parentDir=$(basename $(dirname ${PWD}))
-    local prettyName=${GREEN}${parentDir}/${thisDir}${RESTORE}
-
-    echo "Synchronising Git repo [${prettyName}]..." && \
-    git pull && \
-    echo "Opening Atom in Git repo [${prettyName}]..." && \
-    atom .
-  fi
-}
-
-# cd to a directory at git/<name> or git/parent/<name> by giving a substring of the repo name
 function atomg() {
   g $1 "atom"
 }
-complete -F _do_with_git_complete_options cdg
-complete -F _do_with_git_complete_options cdgp
-complete -F _do_with_git_complete_options cdga
-complete -F _do_with_git_complete_options atomg
+
+for c in cdg atomg codeg; do
+  complete -F _do_with_git_complete_options "$c"
+done
 
 function gitClone() {
   if [[ "$#" != "3" ]]; then
