@@ -24,10 +24,11 @@ function pushDotFilesTo() {
     echoErr "Usage: pushDotFilesTo <host>"
   else
     local host=$1
-    if ! type rc-files-to-push > /dev/null; then
-      alias rc-files-to-push=true
+    if ! type rc-files-to-push &> /dev/null; then
+      "${DOT_FILES_DIR}/pushDotFiles.sh" "$host"
+    else
+      rc-files-to-push | xargs "${DOT_FILES_DIR}/pushDotFiles.sh" "$host"
     fi
-    rc-files-to-push | xargs "${DOT_FILES_DIR}/pushDotFiles.sh" "$host"
   fi
 }
 function pushDotFilesAndSshTo() {
