@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
-hostname
-echo "Cores:  $(nproc)"
-echo "Memory: $(free -h | grep "^Mem" | awk '{print $2}')"
+function prettyPrint() {
+  local name="$1"
+  local value="$2"
+  printf "%-15s %s\n" "$name:" "$value"
+}
+
+prettyPrint "Host" "$(hostname)"
+prettyPrint "Uptime" "$(uptime --pretty)"
+prettyPrint "Cores" "$(nproc)"
+prettyPrint "Memory" "$(free -h | grep "^Mem" | awk '{print $2}')"
