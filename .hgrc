@@ -1,0 +1,14 @@
+[ui]
+merge=idea
+
+[merge-tools]
+idea =
+idea.check = prompt
+idea.gui = True
+idea.args = merge $other $local $base $output
+idea.priority = 100
+idea.executable = /usr/local/bin/idea
+
+[alias]
+whatsout = status --rev p4base --no-status
+whatsout-dirs = !$HG whatsout | xargs dirname | sort -u
