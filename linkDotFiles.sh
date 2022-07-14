@@ -23,6 +23,6 @@ else
 	fi
 fi
 
-for f in .bashrc .bash_profile git/.gitconfig .inputrc ; do
+for f in .bashrc .bash_profile git/.gitconfig .inputrc .hgrc ; do
 	$ACTION "$f"
 done

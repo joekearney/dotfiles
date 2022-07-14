@@ -126,6 +126,8 @@ function sortOutPathEntries() {
   prependToPath "$HOME/bin"
 }
 
+export DOTFILE_EDITOR_DIRS="$HOME/dotfiles $HOME/bin $HOME/.ssh $HOME/.machine-specific.bash"
+
 function setUpAliases() {
   alias ls='ls --color=auto'
   alias ll='ls -lh'
@@ -140,8 +142,8 @@ function setUpAliases() {
   #
   # alias rud='rvm use default'
 
-  alias atomd='atom ~/dotfiles ~/bin ~/.ssh ~/.machine-specific.bash'
-  alias atoms='atom ~/scratchpad'
+  alias atomd="atom \$DOTFILE_EDITOR_DIRS"
+  alias coded="code \$DOTFILE_EDITOR_DIRS"
   alias tn='network-test.sh'
 
   alias clearDnsCache="sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder;say flushed"
