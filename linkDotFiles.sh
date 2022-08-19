@@ -2,7 +2,7 @@
 
 set -e
 
-DOT_FILES_DIR=$(cd "$(dirname $0)" && pwd)
+DOT_FILES_DIR="${DOT_FILES_DIR:-"$(cd "$(dirname $0)" && pwd)"}"
 
 function create_link() {
 	local f="$1"
@@ -23,6 +23,8 @@ else
 	fi
 fi
 
-for f in .bashrc .bash_profile git/.gitconfig .inputrc .hgrc ; do
-	$ACTION "$f"
+for f in .bashrc .bash_profile "git/.gitconfig" .inputrc .hgrc ; do
+	if [[ -f "$DOT_FILES_DIR/$f" ]]; then
+		$ACTION "$f"
+	fi
 done
