@@ -4,6 +4,7 @@ gdate
 hg
 http
 httpie
+jq
 parallel
 telnet
 terminal-notifier
