@@ -151,7 +151,7 @@ function clear_line() {
 
 function get_first_prompt_extras() {
     local hostDeclaration="On:         host[$(hostname -f | sed -E "s/([^.]+)(.*)/${GREEN}\1${RESTORE}\2/")]"
-    local all_bits="Using:      bash[${YELLOW}${BASH}${RESTORE}]"
+    local all_bits="Using:      shell[${YELLOW}${SHELL}${RESTORE}]"
     if ! [ -z "${BASH_VERSION}" ]; then
       all_bits="${all_bits} version[${GREEN}${BASH_VERSION}${RESTORE}]"
     fi

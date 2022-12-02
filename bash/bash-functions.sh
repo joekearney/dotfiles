@@ -280,7 +280,7 @@ function runUpdates() {
     echoErr "No machine-specific updaters found"
   fi
 
-  maybeRunUpdate "apt-get" "sudo apt-get update" "sudo apt-get upgrade"
+  maybeRunUpdate "apt-get" "sudo apt-get update" "sudo apt-get upgrade --yes"
   maybeRunUpdate "brew" "brew update" "brew upgrade" "brew cleanup -s"
   maybeRunUpdate "gcloud" "gcloud components update --quiet"
   maybeRunUpdate "npm" "npm upgrade -g" # update is a synonym

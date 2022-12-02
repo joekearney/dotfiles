@@ -174,6 +174,9 @@ function setExports() {
 
   # Suppressing "The default interactive shell is now zsh" message in macOS Catalina
   export BASH_SILENCE_DEPRECATION_WARNING=1
+
+  # Don't uninstall old bash versions. If a new version is broken, this means no shell.
+  export HOMEBREW_NO_CLEANUP_FORMULAE=bash
 }
 
 function loadCredentials() {
