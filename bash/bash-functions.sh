@@ -348,3 +348,81 @@ function fixBrewVersion() {
   echo "Linked ${formula} version ${version}"
   ls -l "${symlinkName}"
 }
+
+PICTURES_LOCAL_ROOT="/Volumes/Samsung_T5/pictures-backup"
+
+function uploadPicturesToGen10() {
+  local year="${1}"
+  if [[ "$year" == "" ]]; then
+    echo "Specify a year for which to upload pictures"
+    return 1
+  fi
+
+  local dryRun=""
+  if [[ "$2" == "--dryRun" ]]; then
+    dryRun="-n"
+  fi
+
+  local sourceRoot="${PICTURES_LOCAL_ROOT}/${year}"
+  local destHost="gen10.joe-j-kearney.gmail.com.beta.tailscale.net"
+  local destRoot="/data/media/pictures/${year}"
+
+  echo "Syncing pictures for $year with command [rsync -av --progress ${sourceRoot}/ ${destHost}:${destRoot}/]..."
+
+  rsync $dryRun -av --progress \
+    "${sourceRoot}/" \
+    "${destHost}:${destRoot}/"
+
+  # rclone copy $dryRun --progress \
+  #   --transfers 20 \
+  #   "${sourceRoot}/" \
+  #   "gen10:${destRoot}/"
+
+  uploadLightroomCatalogBackupToGen10 "${dryRun}"
+}
+
+LIGHTROOM_CATALOGUE_GDRIVE_BACKUP_DIR="/Users/joe/Google Drive/My Drive/backup/lightroom-catalog-backups"
+function uploadLightroomCatalogBackupToGen10() {
+  local rsyncDryRun="$1"
+
+  local version
+  version=$(ls -r "${LIGHTROOM_CATALOGUE_GDRIVE_BACKUP_DIR}" | head -n 1)
+  local backupDir="${LIGHTROOM_CATALOGUE_GDRIVE_BACKUP_DIR}/${version}"
+  local backupFiles=("${backupDir}"/*)
+  if [[ "${#backupFiles[@]}" != "1" ]]; then
+    echoErr "Found more than one file in the backup directory. Unexpected!"
+    echoErr "Directory:"
+    echoErr "    ${backupDir}"
+    echoErr
+    echoErr "contains:"
+    ls -lAh "${backupDir}" >&2
+    return 1
+  fi
+
+  local backupFile="${backupFiles[0]}"
+  local destHost="gen10.joe-j-kearney.gmail.com.beta.tailscale.net"
+  local destRoot="/data/media/pictures/backup/lightroom-catalogue-backup"
+
+  echoErr "Backing up Lightroom catalogue version [${version}]..."
+  echoErr "    from: ${backupFile}"
+  echoErr "    to:   ${destHost}:${destRoot}/"
+  rsync ${rsyncDryRun} -av --progress \
+    "${backupFile}" \
+    "${destHost}:${destRoot}/"
+}
+
+function uploadPicturesToGoogleDrive() {
+  local year="${1:-20[0-2][0-9]}"
+  local includePattern="/${year}/**/*"
+  local sourceRoot="${PICTURES_LOCAL_ROOT}"
+  local destRoot="google-drive-pictures:"
+
+  echo "Syncing pictures with include pattern: ${includePattern}..."
+
+  rclone sync \
+    --progress \
+    --transfers 20 \
+    --include "${includePattern}" \
+    "${sourceRoot}" \
+    "${destRoot}"
+}
