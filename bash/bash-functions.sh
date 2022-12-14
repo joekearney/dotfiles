@@ -311,10 +311,21 @@ function fixBrewVersion() {
   local formula="${1}"
   local version="${2}"
 
-  if [[ "$#" != "2" ]]; then
+  if (( $# < 0 || $# > 2 )); then
     echo "Usage:   fixBrewVersion <formula> <version>"
     echo "Example: fixBrewVersion bash 5.2.12"
     return 1
+  fi
+
+  local symlinkName="/opt/homebrew/bin/${formula}"
+  local formulaDir="/opt/homebrew/Cellar/${formula}"
+
+  if [[ "$formula" != "" ]]; then
+    echo "Available versions for [$formula]:"
+    ls "${formulaDir}" | indent
+  fi
+  if [[ "$version" == "" ]]; then
+    return 2
   fi
 
   echo "Changing linked version of ${formula} to ${version}..."
@@ -323,15 +334,12 @@ function fixBrewVersion() {
   local formulaDir="/opt/homebrew/Cellar/${formula}"
   local actualBinary="${formulaDir}/${version}/bin/${formula}"
 
-  echo -n "Available versions: "
-  ls --color=none -C "${formulaDir}"
-
   if [[ ! -f "${actualBinary}" ]]; then
     echo "Binary does not exist at: ${actualBinary}"
     return 1
   fi
 
-  if [[ ! -f "${symlinkName}" ]]; then
+  if [[ ! -L "${symlinkName}" ]]; then
     echo "Symlink does not exist at: ${symlinkName}"
     return 1
   fi
