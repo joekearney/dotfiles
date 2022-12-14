@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $(dirname $0)/git-functions.sh
+. "$(dirname ${0})/git-functions.sh"
 
 functionName=$1
 if [[ "$functionName" == "" ]]; then
