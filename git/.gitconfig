@@ -2,7 +2,6 @@
   excludesfile = ~/dotfiles/git/global_gitignore
 	attributesfile = ~/dotfiles/git/.global_gitattributes
 	autocrlf = input
-	sshCommand = /usr/local/bin/ssh
 
 [push]
   default = current
