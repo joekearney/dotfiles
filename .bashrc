@@ -293,6 +293,8 @@ loadIfExists "$SDKMAN_DIR/bin/sdkman-init.sh"
 # load custom prompt
 loadIfExists "${DOT_FILES_DIR}/bash/bash_prompt.sh"
 
+loadIfExists "$HOME/.cargo/env"
+
 loadCredentials
 
 FINISHED_LOADING_BASH_RC=current_time_millis
