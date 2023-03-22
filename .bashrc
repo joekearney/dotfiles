@@ -189,7 +189,7 @@ function loadCredentials() {
 }
 function loadIfExists() {
   local f=$1
-  if [ -f $f ]; then
+  if [[ "$f" != "" && -f $f ]]; then
     echoDebug "Sourcing file $f..."
     startTimer
     . $f
