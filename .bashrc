@@ -189,7 +189,7 @@ function loadCredentials() {
 }
 function loadIfExists() {
   local f=$1
-  if [ -f $f ]; then
+  if [[ "$f" != "" && -f $f ]]; then
     echoDebug "Sourcing file $f..."
     startTimer
     . $f
@@ -292,6 +292,8 @@ loadIfExists "$SDKMAN_DIR/bin/sdkman-init.sh"
 
 # load custom prompt
 loadIfExists "${DOT_FILES_DIR}/bash/bash_prompt.sh"
+
+loadIfExists "$HOME/.cargo/env"
 
 loadCredentials
 
