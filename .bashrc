@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Fig pre block. Keep at the top of this file.
+[[ -f "$HOME/.fig/shell/bashrc.pre.bash" ]] && builtin source "$HOME/.fig/shell/bashrc.pre.bash"
+
 function echoErr() {
   cat <<< "$@" 1>&2
 }
@@ -121,6 +124,7 @@ function sortOutPathEntries() {
   fi
 
   prependToPath "/snap/bin"
+  prependToPath "$HOME/.local/bin"
 
   prependToPath "/usr/local/bin"
   prependToPath "$HOME/bin"
@@ -299,3 +303,6 @@ loadCredentials
 
 FINISHED_LOADING_BASH_RC=current_time_millis
 echoDebug "Loading bash took $((FINISHED_LOADING_BASH_RC-STARTED_LOADING_BASH_RC))ms"
+
+# Fig post block. Keep at the bottom of this file.
+[[ -f "$HOME/.fig/shell/bashrc.post.bash" ]] && builtin source "$HOME/.fig/shell/bashrc.post.bash"
