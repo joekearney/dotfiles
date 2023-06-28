@@ -426,3 +426,13 @@ function uploadPicturesToGoogleDrive() {
     "${sourceRoot}" \
     "${destRoot}"
 }
+
+function watch() {
+  while true; do
+    clear
+    echo "$(date) -> command: $*"
+    echo "-----------------------"
+    "$@"
+    sleep 2
+  done
+}
