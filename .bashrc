@@ -87,7 +87,11 @@ function prependOrBringToFrontOfArray() {
 
 function prependToPath() {
   local newEntry=$1
-  export PATH=$(prependOrBringToFrontOfArray $PATH $newEntry ':')
+  if [[ "$newEntry" = *" "* ]]; then
+    echoErr "PATH entries must not contain spaces: [$newEntry]. This entry will not be added."
+  else
+    export PATH=$(prependOrBringToFrontOfArray $PATH $newEntry ':')
+  fi
 }
 
 function sortOutPathEntries() {
