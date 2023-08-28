@@ -349,18 +349,40 @@ function fixBrewVersion() {
   ls -l "${symlinkName}"
 }
 
-PICTURES_LOCAL_ROOT="/Volumes/Samsung_T5/pictures-backup"
+function uploadPicturesToGen10All() {
+  local dryRun=""
+  if [[ "${1:-}" == "--dryRun" ]]; then
+    dryRun="$1"
+    shift
+  fi
 
+  while read -r year; do
+    echo "Uploading $year to gen10..."
+
+    uploadPicturesToGen10 "$year" "$dryRun" "--noCatalogBackup"
+
+  done < <(ls "$PICTURES_LOCAL_ROOT" | grep -E "[0-9]+")
+}
+
+PICTURES_LOCAL_ROOT="/Volumes/T7 Shield/pictures"
 function uploadPicturesToGen10() {
   local year="${1}"
   if [[ "$year" == "" ]]; then
     echo "Specify a year for which to upload pictures"
     return 1
   fi
+  shift
 
   local dryRun=""
-  if [[ "$2" == "--dryRun" ]]; then
+  if [[ "$1" == "--dryRun" ]]; then
     dryRun="-n"
+    shift
+  fi
+
+  local backupUpload="yes"
+  if [[ "$1" == "--noCatalogBackup" ]]; then
+    backupUpload="no"
+    shift
   fi
 
   local sourceRoot="${PICTURES_LOCAL_ROOT}/${year}"
@@ -378,7 +400,9 @@ function uploadPicturesToGen10() {
   #   "${sourceRoot}/" \
   #   "gen10:${destRoot}/"
 
-  uploadLightroomCatalogBackupToGen10 "${dryRun}"
+  if [[ "$backupUpload" == "yes" ]]; then
+    uploadLightroomCatalogBackupToGen10 "${dryRun}"
+  fi
 }
 
 LIGHTROOM_CATALOGUE_GDRIVE_BACKUP_DIR="/Users/joe/Google Drive/My Drive/backup/lightroom-catalog-backups"
@@ -406,7 +430,7 @@ function uploadLightroomCatalogBackupToGen10() {
   echoErr "Backing up Lightroom catalogue version [${version}]..."
   echoErr "    from: ${backupFile}"
   echoErr "    to:   ${destHost}:${destRoot}/"
-  rsync ${rsyncDryRun} -av --progress \
+  rsync ${rsyncDryRun} -av -i --progress \
     "${backupFile}" \
     "${destHost}:${destRoot}/"
 }
