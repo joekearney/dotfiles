@@ -29,6 +29,12 @@ function abbrev_pwd() {
     fi
 }
 
+function get_prompt_overrides() {
+  if [[ $(type -t machineSpecificPromptOverrides) == function ]]; then
+    machineSpecificPromptOverrides
+  fi
+}
+
 function getBatteryStatus() {
   if [[ "$(command -v battery)" ]]; then
     local value=$(battery)
@@ -237,8 +243,10 @@ function all_the_things() {
 
   shellTitle "${shellPrefix}$(basename "${apwd}")"
 
+  local overrides="$(get_prompt_overrides)"
+
   # prompt formatting helped by http://bashrcgenerator.com/
-  __git_ps1 "${user_colour}\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]${hostname}\[$(tput sgr0)\]${batteryStatus}\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]${apwd}\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE" "\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]$(date +'%Z') \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]${last_command_exec_time_string})\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+  __git_ps1 "${user_colour}\u\[$(tput sgr0)\]\[\033[38;5;8m\]@\[$(tput sgr0)\]\[\033[38;5;5m\]${hostname}\[$(tput sgr0)\]${batteryStatus}\[\033[38;5;8m\]:\[$(tput sgr0)\]\[\033[38;5;14m\]${apwd}\[$(tput sgr0)\]\[\033[38;5;15m\]$RESTORE${overrides}" "\n\[$(tput sgr0)\]\[\033[38;5;10m\]\t\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]$(date +'%Z') \[$(tput sgr0)\]\[\033[38;5;7m\](\[$(tput sgr0)\]\[\033[38;5;9m\]${lastExitCode}\[$(tput sgr0)\]\[\033[38;5;7m\]${last_command_exec_time_string})\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;7m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
 
   NUM_COMMANDS_THIS_SHELL=$((NUM_COMMANDS_THIS_SHELL=NUM_COMMANDS_THIS_SHELL+1))
 
