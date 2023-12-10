@@ -18,5 +18,5 @@ eclipse.org
 bing.com
 flickr.com
 nytimes.com
-slack.com
 1.1.1.1
+srf.ch
