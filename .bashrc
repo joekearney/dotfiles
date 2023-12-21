@@ -158,6 +158,8 @@ function setUpAliases() {
 
   alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 
+  alias hgx="hg x"
+
   if [ -f ~/.iterm2/imgcat ]; then
     alias imgcat=~/.iterm2/imgcat
   fi
