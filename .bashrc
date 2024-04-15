@@ -310,5 +310,9 @@ loadCredentials
 FINISHED_LOADING_BASH_RC=current_time_millis
 echoDebug "Loading bash took $((FINISHED_LOADING_BASH_RC-STARTED_LOADING_BASH_RC))ms"
 
+if [[ $(command -v zoxide ) ]]; then
+  eval "$(zoxide init bash --cmd cd)"
+fi
+
 # Fig post block. Keep at the bottom of this file.
 [[ -f "$HOME/.fig/shell/bashrc.post.bash" ]] && builtin source "$HOME/.fig/shell/bashrc.post.bash"
