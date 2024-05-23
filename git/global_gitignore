@@ -172,6 +172,7 @@ Temporary Items
 .npm/
 .bundle/
 .coursier/
+.idea/
 .oracle_jre_usage
 .bash_history
 
