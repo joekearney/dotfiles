@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-BREW_BASH_PATH=/usr/local/bin/bash
+BREW_BASH_PATH=/opt/homebrew/bin/bash
 
 if [[ "${1:-}" == "--check" ]]; then
   if [[ "$(which bash)" == "${BREW_BASH_PATH}" ]]; then

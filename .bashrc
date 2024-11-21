@@ -1,7 +1,4 @@
-#!/bin/bash
-
-# Fig pre block. Keep at the top of this file.
-[[ -f "$HOME/.fig/shell/bashrc.pre.bash" ]] && builtin source "$HOME/.fig/shell/bashrc.pre.bash"
+#!/usr/bin/env bash
 
 function echoErr() {
   cat <<< "$@" 1>&2
@@ -107,6 +104,7 @@ function sortOutPathEntries() {
 
   prependToPath "$DOT_FILES_DIR/bin"
   prependToPath "$HOME/bin"
+  prependToPath "/opt/homebrew/bin"
 
   # added Miniconda2 3.19.0 to head of path
   if [[ -s "$HOME/.miniconda2" ]]; then
@@ -313,6 +311,3 @@ echoDebug "Loading bash took $((FINISHED_LOADING_BASH_RC-STARTED_LOADING_BASH_RC
 if [[ $(command -v zoxide ) ]]; then
   eval "$(zoxide init bash --cmd cd)"
 fi
-
-# Fig post block. Keep at the bottom of this file.
-[[ -f "$HOME/.fig/shell/bashrc.post.bash" ]] && builtin source "$HOME/.fig/shell/bashrc.post.bash"
