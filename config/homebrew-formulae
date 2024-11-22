@@ -1,6 +1,7 @@
 --cask
 bash-completion
 btop
+duf
 gdate
 hg
 http
