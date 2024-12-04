@@ -386,7 +386,7 @@ function uploadPicturesToGen10() {
   fi
 
   local sourceRoot="${PICTURES_LOCAL_ROOT}/${year}"
-  local destHost="gen10.joe-j-kearney.gmail.com.beta.tailscale.net"
+  local destHost="gen10"
   local destRoot="/data/media/pictures/${year}"
 
   echo "Syncing pictures for $year with command [rsync -av --progress ${sourceRoot}/ ${destHost}:${destRoot}/]..."
@@ -424,7 +424,7 @@ function uploadLightroomCatalogBackupToGen10() {
   fi
 
   local backupFile="${backupFiles[0]}"
-  local destHost="gen10.joe-j-kearney.gmail.com.beta.tailscale.net"
+  local destHost="gen10"
   local destRoot="/data/media/pictures/backup/lightroom-catalogue-backup"
 
   echoErr "Backing up Lightroom catalogue version [${version}]..."
