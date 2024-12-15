@@ -460,3 +460,17 @@ function watch() {
     sleep 2
   done
 }
+
+function public_ip() {
+  # Inspired by:
+  # https://www.cyberciti.biz/faq/how-to-find-my-public-ip-address-from-command-line-on-a-linux/
+
+  # cloudflare
+  dig +short txt ch whoami.cloudflare @1.0.0.1 | tr -d '"'
+
+  # Google
+  # dig TXT +short o-o.myaddr.l.google.com @ns1.google.com | tr -d '"'
+
+  # opendns
+  # dig +short myip.opendns.com @resolver1.opendns.com
+}
