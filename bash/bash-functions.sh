@@ -361,10 +361,11 @@ function uploadPicturesToGen10All() {
 
     uploadPicturesToGen10 "$year" "$dryRun" "--noCatalogBackup"
 
-  done < <(ls "$PICTURES_LOCAL_ROOT" | grep -E "[0-9]+")
+  done < <(ls "$PICTURES_PORTABLE_DISK_ROOT" | grep -E "[0-9]+")
 }
 
-PICTURES_LOCAL_ROOT="/Volumes/T7 Shield/pictures"
+PICTURES_PORTABLE_DISK_ROOT="/Volumes/T7 Shield/pictures"
+PICTURES_LOCAL_ROOT="/Users/joe/Pictures/local"
 function uploadPicturesToGen10() {
   local year="${1}"
   if [[ "$year" == "" ]]; then
@@ -385,9 +386,16 @@ function uploadPicturesToGen10() {
     shift
   fi
 
-  local sourceRoot="${PICTURES_LOCAL_ROOT}/${year}"
+  local sourceRoot
+  local destRoot
+  if [[ "$year" == "local" ]]; then
+    sourceRoot="${PICTURES_LOCAL_ROOT}/2025"
+    destRoot="/data/media/pictures/2025"
+  else
+    sourceRoot="${PICTURES_PORTABLE_DISK_ROOT}/${year}"
+    destRoot="/data/media/pictures/${year}"
+  fi
   local destHost="gen10"
-  local destRoot="/data/media/pictures/${year}"
 
   echo "Syncing pictures for $year with command [rsync -av --progress ${sourceRoot}/ ${destHost}:${destRoot}/]..."
 
@@ -400,7 +408,7 @@ function uploadPicturesToGen10() {
   #   "${sourceRoot}/" \
   #   "gen10:${destRoot}/"
 
-  if [[ "$backupUpload" == "yes" ]]; then
+  if [[ "$backupUpload" == "yes" && "${dryRun}" == "" ]]; then
     uploadLightroomCatalogBackupToGen10 "${dryRun}"
   fi
 }
@@ -438,7 +446,7 @@ function uploadLightroomCatalogBackupToGen10() {
 function uploadPicturesToGoogleDrive() {
   local year="${1:-20[0-2][0-9]}"
   local includePattern="/${year}/**/*"
-  local sourceRoot="${PICTURES_LOCAL_ROOT}"
+  local sourceRoot="${PICTURES_PORTABLE_DISK_ROOT}"
   local destRoot="google-drive-pictures:"
 
   echo "Syncing pictures with include pattern: ${includePattern}..."
