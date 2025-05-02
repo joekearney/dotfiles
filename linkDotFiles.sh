@@ -2,16 +2,16 @@
 
 set -e
 
-DOT_FILES_DIR="${DOT_FILES_DIR:-"$(cd "$(dirname $0)" && pwd)"}"
+DOT_FILES_DIR="${DOT_FILES_DIR:-"$(cd "$(dirname "$0")" && pwd)"}"
 
 function create_link() {
 	local f="$1"
-	ln -sf $DOT_FILES_DIR/$f "$HOME/$(basename $f)"
+	ln -sf "$DOT_FILES_DIR/$f" "$HOME/$(basename "$f")"
 }
 
 function delete_link() {
 	local f="$1"
-	rm "$HOME/$(basename $f)"
+	rm "$HOME/$(basename "$f")"
 }
 
 if [[ "$1" == "--remove" ]]; then
