@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if command -v fastfetch &> /dev/null; then
+    fastfetch --structure "Title:Separator:OS:Host:Kernel:Uptime:Shell:TerminalFont:CPU:GPU:Memory:Swap:Disk:LocalIp:Battery:PowerAdapter:Locale"
+  exit
+fi
+
 function prettyPrint() {
   local name="$1"
   local value="$2"
